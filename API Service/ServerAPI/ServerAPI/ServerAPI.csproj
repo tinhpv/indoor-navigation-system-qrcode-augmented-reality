@@ -1,0 +1,103 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
+    <PackageReference Include="System.Linq" Version="4.3.0" />
+    <PackageReference Include="QRCodeEncoderLibrary" Version="2.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.2.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Database\" />
+    <Folder Include="IRepository\" />
+    <Folder Include="Repository\" />
+    <Folder Include="IService\" />
+    <Folder Include="Service\" />
+    <Folder Include="Models\DefaultModel\" />
+    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\QRCode\" />
+    <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_1.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_2.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_3.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_4.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_5.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_6.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_1.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_2.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_3.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_4.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_5.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_6.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_7.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_8.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_9.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_10.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_11.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_12.png" />
+    <Content Remove="wwwroot\Map\fpt_demo_f_1.png" />
+    <Content Remove="wwwroot\Map\fpt_demo_f_2.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_1.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_2.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_3.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_4.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_5.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_6.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_7.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_8.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_9.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_10.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_11.png" />
+    <Content Remove="wwwroot\QRCode\QrCode_LocationId_fpt_demo_f_1_l_12.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_4.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_15.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_29.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_28.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_14.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_5.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_7.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_16.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_17.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_6.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_2.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_13.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_12.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_3.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_1.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_10.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_11.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_20.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_21.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_23.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_22.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_26.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_27.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_8.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_19.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_25.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_31.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_30.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_24.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_18.png" />
+    <Content Remove="wwwroot\QRCode\fpt_demo_l_9.png" />
+  </ItemGroup>
+</Project>

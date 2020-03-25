@@ -1,0 +1,3 @@
+/Users/hieu/Google Drive/Session 9/API Map/ServerAPI/ServerAPI/obj/Debug/netcoreapp2.2.8/ServerAPI.csprojAssemblyReference.cache
+/Users/hieu/Google Drive/Session 9/API Map/ServerAPI/ServerAPI/obj/Debug/netcoreapp2.2.8/ServerAPI.AssemblyInfoInputs.cache
+/Users/hieu/Google Drive/Session 9/API Map/ServerAPI/ServerAPI/obj/Debug/netcoreapp2.2.8/ServerAPI.AssemblyInfo.cs
