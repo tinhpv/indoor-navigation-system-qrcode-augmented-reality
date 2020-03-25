@@ -33,6 +33,7 @@ import fpt.capstone.inqr.dialog.DeleteDialog;
 import fpt.capstone.inqr.dialog.InfoDialog;
 import fpt.capstone.inqr.dialog.NotificationDialog;
 import fpt.capstone.inqr.dialog.WarningDialog;
+import fpt.capstone.inqr.dialog.WarningDownloadDialog;
 import fpt.capstone.inqr.helper.AppHelper;
 import fpt.capstone.inqr.helper.DatabaseHelper;
 import fpt.capstone.inqr.helper.FileHelper;
@@ -110,11 +111,11 @@ public class ListBuildingFragment extends BaseFragment {
     }
 
 
-    public void updateBuildingData(String buildingId) {
+    public void updateBuildingData(String buildingId, int position) {
         // xóa data cũ
         db.deleteBuildingData(buildingId);
         // thêm data mới
-        downloadBuildingData(buildingId);
+        downloadBuildingData(buildingId, position);
     }
 
     public void showInfo(Building building) {
@@ -123,12 +124,19 @@ public class ListBuildingFragment extends BaseFragment {
         infoDialog.show(getChildFragmentManager(), "info");
     }
 
+    public void showWarningDownload(Building building, int type, int position) {
+        WarningDownloadDialog dialog = new WarningDownloadDialog(this, type, building, position);
+        dialog.show(getChildFragmentManager(), "warning_download");
+    }
+
     public void showWarning(String warning) {
         WarningDialog dialog = new WarningDialog("Warning", warning);
         dialog.show(getChildFragmentManager(), "warning");
     }
 
-    public void downloadBuildingData(String buildingId) {
+    public void downloadBuildingData(String buildingId, int position) {
+        adapter.setPosition(position);
+
         showLoadingBar();
 
         AppHelper helper = AppHelper.getInstance(this.getContext());

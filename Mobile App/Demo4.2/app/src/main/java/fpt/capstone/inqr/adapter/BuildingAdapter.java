@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import fpt.capstone.inqr.R;
+import fpt.capstone.inqr.dialog.WarningDownloadDialog;
 import fpt.capstone.inqr.fragment.ListBuildingFragment;
 import fpt.capstone.inqr.model.Building;
 
@@ -22,6 +23,7 @@ public class BuildingAdapter extends RecyclerView.Adapter<BuildingHolder> {
 
     private List<Building> listBuilding;
     private ListBuildingFragment fragment;
+    private int position = -1;
 
     public BuildingAdapter(ListBuildingFragment fragment) {
         this.fragment = fragment;
@@ -29,6 +31,12 @@ public class BuildingAdapter extends RecyclerView.Adapter<BuildingHolder> {
 
     public void setListBuilding(List<Building> listBuilding) {
         this.listBuilding = listBuilding;
+        this.position = -1;
+        notifyDataSetChanged();
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
         notifyDataSetChanged();
     }
 
@@ -94,18 +102,23 @@ public class BuildingAdapter extends RecyclerView.Adapter<BuildingHolder> {
 
         holder.imgGetData.setOnClickListener(v -> {
 //            if (checkExpired(building.getDayExpired())) {
-            holder.imgGetData.setVisibility(View.INVISIBLE);
-            holder.progressBar.setVisibility(View.VISIBLE);
+//            holder.imgGetData.setVisibility(View.INVISIBLE);
+//            holder.progressBar.setVisibility(View.VISIBLE);
 
             if (building.getStatus() == Building.UPDATE) {
-                fragment.updateBuildingData(building.getId());
+                fragment.updateBuildingData(building.getId(), position);
             } else if (building.getStatus() == Building.NOT_DOWNLOAD) {
-                fragment.downloadBuildingData(building.getId());
+                fragment.downloadBuildingData(building.getId(), position);
             }
 //            } else {
 //                Toasty.info(v.getContext(), building.getName() + " has expired.", Toast.LENGTH_SHORT).show();
 //            }
         });
+
+        if (this.position == position) {
+            holder.imgGetData.setVisibility(View.INVISIBLE);
+            holder.progressBar.setVisibility(View.VISIBLE);
+        }
 
 
         holder.imgShowInfo.setOnClickListener(new View.OnClickListener() {
@@ -129,11 +142,13 @@ public class BuildingAdapter extends RecyclerView.Adapter<BuildingHolder> {
             @Override
             public void onClick(View v) {
 //                if (checkExpired(building.getDayExpired())) {
-                if (building.getStatus() == Building.DOWNLOADED || building.getStatus() == Building.UPDATE) {
+                if (building.getStatus() == Building.DOWNLOADED) {
                     fragment.showMapFragment(building.getId());
                 } else if (building.getStatus() == Building.NOT_DOWNLOAD) {
 //                    Toasty.warning(v.getContext(), "Please download data of " + building.getName() + " before to use.", Toast.LENGTH_SHORT).show();
-                    fragment.showWarning("Please download data of " + building.getName() + " before to use.");
+                    fragment.showWarningDownload(building, WarningDownloadDialog.TYPE_DOWNLOAD, position);
+                } else if (building.getStatus() == Building.UPDATE) {
+                    fragment.showWarningDownload(building, WarningDownloadDialog.TYPE_UPDATE, position);
                 }
 //                } else {
 //                    Toasty.info(v.getContext(), building.getName() + " has expired.", Toast.LENGTH_SHORT).show();
