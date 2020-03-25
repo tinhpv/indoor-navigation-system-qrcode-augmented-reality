@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.MapActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <AutoCompleteTextView
+            android:id="@+id/tvStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:completionThreshold="1"
+            android:visibility="visible"
+            android:text="Seven - Eleven"
+            android:hint="Start" />
+
+        <AutoCompleteTextView
+            android:id="@+id/tvEnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:completionThreshold="1"
+            android:text="Meeting room 008"
+            android:hint="End" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+           >
+
+            <Button
+                android:id="@+id/btnFindWay"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:visibility="visible"
+                android:text="Find Way" />
+
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:max="10"
+                android:min="1" />
+
+            <TextView
+                android:id="@+id/tvFloor"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:visibility="visible"
+                android:onClick="speak"
+                android:textSize="18dp"
+                android:text="~~" />
+
+            <Button
+                android:id="@+id/btnNextFloor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="showNextFloor"
+                android:text="Next" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            >
+
+            <SurfaceView
+                android:id="@+id/cameraView"
+                android:visibility="visible"
+                android:layout_gravity="end"
+                android:layout_width="50dp"
+                android:layout_height="50dp"/>
+
+            <FrameLayout
+                android:id="@+id/bgImg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                >
+
+                <ImageView
+                    android:id="@+id/img"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    />
+
+            </FrameLayout>
+
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/imgView"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.MainActivity">
+
+    <TextView
+        android:id="@+id/txtDatabaseStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Status"/>
+
+    <Button
+        android:id="@+id/btnAddDatabase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Database"
+        android:onClick="createDatabase" />
+
+    <Button
+        android:id="@+id/btnClearDatabase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clear Database"
+        android:onClick="clearDatabase" />
+
+    <Button
+        android:id="@+id/btnShowMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show map"
+        android:onClick="showMap"/>
+
+    <Button
+        android:id="@+id/btnGetAllBuilding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Check Data"
+        android:onClick="checkData"
+        />
+
+</LinearLayout>

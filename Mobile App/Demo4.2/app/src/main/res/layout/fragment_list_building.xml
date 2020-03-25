@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context="fpt.capstone.inqr.fragment.ListBuildingFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+   <ImageView
+       android:id="@+id/imgCheck"
+       android:layout_width="@dimen/_30sdp"
+       android:layout_height="@dimen/_30sdp"
+       android:src="@drawable/ic_check"
+       android:clickable="true"
+       android:focusable="true"
+       android:visibility="gone"
+       />
+
+   <androidx.constraintlayout.widget.ConstraintLayout
+       android:layout_width="match_parent"
+       android:layout_height="@dimen/_150sdp"
+       android:background="@color/bgBuilding"
+       >
+
+       <TextView
+           android:id="@+id/tv1"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+          android:layout_marginStart="@dimen/_20sdp"
+           android:layout_marginBottom="@dimen/_15sdp"
+           android:fontFamily="@font/nunito_black"
+           android:text="Choose"
+           android:textSize="18sp"
+
+           app:layout_constraintBottom_toTopOf="@id/card"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toTopOf="parent"
+           app:layout_constraintVertical_bias="1.0" />
+
+       <TextView
+           android:id="@+id/tv2"
+           android:layout_width="0dp"
+           android:layout_height="wrap_content"
+           android:text=" a building"
+           android:layout_marginBottom="@dimen/_15sdp"
+           android:textSize="18sp"
+           android:fontFamily="@font/nunito_light"
+
+           app:layout_constraintBottom_toTopOf="@id/card"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintStart_toEndOf="@id/tv1"
+           app:layout_constraintTop_toTopOf="parent"
+           app:layout_constraintVertical_bias="1.0" />
+
+       <androidx.cardview.widget.CardView
+           android:id="@+id/card"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_margin="@dimen/_20sdp"
+           app:cardCornerRadius="@dimen/_5sdp"
+
+
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintBottom_toBottomOf="parent"
+           >
+
+           <androidx.constraintlayout.widget.ConstraintLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:padding="@dimen/_10sdp"
+               >
+
+               <ImageView
+                   android:id="@+id/imgSearch"
+                   android:layout_width="@dimen/_20sdp"
+                   android:layout_height="@dimen/_20sdp"
+                   android:src="@drawable/search"
+
+                   app:layout_constraintStart_toStartOf="parent"
+                   app:layout_constraintTop_toTopOf="parent"
+                   app:layout_constraintBottom_toBottomOf="parent"
+                   />
+
+               <EditText
+                   android:id="@+id/edtSearch"
+                   android:layout_width="0dp"
+                   android:layout_height="match_parent"
+                   android:background="@null"
+                   android:layout_marginStart="@dimen/_10sdp"
+
+                   app:layout_constraintTop_toTopOf="parent"
+                   app:layout_constraintBottom_toBottomOf="parent"
+                   app:layout_constraintEnd_toEndOf="parent"
+                   app:layout_constraintStart_toEndOf="@id/imgSearch"
+                   />
+
+           </androidx.constraintlayout.widget.ConstraintLayout>
+
+       </androidx.cardview.widget.CardView>
+
+
+   </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swiperefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvBuilding"
+            android:background="@color/bgMap"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+
+
+</LinearLayout>

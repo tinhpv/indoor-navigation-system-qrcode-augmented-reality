@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/_5sdp"
+    android:layout_marginStart="@dimen/_20sdp"
+    android:layout_marginEnd="@dimen/_20sdp"
+    android:layout_marginBottom="@dimen/_5sdp"
+    android:background="@color/bgMap"
+    >
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="@dimen/_5sdp"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bgCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_20sdp"
+            >
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:text="FPT Campus D.9"
+                android:gravity="bottom"
+                android:textSize="18sp"
+                android:fontFamily="@font/nunito_regular"
+                android:textColor="@android:color/black"
+
+                app:layout_constraintBottom_toTopOf="@+id/tvCompany"
+                app:layout_constraintEnd_toStartOf="@id/imgGetData"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvCompany"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="FPT"
+                android:gravity="top"
+                android:textSize="15sp"
+                android:fontFamily="@font/nunito_regular"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/imgGetData"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvName" />
+
+            <ImageView
+                android:id="@+id/imgGetData"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/download"
+                android:layout_margin="@dimen/_10sdp"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/imgShowInfo"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ProgressBar
+                android:id="@+id/prLoading"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_margin="@dimen/_10sdp"
+                android:visibility="invisible"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/imgShowInfo"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <!--       <ImageView-->
+            <!--           android:id="@+id/imgDeleteData"-->
+            <!--           android:layout_width="@dimen/_50sdp"-->
+            <!--           android:layout_height="@dimen/_50sdp"-->
+            <!--           android:src="@drawable/ic_delete"-->
+            <!--           android:clickable="true"-->
+            <!--           android:focusable="true"-->
+            <!--           android:layout_toStartOf="@id/imgShowInfo"-->
+            <!--           />-->
+
+            <ImageView
+                android:id="@+id/imgShowInfo"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_alignParentEnd="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/information"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+
+
+
+
+</FrameLayout>
