@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/hieu/Google Drive/Session 9/API Map/ServerAPI/ServerAPI/ServerAPI.csproj": {}
+    "/Users/hieu/Google Drive/Session 9/INQR/API Service/ServerAPI/ServerAPI/ServerAPI.csproj": {}
   },
   "projects": {
-    "/Users/hieu/Google Drive/Session 9/API Map/ServerAPI/ServerAPI/ServerAPI.csproj": {
+    "/Users/hieu/Google Drive/Session 9/INQR/API Service/ServerAPI/ServerAPI/ServerAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/hieu/Google Drive/Session 9/API Map/ServerAPI/ServerAPI/ServerAPI.csproj",
+        "projectUniqueName": "/Users/hieu/Google Drive/Session 9/INQR/API Service/ServerAPI/ServerAPI/ServerAPI.csproj",
         "projectName": "ServerAPI",
-        "projectPath": "/Users/hieu/Google Drive/Session 9/API Map/ServerAPI/ServerAPI/ServerAPI.csproj",
+        "projectPath": "/Users/hieu/Google Drive/Session 9/INQR/API Service/ServerAPI/ServerAPI/ServerAPI.csproj",
         "packagesPath": "/Users/hieu/.nuget/packages/",
-        "outputPath": "/Users/hieu/Google Drive/Session 9/API Map/ServerAPI/ServerAPI/obj/",
+        "outputPath": "/Users/hieu/Google Drive/Session 9/INQR/API Service/ServerAPI/ServerAPI/obj/",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"

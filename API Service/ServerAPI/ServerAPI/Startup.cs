@@ -33,8 +33,8 @@ namespace ServerAPI
 
             services.AddDbContext<AppContext>();
 
-            services.AddTransient<ILocationRepository, LocationRepository>();
-            services.AddTransient<ILocationService, LocationService>();
+            //services.AddTransient<ILocationRepository, LocationRepository>();
+            //services.AddTransient<ILocationService, LocationService>();
 
             services.AddTransient<IBuildingRepository, BuildingRepository>();
             services.AddTransient<IBuildingService, BuildingService>();
@@ -89,8 +89,8 @@ namespace ServerAPI
             app.UseDirectoryBrowser(new DirectoryBrowserOptions
             {
                 FileProvider = new PhysicalFileProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "maptest")),
-                RequestPath = "/MAPTEST"
+                    Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "map")),
+                RequestPath = "/MAP"
             });
 
 

@@ -27,9 +27,24 @@ namespace ServerAPI.Service
             return iRepository.GetAllBuildingsActive();
         }
 
-        public string UploadMap(IFormFile file)
+        public string UploadFloorMap(IFormFileCollection files, string buildingId)
         {
-            return iRepository.UploadMap(file);
+            return iRepository.UploadFloorMap(files, buildingId);
+        }
+
+        public Building GetLocations(string buildingId)
+        {
+            return iRepository.GetLocations(buildingId);
+        }
+
+        public string UpdateDataBuilding(IFormFile file)
+        {
+            return iRepository.UpdateDataBuilding(file);
+        }
+
+        public string CreateNewBuilding(Building building)
+        {
+            return iRepository.CreateNewBuilding(building);
         }
     }
 }

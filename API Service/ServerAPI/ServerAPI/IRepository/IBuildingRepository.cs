@@ -11,6 +11,17 @@ namespace ServerAPI.IRepository
         List<Company> GetAllBuildings();
        
 
-        string UploadMap(IFormFile file);
+        string UploadFloorMap(IFormFileCollection files, string buildingId);
+
+
+
+
+
+
+
+        Building GetLocations(string buildingId);
+        string UpdateDataBuilding(IFormFile file);
+        string CreateNewBuilding(Building building);
+
     }
 }
