@@ -9,6 +9,8 @@ namespace ServerAPI.IService
     {
         List<Company> GetAllBuildingsActive();
         List<Company> GetAllBuildings();
+       
+
         string UploadMap(IFormFile file);
     }
 }

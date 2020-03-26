@@ -74,6 +74,26 @@ namespace ServerAPI.Controllers
             return Ok("Fail");
         }
 
+        [HttpPost("createNewBuilding")]
+        public IActionResult CreateBuilding([FromBody] Models.DefaultModel.Building building)
+        {
+            //var model = iService.GetLocations();
+
+            //if (model.Data.Count > 0)
+            //{
+            //    model.Status = 1;
+            //    //model.DayExpired = "21/12/2020";
+            //}
+            //else
+            //{
+            //    model.Status = 0;
+            //    model.DayExpired = null;
+            //}
+
+            //string json = JsonConvert.SerializeObject(model);
+            return Ok(iService.CreateNewBuilding(building));
+        }
+
 
     }
 }

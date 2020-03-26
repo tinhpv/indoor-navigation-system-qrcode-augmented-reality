@@ -297,9 +297,123 @@ namespace ServerAPI.Repository
         }
 
 
+        public String CreateNewBuilding(Building building)
+        {
+            context.Building.Add(new Models.Building
+            {
+                Id = building.Id,
+                Name = building.Name,
+                Description = building.Description,
+                CompanyId = "com_1",
+                DayExpired = Convert.ToDateTime(building.DayExpired),
+                Version = 0,
+                Active = building.Active
+            });
+
+            // add new building
+            context.SaveChanges();
+
+            var listFloor = building.ListFloor;
+            var buildingId = building.Id;
+
+            // add floor
+            foreach (var floor in listFloor)
+            {
+                context.Floor.Add(new Models.Floor
+                {
+                    BuildingId = buildingId,
+                    Id = buildingId + "_f_" + floor.Id,
+                    Name = floor.Name,
+                    // save map
+                    LinkMap = saveMap(floor.LinkMap, buildingId + "_f_" + floor.Id)
+                });
+                context.SaveChanges();
+            }
+
+            //var listLocationBeside = new List<LocationBesideDb>();
 
 
-       
+            var listLocationBeside = new List<LocationBesideDb>();
+
+
+            // add location
+            foreach (var floor in listFloor)
+            {
+                foreach (var location in floor.ListLocation)
+                {
+                    context.Location.Add(new Location
+                    {
+                        //Id = buildingId  + "_l_" + location.Id,
+                        Id = buildingId + "_l_" + location.Id,
+                        Name = location.Name,
+                        RatioX = location.RatioX,
+                        RatioY = location.RatioY,
+                        FloorId = buildingId + "_f_" + floor.Id,
+                        LinkQrcode = generateQRCode("ID: " + buildingId + "_l_" + location.Id + " | Name: " + location.Name, buildingId + "_l_" + location.Id)
+                    });
+                    context.SaveChanges();
+
+                    // add room
+                    foreach (var room in location.ListRoom)
+                    {
+                        string roomId = buildingId + "_f_" + floor.Id + "_r_" + room.Id;
+                        context.Room.Add(new RoomDb
+                        {
+                            Id = roomId,
+                            Name = room.Name,
+                            RatioX = room.RatioX,
+                            RatioY = room.RatioY,
+                            LocationId = buildingId + "_l_" + location.Id,
+                            SpecialRoom = room.SpecialRoom
+                        });
+                        context.SaveChanges();
+                    }
+
+
+                    foreach (var neighbor in location.ListLocationBeside)
+                    {
+                        listLocationBeside.Add(new LocationBesideDb
+                        {
+                            //Id = 0,
+                            LocationId = buildingId + "_l_" + location.Id,
+                            LocationBesideId = buildingId + "_l_" + neighbor.Id,
+                            OrientitationId = neighbor.Orientation,
+                            Distance = neighbor.Distance
+                        });
+                    }
+                }
+
+
+            }
+            // add location beside
+
+            foreach (var item in listLocationBeside)
+            {
+                context.LocationBeside.Add(item);
+                context.SaveChanges();
+            }
+
+            //context.LocationBeside.AddRange(listLocationBeside);
+
+            //context.SaveChanges();
+
+            listLocationBeside.Clear();
+
+            return "OK";
+        }
+
+
+
+
+
+
+
+
+        // ------------------------------------------
+
+
+
+
 
         private string generateQRCode(string content, string locationId)
         {
@@ -396,5 +510,7 @@ namespace ServerAPI.Repository
             }
             return true;
         }
+
+
     }
 }

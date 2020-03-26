@@ -8,5 +8,6 @@ namespace ServerAPI.IRepository
     {
         Building GetLocations(string buildingId);
         string UpdateDataBuilding(IFormFile file);
-      }
+        string CreateNewBuilding(Building building);
+    }
 }

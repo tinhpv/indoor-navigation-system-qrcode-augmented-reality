@@ -16,6 +16,7 @@ namespace ServerAPI.Service
             this.iRepository = _iRepository;
         }
 
+        
         public List<Company> GetAllBuildings()
         {
             return iRepository.GetAllBuildings();

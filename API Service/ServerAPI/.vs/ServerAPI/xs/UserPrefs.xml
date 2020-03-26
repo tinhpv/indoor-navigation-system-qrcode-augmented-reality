@@ -1,8 +1,11 @@
 ﻿<Properties StartupConfiguration="{DF4C2C2E-2C11-4591-BFF2-1B05BE635690}|Default" NuGet.AddPackagesDialog.IncludePrerelease="True">
-  <MonoDevelop.Ide.Workbench ActiveDocument="ServerAPI/Repository/BuildingRepository.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ServerAPI/Controllers/LocationController.cs">
     <Files>
-      <File FileName="ServerAPI/Repository/BuildingRepository.cs" Line="152" Column="36" />
-      <File FileName="../../../../Desktop/API/WebApplication3/Repository/AssetRepository.cs" />
+      <File FileName="ServerAPI/Repository/BuildingRepository.cs" Line="181" Column="9" />
+      <File FileName="ServerAPI/Models/DefaultModel/JsonInputModel.cs" Line="62" Column="18" />
+      <File FileName="ServerAPI/Repository/LocationRepository.cs" Line="402" Column="25" />
+      <File FileName="../../../../Desktop/API/WebApplication3/Controllers/AssetController.cs" Line="68" Column="33" />
+      <File FileName="ServerAPI/Controllers/LocationController.cs" Line="78" Column="54" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -10,14 +13,13 @@
           <Node name="ServerAPI" expanded="True">
             <Node name="ServerAPI" expanded="True">
               <Node name="Dependencies" expanded="True" />
-              <Node name="Controllers" expanded="True" />
+              <Node name="Controllers" expanded="True">
+                <Node name="LocationController.cs" selected="True" />
+              </Node>
               <Node name="Database" expanded="True" />
               <Node name="IRepository" expanded="True" />
               <Node name="IService" expanded="True" />
-              <Node name="Models" expanded="True" />
-              <Node name="Repository" expanded="True">
-                <Node name="BuildingRepository.cs" selected="True" />
-              </Node>
+              <Node name="Repository" expanded="True" />
               <Node name="Service" expanded="True" />
               <Node name="wwwroot" expanded="True" />
             </Node>

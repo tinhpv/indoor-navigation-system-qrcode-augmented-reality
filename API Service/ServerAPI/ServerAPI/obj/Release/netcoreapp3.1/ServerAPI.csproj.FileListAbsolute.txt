@@ -54,3 +54,5 @@
 /Users/hieu/Google Drive/Session 9/API Map/ServerAPI/ServerAPI/bin/Release/netcoreapp3.1/Swashbuckle.AspNetCore.SwaggerGen.dll
 /Users/hieu/Google Drive/Session 9/API Map/ServerAPI/ServerAPI/bin/Release/netcoreapp3.1/Swashbuckle.AspNetCore.SwaggerUI.dll
 /Users/hieu/Google Drive/Session 9/API Map/ServerAPI/ServerAPI/obj/Release/netcoreapp3.1/ServerAPI.MvcApplicationPartsAssemblyInfo.cs
+/Users/hieu/Google Drive/Session 9/API Map/ServerAPI/ServerAPI/obj/Release/netcoreapp3.1/ServerAPI.csproj.CoreCompileInputs.cache
+/Users/hieu/Google Drive/Session 9/API Map/ServerAPI/ServerAPI/obj/Release/netcoreapp3.1/ServerAPI.genruntimeconfig.cache

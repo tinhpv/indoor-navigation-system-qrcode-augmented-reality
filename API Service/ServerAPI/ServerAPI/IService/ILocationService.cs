@@ -9,5 +9,6 @@ namespace ServerAPI.IService
     {
         Building GetLocations(string buildingId);
         string UpdateDataBuilding(IFormFile file);
+        string CreateNewBuilding(Building building);
     }
 }

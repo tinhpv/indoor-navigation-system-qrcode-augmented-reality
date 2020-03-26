@@ -24,5 +24,11 @@ namespace ServerAPI.Service
         {
             return iRepository.UpdateDataBuilding(file);
         }
+
+        public string CreateNewBuilding(Building building)
+        {
+           return iRepository.CreateNewBuilding(building);
+        }
+
     }
 }
