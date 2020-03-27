@@ -12,11 +12,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import fpt.capstone.inqr.R;
+import fpt.capstone.inqr.fragment.BottomSheetFragment;
 import fpt.capstone.inqr.model.supportModel.Step;
 
 public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
 
     private List<Step> listSteps;
+    private BottomSheetFragment fragment;
+
+    public StepAdapter(BottomSheetFragment fragment) {
+        this.fragment = fragment;
+    }
 
     public void setListSteps(List<Step> listSteps) {
         this.listSteps = listSteps;
@@ -57,11 +63,19 @@ public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
             holder.tvDistance.setVisibility(View.VISIBLE);
 
             holder.tvDistance.setText(step.getDistance());
+
+            // set speaker
+            holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo() + " " + step.getDistance()));
         } else {
             holder.tvDistance.setVisibility(View.GONE);
+
+            // set speaker
+            holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo()));
         }
 
         holder.tvInfo.setText(step.getInfo());
+
+
 
     }
 
@@ -73,7 +87,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
 
 class StepHolder extends RecyclerView.ViewHolder {
 
-    ImageView imgType;
+    ImageView imgType, imgSpeaker;
     TextView tvInfo, tvDistance;
 
     public StepHolder(@NonNull View itemView) {
@@ -82,5 +96,6 @@ class StepHolder extends RecyclerView.ViewHolder {
         imgType = itemView.findViewById(R.id.imgType);
         tvInfo = itemView.findViewById(R.id.tvInfo);
         tvDistance = itemView.findViewById(R.id.tvDistance);
+        imgSpeaker = itemView.findViewById(R.id.imgSpeaker);
     }
 }

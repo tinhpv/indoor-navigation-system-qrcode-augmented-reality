@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -49,7 +50,9 @@ import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import es.dmoral.toasty.Toasty;
 import fpt.capstone.inqr.R;
@@ -93,8 +96,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     private Canvas canvas;
     private AutoCompleteTextView tvStart;
     private AutoCompleteTextView tvEnd;
-    //    private Button btnFindWay;
-//    private TextView tvFloor;
+
     private List<Location> locationList;
     private List<Room> listRoom;
     private List<Room> listSpecialRoom;
@@ -106,21 +108,13 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     private List<Bitmap> listSourceMap;
     private List<Floor> listFloor;
     private List<String> listFloorName;
-
     private List<List<Line>> listLines;
     private List<Line> lines;
-
     private List<Step> listStep;
 
     private Room endRoom;
-
     private String startLocationId = "";
     private String buildingId = "";
-
-
-//    private String currentFloorId;
-
-
     private DijkstraShortestPath shortestPath;
 
 
@@ -133,7 +127,6 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
     private FrameLayout bgImg;
     private SurfaceView cameraView;
-    //    private Camera camera;
     boolean hadQr = false;
     private Handler checkQrExistHandler;
     private Runnable runnable;
@@ -146,8 +139,6 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     @Override
     public void onResume() {
         super.onResume();
-//        cameraView = new SurfaceView(this.getContext());
-
 
         mSensorManager.registerListener(this, mRotation, SensorManager.SENSOR_DELAY_GAME);
         Dexter.withActivity(this.getActivity())
@@ -205,52 +196,51 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         super.onStop();
         checkQrExistHandler.removeCallbacks(runnable);
         checkQrExistHandler.removeCallbacksAndMessages(null);
-
-//        this.getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         this.setTitle("Chỉ đường");
 
+        // GET BUILDING_ID THAT USER PICKED
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             buildingId = bundle.getString("buildingID", "");
         }
 
         db = new DatabaseHelper(getContext());
+
         // get all floor
         listFloor = db.getAllFloors(buildingId);
+
         // get all location
         locationList = new ArrayList<>();
         for (Floor floor : listFloor) {
             locationList.addAll(db.getAllLocations(floor.getId()));
         }
+
         // get all location Name
         listLocationName = getListLocationName();
+
         // get all room
         listRoom = new ArrayList<>();
         for (Location location : locationList) {
             listRoom.addAll(db.getAllRooms(location.getId()));
         }
+
         // get all room name
         listRoomName = getListRoomName();
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_map, container, false);
 
+        View view = inflater.inflate(R.layout.fragment_map, container, false);
         initView(view);
         setupInput();
-
         setupSensor();
-
         setupScanQR();
 
         imgScan.setOnClickListener(v -> {
@@ -262,14 +252,12 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         });
 
         bgNavigate.setOnClickListener(v -> {
-
-
             Toasty.success(getContext(), "Wait for Tinh ^^", Toast.LENGTH_SHORT).show();
         });
 
         bgStep.setOnClickListener(v -> {
-            BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
-            bottomSheetFragment.setListSteps(listStep);
+            BottomSheetFragment bottomSheetFragment = new BottomSheetFragment(listStep, tvDistance.getText().toString(), tvTime.getText().toString());
+//            bottomSheetFragment.setListSteps(listStep);
             bottomSheetFragment.show(getActivity().getSupportFragmentManager(), bottomSheetFragment.getTag());
         });
 
@@ -861,15 +849,149 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         showMap();
     }
 
+    private Double calculateAngle(Location A, Location B) {
+        float xB = B.getRatioX();
+        float yB = B.getRatioY();
+        float xA = A.getRatioX();
+        float yA = A.getRatioY();
+
+        Double angleFromOx = Math.atan ((yB - yA) / (xB - xA));
+
+        // value of arc-tan is only in [0..PI]
+        // so if xB > xA (in Android Screen coordinate, (0, 0) in up-left),
+        // vector AB is coming down over PI ==> add PI to the calculated angle.
+        return  (xB - xA > 0) ? angleFromOx + Math.PI : angleFromOx;
+    }
+
+
+    enum Direction {
+        RIGHT,
+        LEFT,
+        STRAIGHT,
+    }
+
+    private int getDirection(Location A, Location B, Location C, Neighbor neighbor) {
+        // angle by AB and Ox
+        Double angleAB = calculateAngle(A, B);
+
+        // angle by BC and Ox
+        Double angleBC = calculateAngle(B, C);
+
+        // angle by AB and BC || normalize to make this angle always in [0..2pi]
+        Double result = angleBC - angleAB < 0 ? (angleBC - angleAB) + 2 * Math.PI : angleBC - angleAB;
+
+        if (result == 0)
+            return neighbor.getDirection();
+        else if (result < Math.PI)
+            return Neighbor.ORIENT_TURN_LEFT;
+        else return Neighbor.ORIENT_TURN_RIGHT;
+    }
+
     private void getStepDetail() {
+
+        Map<Integer, Integer> directionGuide = new HashMap<>();
+
         if (listStep == null) {
             listStep = new ArrayList<>();
         } else {
             listStep.clear();
         }
 
-        // add điểm bắt đầu
-        listStep.add(new Step(Step.TYPE_START_POINT, "Your location: " + tvStart.getText().toString(), null));
+        int step = 0;
+        if (listPointOnWay.size() < 3) {
+            Location A = getLocation(listPointOnWay.get(step).getId());
+            String neighborID = listPointOnWay.get(step + 1).getId();
+            Neighbor neighborOfA = getNeighbor(A, neighborID);
+            directionGuide.put(step, neighborOfA.getDirection());
+        } else {
+            while (step < listPointOnWay.size() - 2) {
+                int nextPointStep = step;
+
+                Location A = getLocation(listPointOnWay.get(nextPointStep).getId());
+                String neighborID = listPointOnWay.get(nextPointStep + 1).getId();
+                Neighbor neighborOfA = getNeighbor(A, neighborID);
+
+                Location B = getLocation(listPointOnWay.get(nextPointStep + 1).getId());
+                neighborID = listPointOnWay.get(nextPointStep + 2).getId();
+                Neighbor neighborOfB = getNeighbor(B, neighborID);
+
+                Location C = getLocation(listPointOnWay.get(nextPointStep + 2).getId());
+
+                // There is no two continuous staircases == three standard locations
+                if (neighborOfA.getDirection() != Neighbor.ORIENT_DOWN && neighborOfA.getDirection() != Neighbor.ORIENT_UP &&
+                        neighborOfB.getDirection() != Neighbor.ORIENT_DOWN && neighborOfB.getDirection() != Neighbor.ORIENT_UP) {
+                    if (directionGuide.get(step) == null) directionGuide.put(step, neighborOfA.getDirection());
+                    int direction = getDirection(A, B, C, neighborOfB);
+                    directionGuide.put(step + 1, direction);
+                } else { // two continuous staircases
+                    directionGuide.put(step, neighborOfA.getDirection());
+                    if (nextPointStep + 2 == listPointOnWay.size() - 1) { // C is the destination
+                        directionGuide.put(++step, neighborOfA.getDirection());
+                    }
+                } // end if
+
+                step++;
+            } // end while
+        } // end if
+
+
+        listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString(), null));
+
+        float distance = 0;
+        Integer previousStep = 0;
+        Location previousLocation = null;
+
+        for (int i = 0; i < directionGuide.size(); i++) {
+            Location location = getLocation(listPointOnWay.get(i).getId());
+            String neighborID = listPointOnWay.get(i + 1).getId();
+            Neighbor neighbor = getNeighbor(location, neighborID);
+
+            int direction = directionGuide.get(i);
+            if (previousStep == 0) previousStep = direction;
+            if (previousLocation == null) previousLocation = location;
+
+            if (i == directionGuide.size() - 1) {
+                distance += neighbor.getDistance();
+                direction = 0;
+            }
+
+            if (direction != previousStep) {
+                switch (previousStep) {
+                    case Neighbor.ORIENT_LEFT:
+                        listStep.add(new Step(Step.TYPE_GO_STRAIGHT, "From the left of " + previousLocation.getName() + ", go straight.", distance + "m"));
+                        break;
+                    case Neighbor.ORIENT_RIGHT:
+                        listStep.add(new Step(Step.TYPE_GO_STRAIGHT, "From the right of " + previousLocation.getName() + ", go straight.", distance + "m"));
+                        break;
+                    case Neighbor.ORIENT_TURN_LEFT:
+                        listStep.add(new Step(Step.TYPE_TURN_LEFT, "Turn left at " + previousLocation.getName() + ", go straight.", distance + "m"));
+                        break;
+                    case Neighbor.ORIENT_TURN_RIGHT:
+                        listStep.add(new Step(Step.TYPE_TURN_RIGHT, "Turn right at " + previousLocation.getName() + ", go straight.", distance + "m"));
+                        break;
+                    case Neighbor.ORIENT_UP:
+                        listStep.add(new Step(Step.TYPE_UP_STAIR, "From " + previousLocation.getName() + ", go up to the next floor", null));
+                        break;
+                    case Neighbor.ORIENT_DOWN:
+                        listStep.add(new Step(Step.TYPE_DOWN_STAIR, "From " + previousLocation.getName() + ", go down to the next floor", null));
+                } // end switch
+                distance = neighbor.getDistance();
+                previousLocation = location;
+            } else {
+                distance += neighbor.getDistance();
+            } // end comparison with previous step
+
+            previousStep = direction;
+        } // end for
+
+        Location location = getLocation(listPointOnWay.get(listPointOnWay.size() - 2).getId());
+        String neighborID = listPointOnWay.get(listPointOnWay.size() - 1).getId();
+        Neighbor neighbor = getNeighbor(location, neighborID);
+        if (neighbor.getDirection() == Neighbor.ORIENT_LEFT) {
+            listStep.add(new Step(Step.TYPE_END_POINT,  tvEnd.getText().toString() + " is at the right side", null));
+        } else {
+            listStep.add(new Step(Step.TYPE_END_POINT,  tvEnd.getText().toString() + " is at the left side", null));
+        }
 
 //        for (int i = 0; i < listPointOnWay.size() - 1; i++) {
 //
@@ -950,7 +1072,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 //        }
 
         // add điểm kết thúc
-        listStep.add(new Step(Step.TYPE_END_POINT, "Your destination: " + tvEnd.getText().toString(), null));
+//        listStep.add(new Step(Step.TYPE_END_POINT, "Your destination: " + tvEnd.getText().toString(), null));
     }
 
     private void getListSourceMap() {

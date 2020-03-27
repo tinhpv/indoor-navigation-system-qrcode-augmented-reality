@@ -14,6 +14,10 @@ public class Neighbor extends Location implements Serializable {
     public static final int ORIENT_RIGHT = 2;
     public static final int ORIENT_UP = 3;
     public static final int ORIENT_DOWN = 4;
+
+    public static final int ORIENT_TURN_LEFT = 5;
+    public static final int ORIENT_TURN_RIGHT = 6;
+
     public static final int ORIENT_LEFT_TURN_LEFT = 11;
     public static final int ORIENT_LEFT_TURN_RIGHT = 12;
     public static final int ORIENT_RIGHT_TURN_LEFT = 21;

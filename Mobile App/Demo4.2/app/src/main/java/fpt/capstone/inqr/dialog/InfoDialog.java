@@ -29,7 +29,7 @@ public class InfoDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogStyle);
 
-        setCancelable(false);
+//        setCancelable(false);
     }
 
     @Nullable
