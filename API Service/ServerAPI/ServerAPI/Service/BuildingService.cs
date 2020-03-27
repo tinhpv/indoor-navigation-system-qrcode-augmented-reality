@@ -46,5 +46,10 @@ namespace ServerAPI.Service
         {
             return iRepository.CreateNewBuilding(building);
         }
+
+        public string UpdateBuilding(Building building)
+        {
+            return iRepository.UpdateBuilding(building);
+        }
     }
 }

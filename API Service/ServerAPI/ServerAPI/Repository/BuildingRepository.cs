@@ -140,36 +140,7 @@ namespace ServerAPI.Repository
             return result;
         }
 
-        private void changeBuildingStatus(string buildingId, int status)
-        {
-            var building = context.Building.Where(x => x.Id == buildingId).FirstOrDefault();
-            if (building != null)
-            {
-                if (status == ACTIVE)
-                {
-                    building.Active = true;
-                }
-                else if (status == DEACTIVE)
-                {
-                    building.Active = false;
-                }
 
-                context.SaveChanges();
-            }
-        }
-
-        //private Floor GetFloor(string buildingId, string floorId)
-        //{
-        //    var listFloorInBuilding = context.Floor.Where(x => x.BuildingId == buildingId).ToList();
-
-        //    foreach (var floor in listFloorInBuilding)
-        //    {
-        //        if (floor.Id == floorId)
-        //        {
-        //            return floor;
-        //        }
-        //    }
-        //}
 
         public string UploadFloorMap(IFormFileCollection files, string buildingId)
         {
@@ -183,12 +154,15 @@ namespace ServerAPI.Repository
 
                 if (floor != null)
                 {
+                    // xóa map cũ nếu có
+                    deleteMap(floorId);
+
                     floor.LinkMap = saveMapFromFile(file, floorId);
                     context.SaveChanges();
                 }
             }
-             
-            
+
+
             return "Done";
         }
 
@@ -462,6 +436,14 @@ namespace ServerAPI.Repository
 
         public string CreateNewBuilding(Building building)
         {
+            int version = 0;
+            if (building.ListFloor != null)
+            {
+                if (building.ListFloor.Count() > 0)
+                {
+                    version = 1;
+                }
+            }
             context.Building.Add(new Models.Building
             {
                 Id = building.Id,
@@ -469,7 +451,7 @@ namespace ServerAPI.Repository
                 Description = building.Description,
                 CompanyId = "com_1",
                 DayExpired = Convert.ToDateTime(building.DayExpired),
-                Version = 0,
+                Version = version,
                 Active = building.Active
             });
 
@@ -568,7 +550,37 @@ namespace ServerAPI.Repository
         }
 
 
+        public string UpdateBuilding(Building building)
+        {
+            var buildingInfo = context.Building.Where(x => x.Id == building.Id).FirstOrDefault();
 
+            if (buildingInfo != null)
+            {
+                buildingInfo.Name = building.Name;
+                buildingInfo.Description = building.Description;
+                buildingInfo.CompanyId = "com_1";
+                buildingInfo.DayExpired = Convert.ToDateTime(building.DayExpired);
+                buildingInfo.Active = building.Active;
+
+                if (building.ListFloor != null)
+                {
+                    if (building.ListFloor.Count() > 0)
+                    {
+                        int? version = buildingInfo.Version;
+                        buildingInfo.Version = version + 1;
+
+                        // add building data
+                        deleteOldDataAndAddNewData(building.Id, building.ListFloor);
+                    }
+                }
+
+                // save
+                context.SaveChanges();
+            }
+
+            return "OK";
+
+        }
 
 
 
@@ -578,6 +590,153 @@ namespace ServerAPI.Repository
 
 
 
+        private void deleteOldDataAndAddNewData(string buildingId, List<Floor> floors)
+        {
+            // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            // remove old data
+            var listFloor = context.Floor.Where(x => x.BuildingId == buildingId).ToList();
+
+            var listLocation = new List<Location>();
+
+            foreach (var floor in listFloor)
+            {
+                listLocation.AddRange(context.Location.Where(x => x.FloorId == floor.Id).ToList());
+            }
+
+            var listLocationBeside = new List<LocationBesideDb>();
+
+            foreach (var location in listLocation)
+            {
+                listLocationBeside.AddRange(context.LocationBeside.Where(x => x.LocationId == location.Id).ToList());
+            }
+
+            var listRoom = new List<RoomDb>();
+
+            foreach (var location in listLocation)
+            {
+                listRoom.AddRange(context.Room.Where(x => x.LocationId == location.Id).ToList());
+            }
+
+            try
+            {
+                // delete list Room
+                context.Room.RemoveRange(listRoom);
+                // delete list Location beside
+                context.LocationBeside.RemoveRange(listLocationBeside);
+                // delete list Location
+                context.Location.RemoveRange(listLocation);
+                // delete list Floor
+                context.Floor.RemoveRange(listFloor);
+
+                context.SaveChanges();
+
+                // delete Map
+                foreach (var floor in listFloor)
+                {
+                    deleteMap(floor.Id);
+                }
+
+                // delete QR Code
+                foreach (var location in listLocation)
+                {
+                    deleteQRCode(location.Id);
+                }
+
+                // clear data
+                listFloor.Clear();
+                listLocation.Clear();
+                listLocationBeside.Clear();
+                listRoom.Clear();
+            }
+            catch (Exception e)
+            {
+                //return e.Data.ToString();
+            }
+
+            // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            // add new data
+
+            // add floor
+            foreach (var floor in floors)
+            {
+                context.Floor.Add(new Models.Floor
+                {
+                    BuildingId = buildingId,
+                    Id = buildingId + "_f_" + floor.Id,
+                    Name = floor.Name,
+                    // save map
+                    //LinkMap = saveMapFromUrl(floor.LinkMap, buildingId + "_f_" + floor.Id)
+                });
+                context.SaveChanges();
+            }
+
+            //var listLocationBeside = new List<LocationBesideDb>();
+
+
+
+            // add location
+            foreach (var floor in floors)
+            {
+                foreach (var location in floor.ListLocation)
+                {
+                    context.Location.Add(new Location
+                    {
+                        //Id = buildingId  + "_l_" + location.Id,
+                        Id = buildingId + "_l_" + location.Id,
+                        Name = location.Name,
+                        RatioX = location.RatioX,
+                        RatioY = location.RatioY,
+                        FloorId = buildingId + "_f_" + floor.Id,
+                        LinkQrcode = generateQRCode("ID: " + buildingId + "_l_" + location.Id + " | Name: " + location.Name, buildingId + "_l_" + location.Id)
+                    });
+                    context.SaveChanges();
+
+                    // add room
+                    foreach (var room in location.ListRoom)
+                    {
+                        string roomId = buildingId + "_f_" + floor.Id + "_r_" + room.Id;
+                        context.Room.Add(new RoomDb
+                        {
+                            Id = roomId,
+                            Name = room.Name,
+                            RatioX = room.RatioX,
+                            RatioY = room.RatioY,
+                            LocationId = buildingId + "_l_" + location.Id,
+                            SpecialRoom = room.SpecialRoom
+                        });
+                        context.SaveChanges();
+                    }
+
+
+                    foreach (var neighbor in location.ListLocationBeside)
+                    {
+                        listLocationBeside.Add(new LocationBesideDb
+                        {
+                            //Id = 0,
+                            LocationId = buildingId + "_l_" + location.Id,
+                            LocationBesideId = buildingId + "_l_" + neighbor.Id,
+                            OrientitationId = neighbor.Orientation,
+                            Distance = neighbor.Distance
+                        });
+                    }
+                }
+
+
+            }
+            // add location beside
+
+            foreach (var item in listLocationBeside)
+            {
+                context.LocationBeside.Add(item);
+                context.SaveChanges();
+            }
+
+            //context.LocationBeside.AddRange(listLocationBeside);
+
+            //context.SaveChanges();
+
+            listLocationBeside.Clear();
+        }
 
 
         private string generateQRCode(string content, string locationId)
@@ -700,6 +859,24 @@ namespace ServerAPI.Repository
                 return false;
             }
             return true;
+        }
+
+        private void changeBuildingStatus(string buildingId, int status)
+        {
+            var building = context.Building.Where(x => x.Id == buildingId).FirstOrDefault();
+            if (building != null)
+            {
+                if (status == ACTIVE)
+                {
+                    building.Active = true;
+                }
+                else if (status == DEACTIVE)
+                {
+                    building.Active = false;
+                }
+
+                context.SaveChanges();
+            }
         }
 
 
