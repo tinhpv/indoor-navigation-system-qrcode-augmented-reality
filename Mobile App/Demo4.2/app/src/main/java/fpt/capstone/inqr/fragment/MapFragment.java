@@ -863,13 +863,6 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         return  (xB - xA > 0) ? angleFromOx + Math.PI : angleFromOx;
     }
 
-
-    enum Direction {
-        RIGHT,
-        LEFT,
-        STRAIGHT,
-    }
-
     private int getDirection(Location A, Location B, Location C, Neighbor neighbor) {
         // angle by AB and Ox
         Double angleAB = calculateAngle(A, B);
