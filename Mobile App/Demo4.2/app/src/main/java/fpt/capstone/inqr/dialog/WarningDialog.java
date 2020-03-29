@@ -13,15 +13,26 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import fpt.capstone.inqr.R;
+import fpt.capstone.inqr.fragment.ListBuildingFragment;
 
 public class WarningDialog extends DialogFragment {
 
     private String buildingName, description;
     private TextView tvName, tvDes, tvClose;
 
+    private ListBuildingFragment fragment;
+    private String buildingId;
+
     public WarningDialog(String buildingName, String description) {
         this.buildingName = buildingName;
         this.description = description;
+    }
+
+    public WarningDialog(String buildingName, String description, ListBuildingFragment fragment, String buildingId) {
+        this.buildingName = buildingName;
+        this.description = description;
+        this.fragment = fragment;
+        this.buildingId = buildingId;
     }
 
     @Override
@@ -46,7 +57,14 @@ public class WarningDialog extends DialogFragment {
         tvName.setText(buildingName);
         tvDes.setText(description);
 
-        tvClose.setOnClickListener(v -> dismiss());
+        tvClose.setOnClickListener(v -> {
+
+            if (fragment != null) {
+                fragment.showMapFragment(buildingId);
+            }
+
+            dismiss();
+        });
 
         return view;
     }

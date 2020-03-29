@@ -20,7 +20,7 @@ public class WarningDownloadDialog extends DialogFragment {
 
     public static final int TYPE_DOWNLOAD = 1;
     public static final int TYPE_UPDATE = 2;
-//    private String buildingName, description;
+    //    private String buildingName, description;
     private TextView tvName, tvDes, tvClose, tvDownload;
     private ListBuildingFragment fragment;
     private int type;
@@ -81,11 +81,14 @@ public class WarningDownloadDialog extends DialogFragment {
             });
 
             tvClose.setOnClickListener(v -> {
-                fragment.showMapFragment(building.getId());
+//                fragment.showMapFragment(building.getId());
+
+                WarningDialog dialog = new WarningDialog("Warning", "If you continue to use the old map of " + building.getName() + ", you are at risk because the data may not be true anymore.", fragment, building.getId());
+                dialog.show(fragment.getChildFragmentManager(), dialog.getTag());
+
                 dismiss();
             });
         }
-
 
 
         return view;

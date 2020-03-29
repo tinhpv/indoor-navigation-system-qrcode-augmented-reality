@@ -74,7 +74,18 @@ public class ListBuildingFragment extends BaseFragment {
         db = new DatabaseHelper(this.getContext());
 
         if (checkExistedDb(getContext())) {
-            listBuilding = db.getAllBuildings();
+            this.listBuilding = db.getAllBuildings();
+            if (this.listBuilding != null) {
+                if (this.listBuilding.size() > 1) {
+                    Collections.sort(this.listBuilding, (o1, o2) -> {
+                        int c = o1.getCompanyName().toLowerCase().compareTo(o2.getCompanyName().toLowerCase());
+                        if (c == 0) {
+                            c = o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+                        }
+                        return c;
+                    });
+                }
+            }
         } else {
             listBuilding = new ArrayList<>();
         }

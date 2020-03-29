@@ -21,7 +21,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_10sdp"
         android:gravity="center_vertical"
         android:text="Lên lầu"
         android:textSize="18sp"

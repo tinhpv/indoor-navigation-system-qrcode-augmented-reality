@@ -62,10 +62,10 @@ public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
         if (step.getDistance() != null) {
             holder.tvDistance.setVisibility(View.VISIBLE);
 
-            holder.tvDistance.setText(step.getDistance());
+            holder.tvDistance.setText("estimated " + step.getDistance());
 
             // set speaker
-            holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo() + " " + step.getDistance()));
+            holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo() + " estimated " + step.getDistance()));
         } else {
             holder.tvDistance.setVisibility(View.GONE);
 

@@ -677,9 +677,9 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                     int sens = (int) (time % 1 * 60);
 
                     if (mins != 0) {
-                        tvTime.setText(mins + "min " + sens + "sen");
+                        tvTime.setText(mins + "min " + sens + "sec");
                     } else {
-                        tvTime.setText(sens + "sen");
+                        tvTime.setText(sens + "sec");
                     }
 
                     tvDistance.setText("(" + (int) Math.round(distanceReal) + "m)");
