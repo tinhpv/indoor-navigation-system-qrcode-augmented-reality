@@ -2,8 +2,8 @@
   <MonoDevelop.Ide.Workbench ActiveDocument="ServerAPI/Repository/BuildingRepository.cs">
     <Files>
       <File FileName="ServerAPI/Controllers/BuildingController.cs" Line="153" Column="26" />
-      <File FileName="ServerAPI/Startup.cs" Line="92" Column="82" />
-      <File FileName="ServerAPI/Service/BuildingService.cs" Line="52" Column="57" />
+      <File FileName="ServerAPI/Startup.cs" />
+      <File FileName="ServerAPI/Service/BuildingService.cs" />
       <File FileName="ServerAPI/Repository/BuildingRepository.cs" Line="577" Column="24" />
     </Files>
     <Pads>

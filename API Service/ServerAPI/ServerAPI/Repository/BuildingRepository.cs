@@ -461,90 +461,119 @@ namespace ServerAPI.Repository
             var listFloor = building.ListFloor;
             var buildingId = building.Id;
 
-
-
-            // add floor
-            foreach (var floor in listFloor)
+            if (listFloor != null)
             {
-                context.Floor.Add(new Models.Floor
+                if (listFloor.Count() > 0)
                 {
-                    BuildingId = buildingId,
-                    Id = buildingId + "_f_" + floor.Id,
-                    Name = floor.Name,
-                    // save map
-                    // chưa có Link Map
-                });
-                context.SaveChanges();
-            }
-
-            //var listLocationBeside = new List<LocationBesideDb>();
-
-
-            var listLocationBeside = new List<LocationBesideDb>();
-
-
-            // add location
-            foreach (var floor in listFloor)
-            {
-                foreach (var location in floor.ListLocation)
-                {
-                    context.Location.Add(new Location
+                    // add floor
+                    foreach (var floor in listFloor)
                     {
-                        //Id = buildingId  + "_l_" + location.Id,
-                        Id = buildingId + "_l_" + location.Id,
-                        Name = location.Name,
-                        RatioX = location.RatioX,
-                        RatioY = location.RatioY,
-                        FloorId = buildingId + "_f_" + floor.Id,
-                        LinkQrcode = generateQRCode("ID: " + buildingId + "_l_" + location.Id + " | Name: " + location.Name, buildingId + "_l_" + location.Id)
-                    });
-                    context.SaveChanges();
-
-                    // add room
-                    foreach (var room in location.ListRoom)
-                    {
-                        string roomId = buildingId + "_f_" + floor.Id + "_r_" + room.Id;
-                        context.Room.Add(new RoomDb
+                        context.Floor.Add(new Models.Floor
                         {
-                            Id = roomId,
-                            Name = room.Name,
-                            RatioX = room.RatioX,
-                            RatioY = room.RatioY,
-                            LocationId = buildingId + "_l_" + location.Id,
-                            SpecialRoom = room.SpecialRoom
+                            BuildingId = buildingId,
+                            Id = buildingId + "_f_" + floor.Id,
+                            Name = floor.Name,
+                            // save map
+                            // chưa có Link Map
                         });
                         context.SaveChanges();
                     }
 
+                    //var listLocationBeside = new List<LocationBesideDb>();
 
-                    foreach (var neighbor in location.ListLocationBeside)
+
+                    var listLocationBeside = new List<LocationBesideDb>();
+
+
+                    // add location
+                    foreach (var floor in listFloor)
                     {
-                        listLocationBeside.Add(new LocationBesideDb
+                        if (floor.ListLocation != null)
                         {
-                            //Id = 0,
-                            LocationId = buildingId + "_l_" + location.Id,
-                            LocationBesideId = buildingId + "_l_" + neighbor.Id,
-                            OrientitationId = neighbor.Orientation,
-                            Distance = neighbor.Distance
-                        });
+                            if (floor.ListLocation.Count() > 0)
+                            {
+                                foreach (var location in floor.ListLocation)
+                                {
+                                    context.Location.Add(new Location
+                                    {
+                                        //Id = buildingId  + "_l_" + location.Id,
+                                        Id = buildingId + "_l_" + location.Id,
+                                        Name = location.Name,
+                                        RatioX = location.RatioX,
+                                        RatioY = location.RatioY,
+                                        FloorId = buildingId + "_f_" + floor.Id,
+                                        LinkQrcode = generateQRCode("ID: " + buildingId + "_l_" + location.Id + " | Name: " + location.Name, buildingId + "_l_" + location.Id)
+                                    });
+                                    context.SaveChanges();
+
+
+                                    if (location.ListRoom != null)
+                                    {
+                                        if (location.ListRoom.Count() > 0)
+                                        {
+                                            // add room
+                                            foreach (var room in location.ListRoom)
+                                            {
+                                                string roomId = buildingId + "_f_" + floor.Id + "_r_" + room.Id;
+                                                context.Room.Add(new RoomDb
+                                                {
+                                                    Id = roomId,
+                                                    Name = room.Name,
+                                                    RatioX = room.RatioX,
+                                                    RatioY = room.RatioY,
+                                                    LocationId = buildingId + "_l_" + location.Id,
+                                                    SpecialRoom = room.SpecialRoom
+                                                });
+                                                context.SaveChanges();
+                                            }
+                                        }
+                                    }
+
+
+                                    if (location.ListLocationBeside != null)
+                                    {
+                                        if (location.ListLocationBeside.Count() > 0)
+                                        {
+                                            foreach (var neighbor in location.ListLocationBeside)
+                                            {
+                                                listLocationBeside.Add(new LocationBesideDb
+                                                {
+                                                    //Id = 0,
+                                                    LocationId = buildingId + "_l_" + location.Id,
+                                                    LocationBesideId = buildingId + "_l_" + neighbor.Id,
+                                                    OrientitationId = neighbor.Orientation,
+                                                    Distance = neighbor.Distance
+                                                });
+                                            }
+                                        }
+                                    }
+
+
+
+                                }
+                            }
+                        }
+
+
+
                     }
+                    // add location beside
+
+                    foreach (var item in listLocationBeside)
+                    {
+                        context.LocationBeside.Add(item);
+                        context.SaveChanges();
+                    }
+
+                    //context.LocationBeside.AddRange(listLocationBeside);
+
+                    //context.SaveChanges();
+
+                    listLocationBeside.Clear();
                 }
-
-
-            }
-            // add location beside
-
-            foreach (var item in listLocationBeside)
-            {
-                context.LocationBeside.Add(item);
-                context.SaveChanges();
             }
 
-            //context.LocationBeside.AddRange(listLocationBeside);
 
-            //context.SaveChanges();
-
-            listLocationBeside.Clear();
 
             return "OK";
         }
@@ -588,6 +617,34 @@ namespace ServerAPI.Repository
 
         // ------------------------------------------
 
+        private void deleteFloorMap(string buildingId, List<Floor> floors)
+        {
+            var listFloor = context.Floor.Where(x => x.BuildingId == buildingId).ToList();
+            bool tmp = false;
+
+            foreach (var floorDb in listFloor)
+            {
+
+                foreach (var floor in floors)
+                {
+                    if (floorDb.Id == floor.Id)
+                    {
+                        tmp = true;
+                        break;
+                    }
+                }
+
+                if (!tmp)
+                {
+                    deleteMap(floorDb.Id);
+                }
+                else
+                {
+                    tmp = false;
+                }
+
+            }
+        }
 
 
         private void deleteOldDataAndAddNewData(string buildingId, List<Floor> floors)
@@ -631,10 +688,12 @@ namespace ServerAPI.Repository
                 context.SaveChanges();
 
                 // delete Map
-                foreach (var floor in listFloor)
-                {
-                    deleteMap(floor.Id);
-                }
+                deleteFloorMap(buildingId, floors);
+                //foreach (var floor in listFloor)
+                //{
+                //    deleteMap(floor.Id);
+                //}
+
 
                 // delete QR Code
                 foreach (var location in listLocation)
@@ -665,7 +724,7 @@ namespace ServerAPI.Repository
                     Id = buildingId + "_f_" + floor.Id,
                     Name = floor.Name,
                     // save map
-                    //LinkMap = saveMapFromUrl(floor.LinkMap, buildingId + "_f_" + floor.Id)
+                    LinkMap = floor.LinkMap
                 });
                 context.SaveChanges();
             }
@@ -677,49 +736,72 @@ namespace ServerAPI.Repository
             // add location
             foreach (var floor in floors)
             {
-                foreach (var location in floor.ListLocation)
+                if (floor.ListLocation != null)
                 {
-                    context.Location.Add(new Location
+                    if (floor.ListLocation.Count() > 0)
                     {
-                        //Id = buildingId  + "_l_" + location.Id,
-                        Id = buildingId + "_l_" + location.Id,
-                        Name = location.Name,
-                        RatioX = location.RatioX,
-                        RatioY = location.RatioY,
-                        FloorId = buildingId + "_f_" + floor.Id,
-                        LinkQrcode = generateQRCode("ID: " + buildingId + "_l_" + location.Id + " | Name: " + location.Name, buildingId + "_l_" + location.Id)
-                    });
-                    context.SaveChanges();
-
-                    // add room
-                    foreach (var room in location.ListRoom)
-                    {
-                        string roomId = buildingId + "_f_" + floor.Id + "_r_" + room.Id;
-                        context.Room.Add(new RoomDb
+                        foreach (var location in floor.ListLocation)
                         {
-                            Id = roomId,
-                            Name = room.Name,
-                            RatioX = room.RatioX,
-                            RatioY = room.RatioY,
-                            LocationId = buildingId + "_l_" + location.Id,
-                            SpecialRoom = room.SpecialRoom
-                        });
-                        context.SaveChanges();
-                    }
+                            context.Location.Add(new Location
+                            {
+                                //Id = buildingId  + "_l_" + location.Id,
+                                Id = buildingId + "_l_" + location.Id,
+                                Name = location.Name,
+                                RatioX = location.RatioX,
+                                RatioY = location.RatioY,
+                                FloorId = buildingId + "_f_" + floor.Id,
+                                LinkQrcode = generateQRCode("ID: " + buildingId + "_l_" + location.Id + " | Name: " + location.Name, buildingId + "_l_" + location.Id)
+                            });
+                            context.SaveChanges();
 
 
-                    foreach (var neighbor in location.ListLocationBeside)
-                    {
-                        listLocationBeside.Add(new LocationBesideDb
-                        {
-                            //Id = 0,
-                            LocationId = buildingId + "_l_" + location.Id,
-                            LocationBesideId = buildingId + "_l_" + neighbor.Id,
-                            OrientitationId = neighbor.Orientation,
-                            Distance = neighbor.Distance
-                        });
+                            if (location.ListRoom != null)
+                            {
+                                if (location.ListRoom.Count() > 0)
+                                {
+                                    // add room
+                                    foreach (var room in location.ListRoom)
+                                    {
+                                        string roomId = buildingId + "_f_" + floor.Id + "_r_" + room.Id;
+                                        context.Room.Add(new RoomDb
+                                        {
+                                            Id = roomId,
+                                            Name = room.Name,
+                                            RatioX = room.RatioX,
+                                            RatioY = room.RatioY,
+                                            LocationId = buildingId + "_l_" + location.Id,
+                                            SpecialRoom = room.SpecialRoom
+                                        });
+                                        context.SaveChanges();
+                                    }
+                                }
+                            }
+
+
+                            if (location.ListLocationBeside != null)
+                            {
+                                if (location.ListLocationBeside.Count() > 0)
+                                {
+                                    foreach (var neighbor in location.ListLocationBeside)
+                                    {
+                                        listLocationBeside.Add(new LocationBesideDb
+                                        {
+                                            //Id = 0,
+                                            LocationId = buildingId + "_l_" + location.Id,
+                                            LocationBesideId = buildingId + "_l_" + neighbor.Id,
+                                            OrientitationId = neighbor.Orientation,
+                                            Distance = neighbor.Distance
+                                        });
+                                    }
+                                }
+                            }
+
+
+
+                        }
                     }
                 }
+
 
 
             }
