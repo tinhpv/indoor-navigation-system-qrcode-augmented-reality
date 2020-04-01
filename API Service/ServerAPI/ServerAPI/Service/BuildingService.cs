@@ -42,14 +42,24 @@ namespace ServerAPI.Service
             return iRepository.UpdateDataBuilding(file);
         }
 
-        public string CreateNewBuilding(Building building)
+        public string CreateNewBuilding(Company company)
         {
-            return iRepository.CreateNewBuilding(building);
+            return iRepository.CreateNewBuilding(company);
         }
 
         public string UpdateBuilding(Building building)
         {
             return iRepository.UpdateBuilding(building);
+        }
+
+        public string CreateNewCompany(Company company)
+        {
+            return iRepository.CreateNewCompany(company);
+        }
+
+        public string UpdateCompany(Company company)
+        {
+            return iRepository.UpdateCompany(company);
         }
     }
 }

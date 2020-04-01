@@ -13,7 +13,8 @@ namespace ServerAPI.IRepository
 
         string UploadFloorMap(IFormFileCollection files, string buildingId);
 
-
+        string CreateNewCompany(Company company);
+        string UpdateCompany(Company company);
 
 
 
@@ -21,8 +22,10 @@ namespace ServerAPI.IRepository
 
         Building GetLocations(string buildingId);
         string UpdateDataBuilding(IFormFile file);
-        string CreateNewBuilding(Building building);
-        string UpdateBuilding(Building building);
+
+
+        string CreateNewBuilding(Company company);
+        string UpdateBuilding(Building company);
 
     }
 }

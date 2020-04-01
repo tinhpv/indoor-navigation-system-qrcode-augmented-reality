@@ -145,15 +145,27 @@ namespace ServerAPI.Controllers
         }
 
         [HttpPost("createNewBuilding")]
-        public IActionResult CreateBuilding([FromBody] Building building)
+        public IActionResult CreateBuilding([FromBody] Company company)
         { 
-            return Ok(iService.CreateNewBuilding(building));
+            return Ok(iService.CreateNewBuilding(company));
         }
 
         [HttpPost("updateBuilding")]
         public IActionResult UpdateBuilding([FromBody] Building building)
         {
             return Ok(iService.UpdateBuilding(building));
+        }
+
+        [HttpPost("createNewCompany")]
+        public IActionResult CreateCompany([FromBody] Company company)
+        {
+            return Ok(iService.CreateNewCompany(company));
+        }
+
+        [HttpPost("updateCompany")]
+        public IActionResult UpdateCompany([FromBody] Company company)
+        {
+            return Ok(iService.UpdateCompany(company));
         }
     }
 }
