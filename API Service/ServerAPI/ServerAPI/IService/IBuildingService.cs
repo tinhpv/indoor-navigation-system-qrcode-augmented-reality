@@ -12,6 +12,7 @@ namespace ServerAPI.IService
 
 
         string UploadFloorMap(IFormFileCollection files, string buildingId);
+        string CreateNewFloor(string buildingId, string floorId, string floorName, IFormFile file);
 
 
         string CreateNewCompany(Company company);

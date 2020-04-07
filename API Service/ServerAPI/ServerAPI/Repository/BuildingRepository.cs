@@ -162,8 +162,20 @@ namespace ServerAPI.Repository
                 }
             }
 
+            var floors = context.Floor.Where(x => x.BuildingId == buildingId).ToList();
 
-            return "Done";
+            var model = new List<Floor>();
+            foreach (var floor in floors)
+            {
+                model.Add(new Floor
+                {
+                    Id = floor.Id,
+                    Name = floor.Name,
+                    LinkMap = floor.LinkMap
+                });
+            }
+
+            return JsonConvert.SerializeObject(model);
         }
 
 
@@ -229,7 +241,7 @@ namespace ServerAPI.Repository
                                 context.Location.Where(x => x.Id == itemLocation.LocationBesideId).FirstOrDefault().Id,
                                 context.Location.Where(x => x.Id == itemLocation.LocationBesideId).FirstOrDefault().Name.ToString(),
                                 //context.Orientation.Where(x => x.Id == itemLocation.OrientitationId).FirstOrDefault().Name.ToString(),
-                                itemLocation.OrientitationId,
+                                itemLocation.Orientitation,
                                 itemLocation.Distance
                                 ));
                         }
@@ -409,7 +421,7 @@ namespace ServerAPI.Repository
                             //Id = 0,
                             LocationId = buildingId + "_l_" + location.Id,
                             LocationBesideId = buildingId + "_l_" + neighbor.Id,
-                            OrientitationId = neighbor.Orientation,
+                            Orientitation = neighbor.Orientation,
                             Distance = neighbor.Distance
                         });
                     }
@@ -547,7 +559,7 @@ namespace ServerAPI.Repository
                                                         //Id = 0,
                                                         LocationId = buildingId + "_l_" + location.Id,
                                                         LocationBesideId = buildingId + "_l_" + neighbor.Id,
-                                                        OrientitationId = neighbor.Orientation,
+                                                        Orientitation = neighbor.Orientation,
                                                         Distance = neighbor.Distance
                                                     });
                                                 }
@@ -622,6 +634,74 @@ namespace ServerAPI.Repository
 
         }
 
+
+        public string CreateNewCompany(Company company)
+        {
+            var comp = context.Company.Where(x => x.Id == company.Id).FirstOrDefault();
+
+            if (comp == null)
+            {
+                context.Company.Add(new Models.Company
+                {
+                    Id = company.Id,
+                    Name = company.Name
+                });
+
+                context.SaveChanges();
+
+                return "OK";
+            }
+
+            return "Company ID is duplicated";
+        }
+
+        public string UpdateCompany(Company company)
+        {
+            var comp = context.Company.Where(x => x.Id == company.Id).FirstOrDefault();
+            if (comp != null)
+            {
+                comp.Name = company.Name;
+
+                context.SaveChanges();
+
+                return "OK";
+            }
+
+            return "Company ID is not available";
+        }
+
+        public string CreateNewFloor(string buildingId, string floorId, string floorName, IFormFile file)
+        {
+            //var fileName = file.Name;
+
+            floorId = buildingId + "_f_" + floorId;
+
+            var floor = context.Floor.Where(x => x.Id == floorId).FirstOrDefault();
+
+            if (floor == null)
+            {
+              
+
+                
+
+                var linkMap = saveMapFromFile(file, floorId);
+
+                context.Floor.Add(new Models.Floor
+                {
+                    Id = floorId,
+                    Name = floorName,
+                    LinkMap = linkMap,
+                    BuildingId = buildingId
+                });
+
+               
+                context.SaveChanges();
+
+                return linkMap;
+            }
+
+            return "Floor ID is duplicated";
+        }
 
 
 
@@ -800,7 +880,7 @@ namespace ServerAPI.Repository
                                             //Id = 0,
                                             LocationId = buildingId + "_l_" + location.Id,
                                             LocationBesideId = buildingId + "_l_" + neighbor.Id,
-                                            OrientitationId = neighbor.Orientation,
+                                            Orientitation = neighbor.Orientation,
                                             Distance = neighbor.Distance
                                         });
                                     }
@@ -972,39 +1052,6 @@ namespace ServerAPI.Repository
             }
         }
 
-        public string CreateNewCompany(Company company)
-        {
-            var comp = context.Company.Where(x => x.Id == company.Id).FirstOrDefault();
 
-            if (comp == null)
-            {
-                context.Company.Add(new Models.Company
-                {
-                    Id = company.Id,
-                    Name = company.Name
-                });
-
-                context.SaveChanges();
-
-                return "OK";
-            }
-
-            return "Company ID is duplicated";
-        }
-
-        public string UpdateCompany(Company company)
-        {
-            var comp = context.Company.Where(x => x.Id == company.Id).FirstOrDefault();
-            if (comp != null)
-            {
-                comp.Name = company.Name;
-
-                context.SaveChanges();
-
-                return "OK";
-            }
-
-            return "Company ID is not available";
-        }
     }
 }

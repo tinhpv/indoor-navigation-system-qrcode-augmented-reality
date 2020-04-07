@@ -61,5 +61,10 @@ namespace ServerAPI.Service
         {
             return iRepository.UpdateCompany(company);
         }
+
+        public string CreateNewFloor(string buildingId, string floorId, string floorName, IFormFile file)
+        {
+            return iRepository.CreateNewFloor(buildingId, floorId, floorName, file);
+        }
     }
 }

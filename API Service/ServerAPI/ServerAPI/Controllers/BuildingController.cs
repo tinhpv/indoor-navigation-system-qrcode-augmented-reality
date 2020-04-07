@@ -74,7 +74,7 @@ namespace ServerAPI.Controllers
             return Ok(json);
         }
 
-        [HttpPost("uploadFloorMap")]
+        [HttpPut("uploadFloorMap")]
         public IActionResult UploadFloorMap([FromForm] string buildingId)
         {
             if (Request.Form.Files.Count > 0)
@@ -85,7 +85,21 @@ namespace ServerAPI.Controllers
                 return Ok(iService.UploadFloorMap(files, buildingId));
             }
 
-            return Ok("Fail");
+            return Ok("No Image");
+        }
+
+        [HttpPost("createNewFloor")]
+        public IActionResult CreateNewFloor([FromForm] string buildingId, [FromForm] string floorId, [FromForm] string floorName)
+        {
+            if (Request.Form.Files.Count > 0)
+            {
+                var file = Request.Form.Files[0];
+                //var model = new JsonInputModel();
+                //model.BuildingId = "2";
+                return Ok(iService.CreateNewFloor(buildingId, floorId, floorName, file));
+            }
+
+            return Ok("No Image");
         }
 
         [HttpGet("getAllLocations")]
@@ -116,7 +130,7 @@ namespace ServerAPI.Controllers
             return Ok(json);
         }
 
-        [HttpPost("updateData")]
+        [HttpPut("updateData")]
         public IActionResult UpdateData()
         {
             //var model = iService.GetLocations();
@@ -150,7 +164,7 @@ namespace ServerAPI.Controllers
             return Ok(iService.CreateNewBuilding(company));
         }
 
-        [HttpPost("updateBuilding")]
+        [HttpPut("updateBuilding")]
         public IActionResult UpdateBuilding([FromBody] Building building)
         {
             return Ok(iService.UpdateBuilding(building));
@@ -162,7 +176,7 @@ namespace ServerAPI.Controllers
             return Ok(iService.CreateNewCompany(company));
         }
 
-        [HttpPost("updateCompany")]
+        [HttpPut("updateCompany")]
         public IActionResult UpdateCompany([FromBody] Company company)
         {
             return Ok(iService.UpdateCompany(company));

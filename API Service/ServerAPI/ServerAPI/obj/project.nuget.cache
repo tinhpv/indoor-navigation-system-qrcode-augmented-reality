@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "81FbPY2U8bY0K5RiePwRglJqgiWPY0ohowf+kiu939nCNLIb2fIpY2w62I6Udqc4I8AHIpT0G9pz7gUN8ldG6A==",
+  "dgSpecHash": "ZnINdx/N/YJSUKPXP6/w97I8w0OnfSvbCKkJC0LWgujtc/nIwIeJUB9t1b1hRiI4HKWRbQemVx20a1O38FLR9g==",
   "success": true,
   "projectFilePath": "/Users/hieu/Google Drive/Session 9/INQR/API Service/ServerAPI/ServerAPI/ServerAPI.csproj",
   "expectedPackageFiles": [
@@ -39,10 +39,10 @@
     "/usr/local/share/dotnet/sdk/NuGetFallbackFolder/runtime.win-arm64.runtime.native.system.data.sqlclient.sni/4.4.0/runtime.win-arm64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
     "/usr/local/share/dotnet/sdk/NuGetFallbackFolder/runtime.win-x64.runtime.native.system.data.sqlclient.sni/4.4.0/runtime.win-x64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
     "/usr/local/share/dotnet/sdk/NuGetFallbackFolder/runtime.win-x86.runtime.native.system.data.sqlclient.sni/4.4.0/runtime.win-x86.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
-    "/Users/hieu/.nuget/packages/swashbuckle.aspnetcore/5.2.1/swashbuckle.aspnetcore.5.2.1.nupkg.sha512",
-    "/Users/hieu/.nuget/packages/swashbuckle.aspnetcore.swagger/5.2.1/swashbuckle.aspnetcore.swagger.5.2.1.nupkg.sha512",
-    "/Users/hieu/.nuget/packages/swashbuckle.aspnetcore.swaggergen/5.2.1/swashbuckle.aspnetcore.swaggergen.5.2.1.nupkg.sha512",
-    "/Users/hieu/.nuget/packages/swashbuckle.aspnetcore.swaggerui/5.2.1/swashbuckle.aspnetcore.swaggerui.5.2.1.nupkg.sha512",
+    "/Users/hieu/.nuget/packages/swashbuckle.aspnetcore/5.3.1/swashbuckle.aspnetcore.5.3.1.nupkg.sha512",
+    "/Users/hieu/.nuget/packages/swashbuckle.aspnetcore.swagger/5.3.1/swashbuckle.aspnetcore.swagger.5.3.1.nupkg.sha512",
+    "/Users/hieu/.nuget/packages/swashbuckle.aspnetcore.swaggergen/5.3.1/swashbuckle.aspnetcore.swaggergen.5.3.1.nupkg.sha512",
+    "/Users/hieu/.nuget/packages/swashbuckle.aspnetcore.swaggerui/5.3.1/swashbuckle.aspnetcore.swaggerui.5.3.1.nupkg.sha512",
     "/usr/local/share/dotnet/sdk/NuGetFallbackFolder/system.collections/4.3.0/system.collections.4.3.0.nupkg.sha512",
     "/usr/local/share/dotnet/sdk/NuGetFallbackFolder/system.collections.concurrent/4.3.0/system.collections.concurrent.4.3.0.nupkg.sha512",
     "/Users/hieu/.nuget/packages/system.collections.immutable/1.7.0/system.collections.immutable.1.7.0.nupkg.sha512",

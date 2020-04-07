@@ -38,10 +38,14 @@ namespace ServerAPI.Models.DefaultModel
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public int? Orientation { get; set; }
+        public string Orientation { get; set; }
         public double? Distance { get; set; }
 
-        public LocationBeside(string id, string name, int? orientation, double? distance)
+        public LocationBeside()
+        {
+        }
+
+        public LocationBeside(string id, string name, string orientation, double? distance)
         {
             Id = id;
             Name = name;

@@ -22,7 +22,7 @@
     <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="QRCodeEncoderLibrary" Version="2.0.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.2.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.3.1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Database\" />
@@ -99,5 +99,6 @@
     <Content Remove="wwwroot\QRCode\fpt_demo_l_24.png" />
     <Content Remove="wwwroot\QRCode\fpt_demo_l_18.png" />
     <Content Remove="wwwroot\QRCode\fpt_demo_l_9.png" />
+    <Content Remove="wwwroot\Map\duy_test4_f_1.png" />
   </ItemGroup>
 </Project>

@@ -21,7 +21,6 @@ namespace ServerAPI.Database
         public virtual DbSet<Floor> Floor { get; set; }
         public virtual DbSet<Location> Location { get; set; }
         public virtual DbSet<LocationBeside> LocationBeside { get; set; }
-        public virtual DbSet<Orientation> Orientation { get; set; }
         public virtual DbSet<Room> Room { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -37,9 +36,9 @@ namespace ServerAPI.Database
         {
             modelBuilder.Entity<Building>(entity =>
             {
-                entity.Property(e => e.Id).HasMaxLength(20);
+                entity.Property(e => e.Id).HasMaxLength(250);
 
-                entity.Property(e => e.CompanyId).HasMaxLength(20);
+                entity.Property(e => e.CompanyId).HasMaxLength(250);
 
                 entity.Property(e => e.DayExpired).HasColumnType("datetime");
 
@@ -53,7 +52,7 @@ namespace ServerAPI.Database
 
             modelBuilder.Entity<Company>(entity =>
             {
-                entity.Property(e => e.Id).HasMaxLength(20);
+                entity.Property(e => e.Id).HasMaxLength(250);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -62,9 +61,9 @@ namespace ServerAPI.Database
 
             modelBuilder.Entity<Floor>(entity =>
             {
-                entity.Property(e => e.Id).HasMaxLength(20);
+                entity.Property(e => e.Id).HasMaxLength(250);
 
-                entity.Property(e => e.BuildingId).HasMaxLength(20);
+                entity.Property(e => e.BuildingId).HasMaxLength(250);
 
                 entity.Property(e => e.Name).HasMaxLength(250);
 
@@ -76,9 +75,9 @@ namespace ServerAPI.Database
 
             modelBuilder.Entity<Location>(entity =>
             {
-                entity.Property(e => e.Id).HasMaxLength(20);
+                entity.Property(e => e.Id).HasMaxLength(250);
 
-                entity.Property(e => e.FloorId).HasMaxLength(20);
+                entity.Property(e => e.FloorId).HasMaxLength(250);
 
                 entity.Property(e => e.LinkQrcode).HasColumnName("LinkQRCode");
 
@@ -92,9 +91,11 @@ namespace ServerAPI.Database
 
             modelBuilder.Entity<LocationBeside>(entity =>
             {
-                entity.Property(e => e.LocationBesideId).HasMaxLength(20);
+                entity.Property(e => e.LocationBesideId).HasMaxLength(250);
 
-                entity.Property(e => e.LocationId).HasMaxLength(20);
+                entity.Property(e => e.LocationId).HasMaxLength(250);
+
+                entity.Property(e => e.Orientitation).HasMaxLength(20);
 
                 entity.HasOne(d => d.LocationBesideNavigation)
                     .WithMany(p => p.LocationBesideLocationBesideNavigation)
@@ -105,25 +106,13 @@ namespace ServerAPI.Database
                     .WithMany(p => p.LocationBesideLocation)
                     .HasForeignKey(d => d.LocationId)
                     .HasConstraintName("FK__LocationB__Locat__182C9B23");
-
-                entity.HasOne(d => d.Orientitation)
-                    .WithMany(p => p.LocationBeside)
-                    .HasForeignKey(d => d.OrientitationId)
-                    .HasConstraintName("FK__LocationB__Orent__1A14E395");
-            });
-
-            modelBuilder.Entity<Orientation>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Name).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Room>(entity =>
             {
-                entity.Property(e => e.Id).HasMaxLength(20);
+                entity.Property(e => e.Id).HasMaxLength(250);
 
-                entity.Property(e => e.LocationId).HasMaxLength(20);
+                entity.Property(e => e.LocationId).HasMaxLength(250);
 
                 entity.Property(e => e.Name).HasMaxLength(50);
 
