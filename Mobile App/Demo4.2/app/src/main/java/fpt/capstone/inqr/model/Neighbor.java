@@ -10,23 +10,23 @@ public class Neighbor extends Location implements Serializable {
 //    private int locationId;
 //    private int neighboorId;
 
-    public static final int ORIENT_LEFT = 1;
-    public static final int ORIENT_RIGHT = 2;
-    public static final int ORIENT_UP = 3;
-    public static final int ORIENT_DOWN = 4;
+    public static final String ORIENT_LEFT = "LEFT";
+    public static final String ORIENT_RIGHT = "RIGHT";
+    public static final String ORIENT_UP = "UP";
+    public static final String ORIENT_DOWN = "DOWN";
 
-    public static final int ORIENT_TURN_LEFT = 5;
-    public static final int ORIENT_TURN_RIGHT = 6;
+    public static final String ORIENT_TURN_LEFT = "TURN_LEFT";
+    public static final String ORIENT_TURN_RIGHT = "TURN_RIGHT";
 
-    public static final int ORIENT_LEFT_TURN_LEFT = 11;
-    public static final int ORIENT_LEFT_TURN_RIGHT = 12;
-    public static final int ORIENT_RIGHT_TURN_LEFT = 21;
-    public static final int ORIENT_RIGHT_TURN_RIGHT = 22;
-    public static final int ORIENT_NULL = 0;
+//    public static final int ORIENT_LEFT_TURN_LEFT = 11;
+//    public static final int ORIENT_LEFT_TURN_RIGHT = 12;
+//    public static final int ORIENT_RIGHT_TURN_LEFT = 21;
+//    public static final int ORIENT_RIGHT_TURN_RIGHT = 22;
+    public static final String ORIENT_NULL = "DONE";
 
     @SerializedName("Orientation")
     @Expose
-    private int direction;
+    private String direction;
 
     @SerializedName("Distance")
     @Expose
@@ -59,11 +59,12 @@ public class Neighbor extends Location implements Serializable {
 //        this.neighboorId = neighboorId;
 //    }
 
-    public int getDirection() {
+
+    public String getDirection() {
         return direction;
     }
 
-    public void setDirection(int direction) {
+    public void setDirection(String direction) {
         this.direction = direction;
     }
 

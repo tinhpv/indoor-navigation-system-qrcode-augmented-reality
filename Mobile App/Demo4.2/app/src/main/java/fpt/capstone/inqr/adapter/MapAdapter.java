@@ -18,11 +18,12 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import fpt.capstone.inqr.R;
-import fpt.capstone.inqr.model.supportModel.Line;
 import com.github.chrisbanes.photoview.PhotoView;
 
 import java.util.List;
+
+import fpt.capstone.inqr.R;
+import fpt.capstone.inqr.model.supportModel.Line;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.atan2;
@@ -71,8 +72,8 @@ public class MapAdapter extends RecyclerView.Adapter<MapHolder> {
             Line firstLine = listLines.get(0).get(0);
 
             new Handler().postDelayed(() -> {
-                float focalX = firstLine.getxStart()*holder.imgMap.getRight()/listSource.get(0).getWidth();
-                float focalY = firstLine.getyStart()*holder.imgMap.getBottom()/listSource.get(0).getHeight();
+                float focalX = firstLine.getxStart() * holder.imgMap.getRight() / listSource.get(0).getWidth();
+                float focalY = firstLine.getyStart() * holder.imgMap.getBottom() / listSource.get(0).getHeight();
                 holder.imgMap.setMaximumScale(5f);
                 holder.imgMap.setScale(zoomLevel, focalX, focalY, true);
             }, 500);

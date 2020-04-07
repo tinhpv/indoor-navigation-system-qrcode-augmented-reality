@@ -47,7 +47,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //Neighbor Table
     private static final String LOCATION_ID = "locationId";
     private static final String NEIGHBOR_ID = "neighborId";
-    private static final String DIRECTION = "direction";
+    private static final String ORIENTATION = "orientation";
     private static final String DISTANCE = "distance";
 
     //Floor Table
@@ -102,7 +102,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + ID + " INTEGER PRIMARY KEY, "
             + LOCATION_ID + " TEXT, "
             + NEIGHBOR_ID + " TEXT, "
-            + DIRECTION + " INTEGER,"
+            + ORIENTATION + " TEXT,"
             + DISTANCE + " FLOAT"
             + ")";
 
@@ -271,7 +271,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(LOCATION_ID, locationId);
         values.put(NEIGHBOR_ID, neighbor.getId());
-        values.put(DIRECTION, neighbor.getDirection());
+        values.put(ORIENTATION, neighbor.getDirection());
         values.put(DISTANCE, neighbor.getDistance());
 
         //Insert row
@@ -360,7 +360,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 neighbor.setId(c.getString(c.getColumnIndex(NEIGHBOR_ID)));
 //                neighbor.setLocationId(c.getInt(c.getColumnIndex(LOCATION_ID)));
                 neighbor.setDistance(c.getFloat(c.getColumnIndex(DISTANCE)));
-                neighbor.setDirection(c.getInt(c.getColumnIndex(DIRECTION)));
+                neighbor.setDirection(c.getString(c.getColumnIndex(ORIENTATION)));
 
                 //add to location list
                 neighbors.add(neighbor);

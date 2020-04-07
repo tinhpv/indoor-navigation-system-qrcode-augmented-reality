@@ -510,19 +510,19 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         qrEader.start();
     }
 
-    private void updateOrientation(int orientId) {
+    private void updateOrientation(String orientId) {
         switch (orientId) {
             case Neighbor.ORIENT_NULL:
                 img.setImageResource(R.drawable.like);
                 break;
             case Neighbor.ORIENT_LEFT:
-            case Neighbor.ORIENT_LEFT_TURN_LEFT:
-            case Neighbor.ORIENT_LEFT_TURN_RIGHT:
+//            case Neighbor.ORIENT_LEFT_TURN_LEFT:
+//            case Neighbor.ORIENT_LEFT_TURN_RIGHT:
                 img.setImageResource(R.drawable.arrow_left);
                 break;
             case Neighbor.ORIENT_RIGHT:
-            case Neighbor.ORIENT_RIGHT_TURN_LEFT:
-            case Neighbor.ORIENT_RIGHT_TURN_RIGHT:
+//            case Neighbor.ORIENT_RIGHT_TURN_LEFT:
+//            case Neighbor.ORIENT_RIGHT_TURN_RIGHT:
                 img.setImageResource(R.drawable.arrow_right);
                 break;
             case Neighbor.ORIENT_UP:
@@ -863,7 +863,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         return  (xB - xA > 0) ? angleFromOx + Math.PI : angleFromOx;
     }
 
-    private int getDirection(Location A, Location B, Location C, Neighbor neighbor) {
+    private String getDirection(Location A, Location B, Location C, Neighbor neighbor) {
         // angle by AB and Ox
         Double angleAB = calculateAngle(A, B);
 
@@ -882,7 +882,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
     private void getStepDetail() {
 
-        Map<Integer, Integer> directionGuide = new HashMap<>();
+        Map<Integer, String> directionGuide = new HashMap<>();
 
         if (listStep == null) {
             listStep = new ArrayList<>();
@@ -914,7 +914,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                 if (neighborOfA.getDirection() != Neighbor.ORIENT_DOWN && neighborOfA.getDirection() != Neighbor.ORIENT_UP &&
                         neighborOfB.getDirection() != Neighbor.ORIENT_DOWN && neighborOfB.getDirection() != Neighbor.ORIENT_UP) {
                     if (directionGuide.get(step) == null) directionGuide.put(step, neighborOfA.getDirection());
-                    int direction = getDirection(A, B, C, neighborOfB);
+                    String direction = getDirection(A, B, C, neighborOfB);
                     directionGuide.put(step + 1, direction);
                 } else { // two continuous staircases
                     directionGuide.put(step, neighborOfA.getDirection());
@@ -931,7 +931,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString(), null));
 
         float distance = 0;
-        Integer previousStep = 0;
+        String previousStep = Neighbor.ORIENT_NULL;
         Location previousLocation = null;
 
         for (int i = 0; i < directionGuide.size(); i++) {
@@ -939,16 +939,16 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
             String neighborID = listPointOnWay.get(i + 1).getId();
             Neighbor neighbor = getNeighbor(location, neighborID);
 
-            int direction = directionGuide.get(i);
-            if (previousStep == 0) previousStep = direction;
+            String direction = directionGuide.get(i);
+            if (previousStep.equals(Neighbor.ORIENT_NULL)) previousStep = direction;
             if (previousLocation == null) previousLocation = location;
 
             if (i == directionGuide.size() - 1) {
                 distance += neighbor.getDistance();
-                direction = 0;
+                direction = Neighbor.ORIENT_NULL;
             }
 
-            if (direction != previousStep) {
+            if (!direction.equals(previousStep)) {
                 switch (previousStep) {
                     case Neighbor.ORIENT_LEFT:
                         listStep.add(new Step(Step.TYPE_GO_STRAIGHT, "From the left of " + previousLocation.getName() + ", go straight.", distance + "m"));
