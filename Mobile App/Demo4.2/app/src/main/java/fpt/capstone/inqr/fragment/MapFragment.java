@@ -63,6 +63,7 @@ import fpt.capstone.inqr.dijkstra.Edge;
 import fpt.capstone.inqr.dijkstra.Vertex;
 import fpt.capstone.inqr.helper.DatabaseHelper;
 import fpt.capstone.inqr.helper.FileHelper;
+import fpt.capstone.inqr.helper.GeoHelper;
 import fpt.capstone.inqr.model.Floor;
 import fpt.capstone.inqr.model.supportModel.Line;
 import fpt.capstone.inqr.model.Location;
@@ -855,26 +856,12 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         showMap();
     }
 
-    private Double calculateAngle(Location A, Location B) {
-        float xB = B.getRatioX();
-        float yB = B.getRatioY();
-        float xA = A.getRatioX();
-        float yA = A.getRatioY();
-
-        Double angleFromOx = Math.atan ((yB - yA) / (xB - xA));
-
-        // value of arc-tan is only in [0..PI]
-        // so if xB > xA (in Android Screen coordinate, (0, 0) in up-left),
-        // vector AB is coming down over PI ==> add PI to the calculated angle.
-        return  (xB - xA > 0) ? angleFromOx + Math.PI : angleFromOx;
-    }
-
     private String getDirection(Location A, Location B, Location C, Neighbor neighbor) {
         // angle by AB and Ox
-        Double angleAB = calculateAngle(A, B);
+        Double angleAB = GeoHelper.calculateAngle(A, B);
 
         // angle by BC and Ox
-        Double angleBC = calculateAngle(B, C);
+        Double angleBC = GeoHelper.calculateAngle(B, C);
 
         // angle by AB and BC || normalize to make this angle always in [0..2pi]
         Double result = angleBC - angleAB < 0 ? (angleBC - angleAB) + 2 * Math.PI : angleBC - angleAB;
