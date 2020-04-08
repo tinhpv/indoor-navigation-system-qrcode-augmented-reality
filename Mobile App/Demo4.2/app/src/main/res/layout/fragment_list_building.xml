@@ -108,12 +108,13 @@
         android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvBuilding"
             android:background="@color/bgMap"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            />
+            android:paddingVertical="@dimen/_7sdp"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 

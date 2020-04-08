@@ -884,7 +884,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         }
 
         int step = 0;
-        if (listPointOnWay.size() < 3) {
+        if (listPointOnWay.size() > 1 && listPointOnWay.size() < 3) {
             Location A = getLocation(listPointOnWay.get(step).getId());
             String neighborID = listPointOnWay.get(step + 1).getId();
             Neighbor neighborOfA = getNeighbor(A, neighborID);
@@ -923,61 +923,74 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
         listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString(), null));
 
-        float distance = 0;
-        String previousStep = Neighbor.ORIENT_NULL;
-        Location previousLocation = null;
+        if (directionGuide.size() > 0) {
+            float distance = 0;
+            String previousStep = Neighbor.ORIENT_NULL;
+            Location previousLocation = null;
 
-        for (int i = 0; i < directionGuide.size(); i++) {
-            Location location = getLocation(listPointOnWay.get(i).getId());
-            String neighborID = listPointOnWay.get(i + 1).getId();
-            Neighbor neighbor = getNeighbor(location, neighborID);
+            for (int i = 0; i < directionGuide.size(); i++) {
+                Location location = getLocation(listPointOnWay.get(i).getId());
+                String neighborID = listPointOnWay.get(i + 1).getId();
+                Neighbor neighbor = getNeighbor(location, neighborID);
 
-            String direction = directionGuide.get(i);
-            if (previousStep.equals(Neighbor.ORIENT_NULL)) previousStep = direction;
-            if (previousLocation == null) previousLocation = location;
+                String direction = directionGuide.get(i);
+                if (previousStep.equals(Neighbor.ORIENT_NULL)) previousStep = direction;
+                if (previousLocation == null) previousLocation = location;
 
-            if (i == directionGuide.size() - 1) {
-                distance += neighbor.getDistance();
-                direction = Neighbor.ORIENT_NULL;
-            }
+                if (i == directionGuide.size() - 1) {
+                    distance += neighbor.getDistance();
+                    direction = Neighbor.ORIENT_NULL;
+                }
 
-            if (!direction.equals(previousStep)) {
-                switch (previousStep) {
-                    case Neighbor.ORIENT_LEFT:
-                        listStep.add(new Step(Step.TYPE_GO_STRAIGHT, "From the left of " + previousLocation.getName() + ", go straight.", distance + "m"));
-                        break;
-                    case Neighbor.ORIENT_RIGHT:
-                        listStep.add(new Step(Step.TYPE_GO_STRAIGHT, "From the right of " + previousLocation.getName() + ", go straight.", distance + "m"));
-                        break;
-                    case Neighbor.ORIENT_TURN_LEFT:
-                        listStep.add(new Step(Step.TYPE_TURN_LEFT, "Turn left at " + previousLocation.getName() + ", go straight.", distance + "m"));
-                        break;
-                    case Neighbor.ORIENT_TURN_RIGHT:
-                        listStep.add(new Step(Step.TYPE_TURN_RIGHT, "Turn right at " + previousLocation.getName() + ", go straight.", distance + "m"));
-                        break;
-                    case Neighbor.ORIENT_UP:
-                        listStep.add(new Step(Step.TYPE_UP_STAIR, "From " + previousLocation.getName() + ", go up to the next floor", null));
-                        break;
-                    case Neighbor.ORIENT_DOWN:
-                        listStep.add(new Step(Step.TYPE_DOWN_STAIR, "From " + previousLocation.getName() + ", go down to the next floor", null));
-                } // end switch
-                distance = neighbor.getDistance();
-                previousLocation = location;
-            } else {
-                distance += neighbor.getDistance();
-            } // end comparison with previous step
+                if (!direction.equals(previousStep)) {
+                    switch (previousStep) {
+                        case Neighbor.ORIENT_LEFT:
+                            listStep.add(new Step(Step.TYPE_GO_STRAIGHT, "From the left of " + previousLocation.getName() + ", go straight.", distance + "m"));
+                            break;
+                        case Neighbor.ORIENT_RIGHT:
+                            listStep.add(new Step(Step.TYPE_GO_STRAIGHT, "From the right of " + previousLocation.getName() + ", go straight.", distance + "m"));
+                            break;
+                        case Neighbor.ORIENT_TURN_LEFT:
+                            listStep.add(new Step(Step.TYPE_TURN_LEFT, "Turn left at " + previousLocation.getName() + ", go straight.", distance + "m"));
+                            break;
+                        case Neighbor.ORIENT_TURN_RIGHT:
+                            listStep.add(new Step(Step.TYPE_TURN_RIGHT, "Turn right at " + previousLocation.getName() + ", go straight.", distance + "m"));
+                            break;
+                        case Neighbor.ORIENT_UP:
+                            listStep.add(new Step(Step.TYPE_UP_STAIR, "From " + previousLocation.getName() + ", go up to the next floor", null));
+                            break;
+                        case Neighbor.ORIENT_DOWN:
+                            listStep.add(new Step(Step.TYPE_DOWN_STAIR, "From " + previousLocation.getName() + ", go down to the next floor", null));
+                            break;
+                        case Neighbor.ORIENT_BACKWARD:
+                            listStep.add(new Step(Step.TYPE_TURN_BACK, "Go straight in the opposite direction of  " + previousLocation.getName(), null));
+                            break;
+                        case Neighbor.ORIENT_FORWARD:
+                            listStep.add(new Step(Step.TYPE_GO_FORWARD, "Keep going straight from " + previousLocation.getName(), null));
 
-            previousStep = direction;
-        } // end for
+                    } // end switch
+                    distance = neighbor.getDistance();
+                    previousLocation = location;
+                } else {
+                    distance += neighbor.getDistance();
+                } // end comparison with previous step
 
-        Location location = getLocation(listPointOnWay.get(listPointOnWay.size() - 2).getId());
-        String neighborID = listPointOnWay.get(listPointOnWay.size() - 1).getId();
-        Neighbor neighbor = getNeighbor(location, neighborID);
-        if (neighbor.getDirection() == Neighbor.ORIENT_LEFT) {
-            listStep.add(new Step(Step.TYPE_END_POINT,  tvEnd.getText().toString() + " is at the right side", null));
-        } else {
-            listStep.add(new Step(Step.TYPE_END_POINT,  tvEnd.getText().toString() + " is at the left side", null));
-        }
+                previousStep = direction;
+            } // end for
+
+        } // end extracting direction guide
+
+
+        listStep.add(new Step(Step.TYPE_END_POINT,  "You reach the destination: " + tvEnd.getText().toString(), null));
+
+//        Location location = getLocation(listPointOnWay.get(listPointOnWay.size() - 2).getId());
+//        String neighborID = listPointOnWay.get(listPointOnWay.size() - 1).getId();
+//        Neighbor neighbor = getNeighbor(location, neighborID);
+//        if (neighbor.getDirection() == Neighbor.ORIENT_LEFT) {
+//            listStep.add(new Step(Step.TYPE_END_POINT,  tvEnd.getText().toString() + " is at the right side", null));
+//        } else {
+//            listStep.add(new Step(Step.TYPE_END_POINT,  tvEnd.getText().toString() + " is at the left side", null));
+//        }
     }
 
     private void getListSourceMap() {

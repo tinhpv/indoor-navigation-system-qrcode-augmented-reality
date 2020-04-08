@@ -56,6 +56,10 @@ public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
             holder.imgType.setImageResource(R.drawable.stairs_up);
         } else if (step.getType() == Step.TYPE_DOWN_STAIR) {
             holder.imgType.setImageResource(R.drawable.stairs_down);
+        } else if (step.getType() == Step.TYPE_GO_FORWARD) {
+            holder.imgType.setImageResource(R.drawable.arrow_forward);
+        } else if (step.getType() == Step.TYPE_TURN_BACK) {
+            holder.imgType.setImageResource(R.drawable.arrow_back);
         }
 
         // nếu distance = null thì ẩn tv distance đi

@@ -5,9 +5,11 @@ public class Step {
     public static final int TYPE_TURN_LEFT = 2;
     public static final int TYPE_TURN_RIGHT = 4;
     public static final int TYPE_UP_STAIR = 5;
-    public static final int TYPE_DOWN_STAIR = 7;
-    public static final int TYPE_START_POINT = 10;
-    public static final int TYPE_END_POINT = 11;
+    public static final int TYPE_TURN_BACK = 6;
+    public static final int TYPE_GO_FORWARD = 7;
+    public static final int TYPE_DOWN_STAIR = 8;
+    public static final int TYPE_START_POINT = 9;
+    public static final int TYPE_END_POINT = 10;
 
     private int type;
     private String info;
