@@ -14,6 +14,8 @@ public class Neighbor extends Location implements Serializable {
     public static final String ORIENT_RIGHT = "RIGHT";
     public static final String ORIENT_UP = "UP";
     public static final String ORIENT_DOWN = "DOWN";
+    public static final String ORIENT_FORWARD = "FRONT";
+    public static final String ORIENT_BACKWARD = "BACK";
 
     public static final String ORIENT_TURN_LEFT = "TURN_LEFT";
     public static final String ORIENT_TURN_RIGHT = "TURN_RIGHT";
