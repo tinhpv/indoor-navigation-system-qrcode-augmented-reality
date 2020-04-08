@@ -532,6 +532,12 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
             case Neighbor.ORIENT_DOWN:
                 img.setImageResource(R.drawable.arrow_down);
                 break;
+            case Neighbor.ORIENT_FORWARD:
+                img.setImageResource(R.drawable.arrow_forward);
+                break;
+            case Neighbor.ORIENT_BACKWARD:
+                img.setImageResource(R.drawable.arrow_back);
+                break;
         }
     }
 
