@@ -239,6 +239,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_map, container, false);
+
         initView(view);
         setupInput();
         setupSensor();
@@ -253,12 +254,12 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         });
 
         bgNavigate.setOnClickListener(v -> {
-            Toasty.success(getContext(), "Wait for Tinh ^^", Toast.LENGTH_SHORT).show();
+            NavigationFragment navFragment = new NavigationFragment();
+            changeFragment(navFragment, true, false);
         });
 
         bgStep.setOnClickListener(v -> {
             BottomSheetFragment bottomSheetFragment = new BottomSheetFragment(listStep, tvDistance.getText().toString(), tvTime.getText().toString());
-//            bottomSheetFragment.setListSteps(listStep);
             bottomSheetFragment.show(getActivity().getSupportFragmentManager(), bottomSheetFragment.getTag());
         });
 
@@ -856,23 +857,6 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         showMap();
     }
 
-    private String getDirection(Location A, Location B, Location C, Neighbor neighbor) {
-        // angle by AB and Ox
-        Double angleAB = GeoHelper.calculateAngle(A, B);
-
-        // angle by BC and Ox
-        Double angleBC = GeoHelper.calculateAngle(B, C);
-
-        // angle by AB and BC || normalize to make this angle always in [0..2pi]
-        Double result = angleBC - angleAB < 0 ? (angleBC - angleAB) + 2 * Math.PI : angleBC - angleAB;
-
-        if (result == 0)
-            return neighbor.getDirection();
-        else if (result < Math.PI)
-            return Neighbor.ORIENT_TURN_LEFT;
-        else return Neighbor.ORIENT_TURN_RIGHT;
-    }
-
     private void getStepDetail() {
 
         Map<Integer, String> directionGuide = new HashMap<>();
@@ -907,7 +891,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                 if (neighborOfA.getDirection() != Neighbor.ORIENT_DOWN && neighborOfA.getDirection() != Neighbor.ORIENT_UP &&
                         neighborOfB.getDirection() != Neighbor.ORIENT_DOWN && neighborOfB.getDirection() != Neighbor.ORIENT_UP) {
                     if (directionGuide.get(step) == null) directionGuide.put(step, neighborOfA.getDirection());
-                    String direction = getDirection(A, B, C, neighborOfB);
+                    String direction = GeoHelper.getDirection(A, B, C, neighborOfB);
                     directionGuide.put(step + 1, direction);
                 } else { // two continuous staircases
                     directionGuide.put(step, neighborOfA.getDirection());
@@ -1199,9 +1183,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     }
 
     private void drawLine(final float xStart, final float yStart, final float xEnd, final float yEnd) {
-
         lines.add(new Line(xStart, yStart, xEnd, yEnd));
-
 
         final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setStyle(Paint.Style.FILL);

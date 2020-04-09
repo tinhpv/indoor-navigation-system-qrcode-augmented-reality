@@ -8,4 +8,7 @@
     <string name="qr_error">QR Code không hợp lệ!</string>
     
     <integer name="speed_walking">5000</integer>
+
+    <string name="ACCOUNT_ID">d5a6066b-ff8a-4582-92f4-aba73928ce46</string>
+    <string name="ACCOUNT_KEY">T3TesRQte4QsoZr9Cp7QGVLB1ILJuAkPpsmXMPTPxV4=</string>
 </resources>

@@ -84,7 +84,6 @@ public class AppActivity extends AppCompatActivity {
         super.onBackPressed();
 
         if (checkHomeFragment()) {
-
 //            imgNavigation.setImageResource(R.drawable.ic_baseline_sort_24px);
             imgNavigation.setVisibility(View.INVISIBLE);
         } else {

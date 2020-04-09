@@ -44,7 +44,6 @@ public class BuildingAdapter extends RecyclerView.Adapter<BuildingHolder> {
     @Override
     public BuildingHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_buidling_adapter, parent, false);
-
         return new BuildingHolder(view);
     }
 
@@ -54,7 +53,6 @@ public class BuildingAdapter extends RecyclerView.Adapter<BuildingHolder> {
 
         holder.tvBuildingName.setText(building.getName());
         holder.tvCompany.setText(building.getCompanyName());
-
         holder.progressBar.setVisibility(View.INVISIBLE);
 
 //        if (checkExpired(building.getDayExpired())) {
@@ -138,22 +136,19 @@ public class BuildingAdapter extends RecyclerView.Adapter<BuildingHolder> {
             }
         });
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.itemView.setOnClickListener(v -> {
 //                if (checkExpired(building.getDayExpired())) {
-                if (building.getStatus() == Building.DOWNLOADED) {
-                    fragment.showMapFragment(building.getId());
-                } else if (building.getStatus() == Building.NOT_DOWNLOAD) {
+            if (building.getStatus() == Building.DOWNLOADED) {
+                fragment.showMapFragment(building.getId());
+            } else if (building.getStatus() == Building.NOT_DOWNLOAD) {
 //                    Toasty.warning(v.getContext(), "Please download data of " + building.getName() + " before to use.", Toast.LENGTH_SHORT).show();
-                    fragment.showWarningDownload(building, WarningDownloadDialog.TYPE_DOWNLOAD, position);
-                } else if (building.getStatus() == Building.UPDATE) {
-                    fragment.showWarningDownload(building, WarningDownloadDialog.TYPE_UPDATE, position);
-                }
+                fragment.showWarningDownload(building, WarningDownloadDialog.TYPE_DOWNLOAD, position);
+            } else if (building.getStatus() == Building.UPDATE) {
+                fragment.showWarningDownload(building, WarningDownloadDialog.TYPE_UPDATE, position);
+            }
 //                } else {
 //                    Toasty.info(v.getContext(), building.getName() + " has expired.", Toast.LENGTH_SHORT).show();
 //                }
-            }
         });
     }
 
