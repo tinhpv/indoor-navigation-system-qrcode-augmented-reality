@@ -9,7 +9,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Point;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -31,7 +30,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
@@ -55,7 +53,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import es.dmoral.toasty.Toasty;
 import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.adapter.MapAdapter;
 import fpt.capstone.inqr.adapter.PointViewAdapter;
@@ -66,12 +63,13 @@ import fpt.capstone.inqr.helper.DatabaseHelper;
 import fpt.capstone.inqr.helper.FileHelper;
 import fpt.capstone.inqr.helper.GeoHelper;
 import fpt.capstone.inqr.model.Floor;
-import fpt.capstone.inqr.model.supportModel.Line;
 import fpt.capstone.inqr.model.Location;
 import fpt.capstone.inqr.model.Neighbor;
 import fpt.capstone.inqr.model.Room;
+import fpt.capstone.inqr.model.supportModel.Line;
 import fpt.capstone.inqr.model.supportModel.Step;
 import github.nisrulz.qreader.QREader;
+import retrofit2.http.HEAD;
 
 import static android.content.Context.SENSOR_SERVICE;
 import static java.lang.Math.PI;
@@ -728,7 +726,8 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         return listTmp;
     }
 
-    private  double currentPath = 0.0;
+    private double currentPath = 0.0;
+
     private void findWay(String startLocationId, String roomName) {
 
 //        if (!isFinding) {
@@ -767,7 +766,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                     listPointOnWay.add(getVertexInList(listSpecialRoom.get(i).getLocationId()));
                     endRoom = listSpecialRoom.get(i);
 
-                    currentPath = 0;
+                    shortestDistance = 0;
                     break;
                 } else {
                     shortestPath.computeShortestPaths(getVertexInList(startLocationId));
@@ -870,7 +869,11 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
         // CONSTRUCT DIRECTION_GUIDE MAP
         int step = 0;
+<<<<<<<HEAD
         if (listPointOnWay.size() == 2) { // THE DESTINATION IS A ROOM OF SOURCE (LOCATION)
+=======
+        if (listPointOnWay.size() == 2) {
+>>>>>>> origin/dev_mobile
             Location A = getLocation(listPointOnWay.get(step).getId());
             String neighborID = listPointOnWay.get(step + 1).getId();
             Neighbor neighborOfA = getNeighbor(A, neighborID);
@@ -891,9 +894,10 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                 Location C = getLocation(listPointOnWay.get(nextPointStep + 2).getId());
 
                 // There is no two continuous staircases == three standard locations
-                if (neighborOfA.getDirection() != Neighbor.ORIENT_DOWN && neighborOfA.getDirection() != Neighbor.ORIENT_UP &&
-                        neighborOfB.getDirection() != Neighbor.ORIENT_DOWN && neighborOfB.getDirection() != Neighbor.ORIENT_UP) {
-                    if (directionGuide.get(step) == null) directionGuide.put(step, neighborOfA.getDirection());
+                if (!neighborOfA.getDirection().equals(Neighbor.ORIENT_DOWN) && !neighborOfA.getDirection().equals(Neighbor.ORIENT_UP) &&
+                        !neighborOfB.getDirection().equals(Neighbor.ORIENT_DOWN) && !neighborOfB.getDirection().equals(Neighbor.ORIENT_UP)) {
+                    if (directionGuide.get(step) == null)
+                        directionGuide.put(step, neighborOfA.getDirection());
                     String direction = GeoHelper.getDirection(A, B, C, neighborOfB);
                     directionGuide.put(step + 1, direction);
                 } else { // IN CASE, THERE'S 2 CONTINUOUS STAIRCASES >> CANNOT CALCULATE DIRECTION
@@ -982,9 +986,22 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         } // end extracting direction guide
 
 
+<<<<<<< HEAD
         listStep.add(new Step(Step.TYPE_END_POINT,
                 "You reach the destination: " + tvEnd.getText().toString(),
                 null));
+=======
+        listStep.add(new Step(Step.TYPE_END_POINT, "You reach the destination: " + tvEnd.getText().toString(), null));
+
+//        Location location = getLocation(listPointOnWay.get(listPointOnWay.size() - 2).getId());
+//        String neighborID = listPointOnWay.get(listPointOnWay.size() - 1).getId();
+//        Neighbor neighbor = getNeighbor(location, neighborID);
+//        if (neighbor.getDirection() == Neighbor.ORIENT_LEFT) {
+//            listStep.add(new Step(Step.TYPE_END_POINT,  tvEnd.getText().toString() + " is at the right side", null));
+//        } else {
+//            listStep.add(new Step(Step.TYPE_END_POINT,  tvEnd.getText().toString() + " is at the left side", null));
+//        }
+>>>>>>> origin/dev_mobile
     }
 
     private void getListSourceMap() {
@@ -1206,47 +1223,6 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         mapImg = BitmapFactory.decodeStream(FileHelper.getImage(this.getContext(), FileHelper.TYPE_MAP, currentFloorId)).copy(Bitmap.Config.ARGB_8888, true);
     }
 
-
-    //
-//    public void showNextFloor(View view) {
-//        if (currentFloorId.equals(getLocation(startLocationId).getFloorId())) {
-//
-//            updateFloor(endRoom.getFloorId());
-//
-//            drawImage();
-//        } else {
-//            updateFloor(getLocation(startLocationId).getFloorId());
-//
-//            drawImage();
-//        }
-//    }
-
-//    public void showNextFloor(View view) {
-//        if (listPointOnWay == null) {
-//            if ((getIndexOfFloor(currentFloorId) + 1) == listFloor.size()) {
-//                currentFloorId = listFloor.get(0).getId();
-//                updateFloor(currentFloorId);
-//                canvas = new Canvas(mapImg);
-//                drawPoint(null);
-//            } else {
-//                currentFloorId = listFloor.get(getIndexOfFloor(currentFloorId) + 1).getId();
-//                updateFloor(currentFloorId);
-//                canvas = new Canvas(mapImg);
-//                drawPoint(null);
-//            }
-//        } else {
-//            if ((getIndexOfFloor(currentFloorId) + 1) == listFloor.size()) {
-//                currentFloorId = listFloor.get(0).getId();
-//                updateFloor(currentFloorId);
-//                drawImage();
-//            } else {
-//                currentFloorId = listFloor.get(getIndexOfFloor(currentFloorId) + 1).getId();
-//                updateFloor(currentFloorId);
-//                drawImage();
-//            }
-//        }
-//    }
-
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor == mRotation) {
@@ -1289,32 +1265,5 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
     }
 
-//    public void speak(View view) {
-//        VoiceHelper voiceHelper = new VoiceHelper();
-//        int orientation = 0;
-//        String startPoint = getLocation(listPointOnWay.get(0).getId()).getName();
-//        String nextPoint = "";
-//        if (listPointOnWay.size() == 1) {
-//            //do Nothing
-//        } else {
-//            orientation = getNeighbor(getLocation(startLocationId), getLocation(listPointOnWay.get(1).getId()).getId());
-////        Location neighbor = getLocation(listPointOnWay.get(1).getId());
-////        Location location = getLocation(startLocationId);
-////        updateOrientation(getOrientation(location, neighbor.getId()));
-//            for (int i = 1; i < listPointOnWay.size(); i++) {
-//                if (orientation != getNeighbor(getLocation(listPointOnWay.get(i - 1).getId()), getLocation(listPointOnWay.get(i).getId()).getId())) {
-//                    nextPoint = getLocation(listPointOnWay.get(i - 1).getId()).getName();
-//                    break;
-//                } else {
-//                    nextPoint = getLocation(listPointOnWay.get(i).getId()).getName();
-//                }
-//            }
-//        }
-//        System.out.println("Start Point: " + startPoint);
-//        System.out.println("Next Point: " + nextPoint);
-//        System.out.println("Orien: " + orientation);
-//
-//        voiceHelper.generateSpeechLine(getActivity(), startPoint, nextPoint, orientation);
-//    }
 
 }
