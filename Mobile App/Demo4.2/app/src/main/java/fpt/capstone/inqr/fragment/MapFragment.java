@@ -869,11 +869,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
         // CONSTRUCT DIRECTION_GUIDE MAP
         int step = 0;
-<<<<<<<HEAD
-        if (listPointOnWay.size() == 2) { // THE DESTINATION IS A ROOM OF SOURCE (LOCATION)
-=======
         if (listPointOnWay.size() == 2) {
->>>>>>> origin/dev_mobile
             Location A = getLocation(listPointOnWay.get(step).getId());
             String neighborID = listPointOnWay.get(step + 1).getId();
             Neighbor neighborOfA = getNeighbor(A, neighborID);
@@ -986,11 +982,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         } // end extracting direction guide
 
 
-<<<<<<< HEAD
-        listStep.add(new Step(Step.TYPE_END_POINT,
-                "You reach the destination: " + tvEnd.getText().toString(),
-                null));
-=======
+
         listStep.add(new Step(Step.TYPE_END_POINT, "You reach the destination: " + tvEnd.getText().toString(), null));
 
 //        Location location = getLocation(listPointOnWay.get(listPointOnWay.size() - 2).getId());
@@ -1001,7 +993,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 //        } else {
 //            listStep.add(new Step(Step.TYPE_END_POINT,  tvEnd.getText().toString() + " is at the left side", null));
 //        }
->>>>>>> origin/dev_mobile
+
     }
 
     private void getListSourceMap() {
