@@ -1,0 +1,106 @@
+body, html {
+	height: 100%;
+}
+
+.bg {
+	/* Full width */
+	height: 100%;
+}
+
+.icon {
+	/* background-image: url("${pageContext.request.contextPath}/images/background.png"); */
+	/* Center and scale the image nicely */
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	height: 100%;
+	float: left;
+	width: 40%;
+	border: 2px solid white;
+	position: relative;
+	border-radius: 25px;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.icon div {
+	height: auto;
+	text-align: center;
+	margin: 0;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-ms-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+}
+
+.icon div img {
+	width: 70%;
+	height: auto;
+	border-radius: 50%;
+}
+
+.icon div h2 {
+	color: white;
+}
+
+.content {
+	height: 95%;
+	background-color: white;
+	float: left;
+	width: 57%;
+	margin: 0.5% 0.5% 0.5% 2.5%;
+}
+
+.content-header {
+	width: 99%;
+	float: left;
+	margin-top: 1%;
+	margin-bottom: 1%;
+}
+
+.content-header p {
+	font-size: 25px;
+	float: left;
+}
+
+.content-header a {
+	float: right;
+}
+
+.content-body {
+	width: 99%;
+	float: left;
+	background-color: teal;
+}
+
+#companyLi-row {
+	float: left;
+	width: 100%;
+}
+
+#companyLi-row-1 {
+	width: 70%;
+	float: left;
+}
+
+#companyLi-row-2 {
+	width: 30%;
+	float: left;
+}
+
+#list-group {
+	float: left;
+	width: 100%;
+}
+
+#list-group-1 {
+	float: left;
+	width: 70%;
+}
+
+#list-group-2 {
+	float: left;
+	width: 30%;
+	text-align: center;
+}

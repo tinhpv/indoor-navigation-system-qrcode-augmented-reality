@@ -1,0 +1,217 @@
+#menu-bar {
+	width: 15%;
+	float: left;
+	background-color: #4e73df;
+	border-radius: 10px;
+	padding-bottom: 10%;
+	min-height: 100vh;
+}
+
+#menu-bar small {
+	color: white;
+	margin-left: 5%;
+	float: left;
+}
+
+#menu-bar-floor-list {
+	float: left;
+	color: white;
+	margin-top: 0% !important;
+}
+
+#menu-bar-floor-list a {
+	width: 95%;
+	float: left;
+	color: #ede8da;
+	text-decoration: none;
+	float: left;
+	margin-top: 3%;
+}
+
+#menu-bar-floor-list a:hover {
+	color: white;
+}
+
+#front-page {
+	text-align: center;
+	font-size: 30px;
+}
+
+#menu-bar div {
+	margin: 5% 5% 5% 5%;
+	width: 90%;
+	float: left;
+	color: white;
+}
+
+#menu-bar hr {
+	margin: 5% 5% 5% 5%;
+	float: left;
+	width: 90%;
+	border: 0.5px solid white;
+}
+
+.content {
+	margin-left: 1%;
+	width: auto;
+	float: left;
+	width: 84%;
+	/* background-color: silver; */
+}
+
+#menu-bar-content a {
+	color: #ede8da;
+	text-decoration: none;
+}
+
+#menu-bar-content a:hover {
+	color: white;
+}
+
+#content-header {
+	width: 99%;
+	float: left;
+	margin-top: 1%;
+}
+
+#content-header p {
+	font-size: 30px;
+	float: left;
+	color: #575c59;
+}
+
+#content-header-action {
+	float: right;
+}
+
+#content-body-location {
+	float: left;
+	width: 70%;
+}
+
+#list-group {
+	width: 100%;
+	float: left;
+}
+
+#list-group-1 {
+	float: left;
+	width: 75%;
+}
+
+#list-group-2 {
+	float: left;
+	width: 25%;
+}
+
+#locationList {
+	width: 100%;
+	float: left;
+}
+
+#locationLink {
+	float: left;
+	width: 50%;
+}
+
+#editButton {
+	float: left;
+	width: 10%;
+	text-align: center;
+}
+
+#qrButton {
+	float: left;
+	width: 10%;
+	text-align: center;
+}
+
+#neighbourCollapse {
+	float: left;
+	width: 10%;
+	text-align: center;
+}
+
+.form-group {
+	width: 100%;
+	float: left;
+}
+
+#roomCollapse {
+	float: left;
+	width: 10%;
+	text-align: center;
+}
+
+#locationDelete {
+	float: left;
+	width: 10%;
+	text-align: center;
+}
+
+.collapse {
+	float: left;
+	width: 100%;
+}
+
+#navigate-footer {
+	float: left;
+	width: 100%;
+	margin-top: 1%;
+}
+
+#navigate-footer a {
+	float: left;
+}
+
+.modal-header {
+	background-color: #4e73df;
+}
+
+.modal-header h5 {
+	color: white;
+}
+
+.col-sm-1 {
+	color: red;
+	padding-left: 0px !important;
+}
+
+#qrCodeWraper {
+	text-align: center;
+}
+
+.modal-body {
+	float: left;
+}
+
+#neighborWraper {
+	float: left;
+	width: 100%;
+	padding-bottom: 0px !important;
+}
+
+#neighborName {
+	float: left;
+	width: 50%;
+}
+
+#neighborOrien {
+	float: left;
+	width: 25%;
+	text-align: center;
+}
+
+#neighborDistance {
+	float: left;
+	width: 25%;
+	text-align: center;
+}
+
+.row {
+	width: 100%;
+}
+
+.col {
+	
+}
