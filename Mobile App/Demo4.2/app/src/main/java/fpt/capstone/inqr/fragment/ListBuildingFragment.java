@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import es.dmoral.toasty.Toasty;
 import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.adapter.BuildingAdapter;
 import fpt.capstone.inqr.callbacks.CallbackData;
@@ -423,7 +422,7 @@ public class ListBuildingFragment extends BaseFragment {
                     // nếu có version mới và đã download thì cập nhập trạng thái update
                     if (building.getStatus() == Building.DOWNLOADED) {
                         return Building.UPDATE_DATA;
-                    } else  if (building.getStatus() == Building.NOT_DOWNLOAD) {
+                    } else if (building.getStatus() == Building.NOT_DOWNLOAD) {
                         return Building.EXISTED;
                     }
                 } else {
