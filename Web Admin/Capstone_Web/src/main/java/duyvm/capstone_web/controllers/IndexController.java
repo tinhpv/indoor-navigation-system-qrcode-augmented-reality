@@ -36,6 +36,8 @@ import duyvm.capstone_web.utils.Utilities;
 @Controller
 public class IndexController {
 
+	//test
+	
 	@Autowired
 	RestTemplate restTemplate;
 
