@@ -61,9 +61,9 @@ dependencies {
     implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.15.0'
 
     // Azure for handling spatial anchor || minimum sdk api 24
-    implementation "com.microsoft.azure.spatialanchors:spatialanchors_jni:[2.1.1]"
-    implementation "com.microsoft.azure.spatialanchors:spatialanchors_java:[2.1.1]"
+    implementation "com.microsoft.azure.spatialanchors:spatialanchors_jni:2.1.1"
+    implementation "com.microsoft.azure.spatialanchors:spatialanchors_java:2.1.1"
 
     // Vision API for QR Code Detection
-    implementation 'com.google.android.gms:play-services-vision:15.0.2'
+    implementation 'com.google.android.gms:play-services-vision:19.0.0'
 }
