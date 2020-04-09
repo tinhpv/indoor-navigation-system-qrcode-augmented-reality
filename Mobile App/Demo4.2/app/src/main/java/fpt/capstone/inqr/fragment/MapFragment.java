@@ -35,6 +35,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.RemoteInput;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
@@ -859,16 +860,17 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
     private void getStepDetail() {
 
+        /*
+        * directionGuide map
+        *   - key: location number on listPointOnWay
+        *   - value: guide on direction in {left, right, turnleft, turnright, turnback, go forward}
+        * */
         Map<Integer, String> directionGuide = new HashMap<>();
 
-        if (listStep == null) {
-            listStep = new ArrayList<>();
-        } else {
-            listStep.clear();
-        }
 
+        // CONSTRUCT DIRECTION_GUIDE MAP
         int step = 0;
-        if (listPointOnWay.size() > 1 && listPointOnWay.size() < 3) {
+        if (listPointOnWay.size() == 2) { // THE DESTINATION IS A ROOM OF SOURCE (LOCATION)
             Location A = getLocation(listPointOnWay.get(step).getId());
             String neighborID = listPointOnWay.get(step + 1).getId();
             Neighbor neighborOfA = getNeighbor(A, neighborID);
@@ -877,6 +879,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
             while (step < listPointOnWay.size() - 2) {
                 int nextPointStep = step;
 
+                // GET 3 CONTINUOUS LOCATIONS TO DETERMINE LOCATION
                 Location A = getLocation(listPointOnWay.get(nextPointStep).getId());
                 String neighborID = listPointOnWay.get(nextPointStep + 1).getId();
                 Neighbor neighborOfA = getNeighbor(A, neighborID);
@@ -893,7 +896,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                     if (directionGuide.get(step) == null) directionGuide.put(step, neighborOfA.getDirection());
                     String direction = GeoHelper.getDirection(A, B, C, neighborOfB);
                     directionGuide.put(step + 1, direction);
-                } else { // two continuous staircases
+                } else { // IN CASE, THERE'S 2 CONTINUOUS STAIRCASES >> CANNOT CALCULATE DIRECTION
                     directionGuide.put(step, neighborOfA.getDirection());
                     if (nextPointStep + 2 == listPointOnWay.size() - 1) { // C is the destination
                         directionGuide.put(++step, neighborOfA.getDirection());
@@ -905,27 +908,40 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         } // end if
 
 
+        // THE LAST STEP IN DIRECTION GUIDE HAS VALUE OF DONE
+        directionGuide.put(listPointOnWay.size() - 1, Neighbor.ORIENT_NULL);
+
+        // EXTRACT DIRECTION_GUIDE TO TEXT LIST
+        if (listStep == null) {
+            listStep = new ArrayList<>();
+        } else {
+            listStep.clear();
+        }
+
         listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString(), null));
 
-        if (directionGuide.size() > 0) {
+        if (directionGuide.size() > 1) { // ONLY EXTRACTING WHEN DESTINATION IS NOT A ROOM OF SOURCE LOCATION
             float distance = 0;
             String previousStep = Neighbor.ORIENT_NULL;
             Location previousLocation = null;
 
             for (int i = 0; i < directionGuide.size(); i++) {
                 Location location = getLocation(listPointOnWay.get(i).getId());
-                String neighborID = listPointOnWay.get(i + 1).getId();
-                Neighbor neighbor = getNeighbor(location, neighborID);
+                Neighbor neighbor = null;
+
+                // THE LAST STEP HAS NO NEIGHBOR => VALUE OF NULL
+                if (i != directionGuide.size() - 1) {
+                    String neighborID = listPointOnWay.get(i + 1).getId();
+                    neighbor = getNeighbor(location, neighborID);
+                }
 
                 String direction = directionGuide.get(i);
+
+                // INITIALIZE THE VALUE OF PREVIOUS, IN CASE IT IS THE STEP 0
                 if (previousStep.equals(Neighbor.ORIENT_NULL)) previousStep = direction;
                 if (previousLocation == null) previousLocation = location;
 
-                if (i == directionGuide.size() - 1) {
-                    distance += neighbor.getDistance();
-                    direction = Neighbor.ORIENT_NULL;
-                }
-
+                // IF THE CURRENT STEP IS NOT THE SAME AS SOME PREVIOUS STEPS >> DETECT THE DIFFERENCE
                 if (!direction.equals(previousStep)) {
                     switch (previousStep) {
                         case Neighbor.ORIENT_LEFT:
@@ -951,9 +967,10 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                             break;
                         case Neighbor.ORIENT_FORWARD:
                             listStep.add(new Step(Step.TYPE_GO_FORWARD, "Keep going straight from " + previousLocation.getName(), null));
-
                     } // end switch
-                    distance = neighbor.getDistance();
+
+                    // THE LAST STEP HAS NO NEIGHBOR > VALUE OF NULL
+                    if (i != directionGuide.size() - 1) distance = neighbor.getDistance();
                     previousLocation = location;
                 } else {
                     distance += neighbor.getDistance();
@@ -965,16 +982,9 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         } // end extracting direction guide
 
 
-        listStep.add(new Step(Step.TYPE_END_POINT,  "You reach the destination: " + tvEnd.getText().toString(), null));
-
-//        Location location = getLocation(listPointOnWay.get(listPointOnWay.size() - 2).getId());
-//        String neighborID = listPointOnWay.get(listPointOnWay.size() - 1).getId();
-//        Neighbor neighbor = getNeighbor(location, neighborID);
-//        if (neighbor.getDirection() == Neighbor.ORIENT_LEFT) {
-//            listStep.add(new Step(Step.TYPE_END_POINT,  tvEnd.getText().toString() + " is at the right side", null));
-//        } else {
-//            listStep.add(new Step(Step.TYPE_END_POINT,  tvEnd.getText().toString() + " is at the left side", null));
-//        }
+        listStep.add(new Step(Step.TYPE_END_POINT,
+                "You reach the destination: " + tvEnd.getText().toString(),
+                null));
     }
 
     private void getListSourceMap() {
