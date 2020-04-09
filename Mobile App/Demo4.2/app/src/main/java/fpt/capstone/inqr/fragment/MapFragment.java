@@ -1050,6 +1050,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                 return neighbor;
             }
         }
+
         return null;
     }
 
