@@ -899,7 +899,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                 } else { // IN CASE, THERE'S 2 CONTINUOUS STAIRCASES >> CANNOT CALCULATE DIRECTION
                     directionGuide.put(step, neighborOfA.getDirection());
                     if (nextPointStep + 2 == listPointOnWay.size() - 1) { // C is the destination
-                        directionGuide.put(++step, neighborOfA.getDirection());
+                        directionGuide.put(++step, neighborOfB.getDirection());
                     }
                 } // end if
 
@@ -945,10 +945,10 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                 if (!direction.equals(previousStep)) {
                     switch (previousStep) {
                         case Neighbor.ORIENT_LEFT:
-                            listStep.add(new Step(Step.TYPE_GO_STRAIGHT, "From the left of " + previousLocation.getName() + ", go straight.", distance + "m"));
+                            listStep.add(new Step(Step.TYPE_GO_STRAIGHT, "At " + previousLocation.getName() + ", go straight to the left", distance + "m"));
                             break;
                         case Neighbor.ORIENT_RIGHT:
-                            listStep.add(new Step(Step.TYPE_GO_STRAIGHT, "From the right of " + previousLocation.getName() + ", go straight.", distance + "m"));
+                            listStep.add(new Step(Step.TYPE_GO_STRAIGHT, "At " + previousLocation.getName() + ", go straight to the right", distance + "m"));
                             break;
                         case Neighbor.ORIENT_TURN_LEFT:
                             listStep.add(new Step(Step.TYPE_TURN_LEFT, "Turn left at " + previousLocation.getName() + ", go straight.", distance + "m"));
@@ -957,10 +957,10 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                             listStep.add(new Step(Step.TYPE_TURN_RIGHT, "Turn right at " + previousLocation.getName() + ", go straight.", distance + "m"));
                             break;
                         case Neighbor.ORIENT_UP:
-                            listStep.add(new Step(Step.TYPE_UP_STAIR, "From " + previousLocation.getName() + ", go up to the next floor", null));
+                            listStep.add(new Step(Step.TYPE_UP_STAIR, "Go upstair at " + previousLocation.getName(), null));
                             break;
                         case Neighbor.ORIENT_DOWN:
-                            listStep.add(new Step(Step.TYPE_DOWN_STAIR, "From " + previousLocation.getName() + ", go down to the next floor", null));
+                            listStep.add(new Step(Step.TYPE_DOWN_STAIR, "Go downstairs at " + previousLocation.getName(), null));
                             break;
                         case Neighbor.ORIENT_BACKWARD:
                             listStep.add(new Step(Step.TYPE_TURN_BACK, "Go straight in the opposite direction of  " + previousLocation.getName(), null));
@@ -981,19 +981,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
         } // end extracting direction guide
 
-
-
         listStep.add(new Step(Step.TYPE_END_POINT, "You reach the destination: " + tvEnd.getText().toString(), null));
-
-//        Location location = getLocation(listPointOnWay.get(listPointOnWay.size() - 2).getId());
-//        String neighborID = listPointOnWay.get(listPointOnWay.size() - 1).getId();
-//        Neighbor neighbor = getNeighbor(location, neighborID);
-//        if (neighbor.getDirection() == Neighbor.ORIENT_LEFT) {
-//            listStep.add(new Step(Step.TYPE_END_POINT,  tvEnd.getText().toString() + " is at the right side", null));
-//        } else {
-//            listStep.add(new Step(Step.TYPE_END_POINT,  tvEnd.getText().toString() + " is at the left side", null));
-//        }
-
     }
 
     private void getListSourceMap() {
