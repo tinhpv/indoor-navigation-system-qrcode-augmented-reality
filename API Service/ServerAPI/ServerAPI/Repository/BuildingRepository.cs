@@ -614,14 +614,14 @@ namespace ServerAPI.Repository
                 buildingInfo.DayExpired = Convert.ToDateTime(building.DayExpired);
                 buildingInfo.Active = building.Active;
 
+                int? version = buildingInfo.Version;
+                buildingInfo.Version = version + 1;
+
                 if (building.ListFloor != null)
                 {
                     if (building.ListFloor.Count() > 0)
                     {
-                        int? version = buildingInfo.Version;
-                        buildingInfo.Version = version + 1;
-
-                        // add building data
+                     // add building data
                         deleteOldDataAndAddNewData(building.Id, building.ListFloor);
                     }
                 }
@@ -680,9 +680,9 @@ namespace ServerAPI.Repository
 
             if (floor == null)
             {
-              
 
-                
+
+
 
                 var linkMap = saveMapFromFile(file, floorId);
 
@@ -694,7 +694,7 @@ namespace ServerAPI.Repository
                     BuildingId = buildingId
                 });
 
-               
+
                 context.SaveChanges();
 
                 return linkMap;
