@@ -18,7 +18,7 @@ import fpt.capstone.inqr.fragment.ListBuildingFragment;
 public class WarningDialog extends DialogFragment {
 
     private String buildingName, description;
-    private TextView tvName, tvDes, tvClose;
+    private TextView tvName, tvDes, tvClose, tvGo;
 
     private ListBuildingFragment fragment;
     private String buildingId;
@@ -52,12 +52,17 @@ public class WarningDialog extends DialogFragment {
         tvName = view.findViewById(R.id.tvName);
         tvDes = view.findViewById(R.id.tvDes);
         tvClose = view.findViewById(R.id.tvClose);
+        tvGo = view.findViewById(R.id.tvGo);
 
 
         tvName.setText(buildingName);
         tvDes.setText(description);
 
         tvClose.setOnClickListener(v -> {
+            dismiss();
+        });
+
+        tvGo.setOnClickListener(v -> {
 
             if (fragment != null) {
                 fragment.showMapFragment(buildingId);

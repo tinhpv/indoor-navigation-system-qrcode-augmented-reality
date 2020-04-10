@@ -122,6 +122,9 @@ public class ListBuildingFragment extends BaseFragment {
 
 
     public void updateBuildingData(String buildingId, int position) {
+        // update building information
+//        db.updateBuilding()
+
         // xóa data cũ
         db.deleteBuildingData(buildingId);
         // thêm data mới
@@ -220,7 +223,7 @@ public class ListBuildingFragment extends BaseFragment {
 //        txtDbStatus.setText("Đã tạo Database");
                         removeLoadingBar();
 
-                        InfoDialog infoDialog = new InfoDialog("Building Updated", building.getName());
+                        InfoDialog infoDialog = new InfoDialog("Building Downloaded", building.getName());
                         infoDialog.show(getChildFragmentManager(), "info");
                     }
                 }.execute();
@@ -378,7 +381,9 @@ public class ListBuildingFragment extends BaseFragment {
                             // thêm thông tin cập nhập
                             listNotification.add(new Notification(Notification.TYPE_UPDATE, building.getName()));
                         } else if (status == Building.EXISTED) {
-                            // do nothing
+                            // update building information
+                            building.setCompanyName(company.getName());
+                            db.updateBuildingInformation(building);
                         }
                     }
                 }
