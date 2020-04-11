@@ -463,6 +463,7 @@ public class ListBuildingFragment extends BaseFragment {
 
             }
         }
+
         return Building.NOT_EXIST;
     }
 
