@@ -3,8 +3,8 @@
     <Files>
       <File FileName="ServerAPI/Startup.cs" Line="105" Column="30" />
       <File FileName="ServerAPI/Controllers/BuildingController.cs" Line="198" Column="89" />
-      <File FileName="ServerAPI/IService/IBuildingService.cs" Line="1" Column="1" />
-      <File FileName="ServerAPI/Repository/BuildingRepository.cs" Line="735" Column="24" />
+      <File FileName="ServerAPI/IService/IBuildingService.cs" />
+      <File FileName="ServerAPI/Repository/BuildingRepository.cs" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">

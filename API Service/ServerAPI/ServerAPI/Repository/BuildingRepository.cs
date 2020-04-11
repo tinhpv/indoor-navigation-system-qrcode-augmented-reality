@@ -233,6 +233,8 @@ namespace ServerAPI.Repository
                         location.RatioX = item.RatioX;
                         location.RatioY = item.RatioY;
                         location.LinkQR = item.LinkQrcode;
+                        location.QrAnchorId = item.QranchorId;
+                        location.SpaceAnchorId = item.SpaceAnchorId;
 
                         var listLocationBeside = new List<LocationBeside>();
                         foreach (var itemLocation in context.LocationBeside.Where(x => x.LocationId == item.Id).OrderBy(x => x.Id).ToList())
@@ -256,7 +258,8 @@ namespace ServerAPI.Repository
                                 Name = room.Name,
                                 RatioX = room.RatioX,
                                 RatioY = room.RatioY,
-                                SpecialRoom = room.SpecialRoom
+                                SpecialRoom = room.SpecialRoom,
+                                SpaceAnchorId = room.SpaceAnchorId
                             });
                         }
                         location.ListRoom = listRoom;
@@ -713,7 +716,7 @@ namespace ServerAPI.Repository
 
                 context.SaveChanges();
 
-                return "1";
+                return qrAnchorId;
             }
 
             return "0";
@@ -729,7 +732,7 @@ namespace ServerAPI.Repository
 
                 context.SaveChanges();
 
-                return "1";
+                return spaceAnchorId;
             }
 
             return "0";
@@ -745,7 +748,7 @@ namespace ServerAPI.Repository
 
                 context.SaveChanges();
 
-                return "1";
+                return spaceAnchorId;
             }
 
             return "0";
