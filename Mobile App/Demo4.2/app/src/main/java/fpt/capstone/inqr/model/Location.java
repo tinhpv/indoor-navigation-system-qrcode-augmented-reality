@@ -28,6 +28,14 @@ public class Location implements Serializable {
     @Expose
     private String linkQr;
 
+    @SerializedName("QrAnchorId")
+    @Expose
+    private String qrAnchorId;
+
+    @SerializedName("SpaceAnchorId")
+    @Expose
+    private String spaceAnchorId;
+
     @SerializedName("ListLocationBeside")
     @Expose
     private List<Neighbor> neighborList;
@@ -104,5 +112,21 @@ public class Location implements Serializable {
 
     public void setListRoom(List<Room> listRoom) {
         this.listRoom = listRoom;
+    }
+
+    public String getQrAnchorId() {
+        return qrAnchorId;
+    }
+
+    public void setQrAnchorId(String qrAnchorId) {
+        this.qrAnchorId = qrAnchorId;
+    }
+
+    public String getSpaceAnchorId() {
+        return spaceAnchorId;
+    }
+
+    public void setSpaceAnchorId(String spaceAnchorId) {
+        this.spaceAnchorId = spaceAnchorId;
     }
 }

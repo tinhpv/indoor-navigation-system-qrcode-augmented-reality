@@ -42,6 +42,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String RATIO_X = "ratioX";
     private static final String RATIO_Y = "ratioY";
     private static final String LINK_QR_CODE = "linkQr";
+    private static final String QR_ANCHOR_ID = "qrAnchorId";
+    private static final String SPACE_ANCHOR_ID = "spaceAnchorId";
 //    private static final String FLOOR_ID = "floorId";
 
     //Neighbor Table
@@ -93,7 +95,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + RATIO_X + " FLOAT,"
             + RATIO_Y + " FLOAT,"
             + FLOOR_ID + " TEXT, "
-            + LINK_QR_CODE + " TEXT"
+            + LINK_QR_CODE + " TEXT, "
+            + QR_ANCHOR_ID + " TEXT, "
+            + SPACE_ANCHOR_ID + " TEXT"
             + ")";
 
     //Neighbor Table Create statement
@@ -115,7 +119,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + RATIO_Y + " FLOAT, "
             + LOCATION_ID + " TEXT, "
             + FLOOR_ID + " TEXT, "
-            + SPECIAL_ROOM + " INTEGER"
+            + SPECIAL_ROOM + " INTEGER, "
+            + SPACE_ANCHOR_ID + " TEXT"
             + ")";
 
     public DatabaseHelper(Context context) {
@@ -227,6 +232,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(RATIO_Y, location.getRatioY());
         values.put(FLOOR_ID, floorId);
         values.put(LINK_QR_CODE, location.getLinkQr());
+        values.put(QR_ANCHOR_ID, location.getQrAnchorId());
+        values.put(SPACE_ANCHOR_ID, location.getSpaceAnchorId());
+
 
         //Insert row
         long floor_id = db.insert(TABLE_LOCATION, null, values);
@@ -250,6 +258,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } else {
             values.put(SPECIAL_ROOM, 0);
         }
+        values.put(SPACE_ANCHOR_ID, room.getSpaceAnchorId());
 
 
         //Insert row

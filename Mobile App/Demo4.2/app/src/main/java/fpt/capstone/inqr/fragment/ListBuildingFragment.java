@@ -440,6 +440,8 @@ public class ListBuildingFragment extends BaseFragment {
             public void onFail(String message) {
                 removeLoadingBar();
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
     }

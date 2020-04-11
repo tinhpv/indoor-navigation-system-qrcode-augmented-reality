@@ -27,6 +27,10 @@ public class Room implements Serializable {
     @Expose
     private boolean specialRoom;
 
+    @SerializedName("SpaceAnchorId")
+    @Expose
+    private String spaceAnchorId;
+
     private String locationId;
 
     private String floorId;
@@ -85,5 +89,13 @@ public class Room implements Serializable {
 
     public void setRatioY(float ratioY) {
         this.ratioY = ratioY;
+    }
+
+    public String getSpaceAnchorId() {
+        return spaceAnchorId;
+    }
+
+    public void setSpaceAnchorId(String spaceAnchorId) {
+        this.spaceAnchorId = spaceAnchorId;
     }
 }
