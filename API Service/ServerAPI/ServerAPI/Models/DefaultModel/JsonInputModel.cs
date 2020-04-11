@@ -61,6 +61,7 @@ namespace ServerAPI.Models.DefaultModel
         public double? RatioX { get; set; }
         public double? RatioY { get; set; }
         public bool? SpecialRoom { get; set; }
+        public string SpaceAnchorId { get; set; }
     }
 
     public class Building

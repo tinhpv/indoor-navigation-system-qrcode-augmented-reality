@@ -18,6 +18,8 @@ namespace ServerAPI.Models
         public double? RatioY { get; set; }
         public string FloorId { get; set; }
         public string LinkQrcode { get; set; }
+        public string QranchorId { get; set; }
+        public string SpaceAnchorId { get; set; }
 
         public virtual Floor Floor { get; set; }
         public virtual ICollection<LocationBeside> LocationBesideLocation { get; set; }

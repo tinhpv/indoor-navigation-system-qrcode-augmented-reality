@@ -614,13 +614,13 @@ namespace ServerAPI.Repository
                 buildingInfo.DayExpired = Convert.ToDateTime(building.DayExpired);
                 buildingInfo.Active = building.Active;
 
+                int? version = buildingInfo.Version;
+                buildingInfo.Version = version + 1;
+
                 if (building.ListFloor != null)
                 {
                     if (building.ListFloor.Count() > 0)
                     {
-                        int? version = buildingInfo.Version;
-                        buildingInfo.Version = version + 1;
-
                         // add building data
                         deleteOldDataAndAddNewData(building.Id, building.ListFloor);
                     }
@@ -680,9 +680,9 @@ namespace ServerAPI.Repository
 
             if (floor == null)
             {
-              
 
-                
+
+
 
                 var linkMap = saveMapFromFile(file, floorId);
 
@@ -694,7 +694,7 @@ namespace ServerAPI.Repository
                     BuildingId = buildingId
                 });
 
-               
+
                 context.SaveChanges();
 
                 return linkMap;
@@ -703,10 +703,59 @@ namespace ServerAPI.Repository
             return "Floor ID is duplicated";
         }
 
+        public string UpdateLocationQrAnchorId(string locationId, string qrAnchorId)
+        {
+            var location = context.Location.Where(x => x.Id == locationId).FirstOrDefault();
+
+            if (location != null)
+            {
+                location.QranchorId = qrAnchorId;
+
+                context.SaveChanges();
+
+                return "1";
+            }
+
+            return "0";
+        }
+
+        public string UpdateLocationSpaceAnchorId(string locationId, string spaceAnchorId)
+        {
+            var location = context.Location.Where(x => x.Id == locationId).FirstOrDefault();
+
+            if (location != null)
+            {
+                location.SpaceAnchorId = spaceAnchorId;
+
+                context.SaveChanges();
+
+                return "1";
+            }
+
+            return "0";
+        }
+
+        public string UpdateRoomSpaceAnchorId(string roomId, string spaceAnchorId)
+        {
+            var room = context.Room.Where(x => x.Id == roomId).FirstOrDefault();
+
+            if (room != null)
+            {
+                room.SpaceAnchorId = spaceAnchorId;
+
+                context.SaveChanges();
+
+                return "1";
+            }
+
+            return "0";
+        }
+
 
 
 
         // ------------------------------------------
+        // -------------------------------------------
 
         private void deleteFloorMap(string buildingId, List<Floor> floors)
         {

@@ -181,5 +181,23 @@ namespace ServerAPI.Controllers
         {
             return Ok(iService.UpdateCompany(company));
         }
+
+        [HttpPut("updateLocationQrAnchorId")]
+        public IActionResult UpdateLocationQrAnchorId([FromForm] string locationId,[FromForm] string qrAnchorId)
+        {
+            return Ok(iService.UpdateLocationQrAnchorId(locationId, qrAnchorId));
+        }
+
+        [HttpPut("updateLocationQrSpaceAnchorId")]
+        public IActionResult UpdateLocationSpaceAnchorId([FromForm] string locationId, [FromForm] string spaceAnchorId)
+        {
+            return Ok(iService.UpdateLocationSpaceAnchorId(locationId, spaceAnchorId));
+        }
+
+        [HttpPut("updateRoomQrSpaceAnchorId")]
+        public IActionResult UpdateRoomSpaceAnchorId([FromForm] string roomId, [FromForm] string spaceAnchorId)
+        {
+            return Ok(iService.UpdateRoomSpaceAnchorId(roomId, spaceAnchorId));
+        }
     }
 }

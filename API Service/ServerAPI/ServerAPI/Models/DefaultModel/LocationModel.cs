@@ -10,6 +10,8 @@ namespace ServerAPI.Models.DefaultModel
         public double? RatioX { get; set; }
         public double? RatioY { get; set; }
         public string LinkQR { get; set; }
+        public string QrAnchorId { get; set; }
+        public string SpaceAnchorId { get; set; }
         public List<LocationBeside> ListLocationBeside { get; set; }
         public List<Room> ListRoom { get; set; }
 

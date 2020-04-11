@@ -66,5 +66,20 @@ namespace ServerAPI.Service
         {
             return iRepository.CreateNewFloor(buildingId, floorId, floorName, file);
         }
+
+        public string UpdateLocationQrAnchorId(string locationId, string qrAnchorId)
+        {
+            return iRepository.UpdateLocationQrAnchorId(locationId, qrAnchorId);
+        }
+
+        public string UpdateLocationSpaceAnchorId(string locationId, string spaceAnchorId)
+        {
+            return iRepository.UpdateLocationSpaceAnchorId(locationId, spaceAnchorId);
+        }
+
+        public string UpdateRoomSpaceAnchorId(string roomId, string spaceAnchorId)
+        {
+            return iRepository.UpdateRoomSpaceAnchorId(roomId, spaceAnchorId);
+        }
     }
 }

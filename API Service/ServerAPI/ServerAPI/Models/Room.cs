@@ -11,6 +11,7 @@ namespace ServerAPI.Models
         public double? RatioY { get; set; }
         public string LocationId { get; set; }
         public bool? SpecialRoom { get; set; }
+        public string SpaceAnchorId { get; set; }
 
         public virtual Location Location { get; set; }
     }

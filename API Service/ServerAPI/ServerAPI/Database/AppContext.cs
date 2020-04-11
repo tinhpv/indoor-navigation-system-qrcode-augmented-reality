@@ -83,6 +83,12 @@ namespace ServerAPI.Database
 
                 entity.Property(e => e.Name).HasMaxLength(50);
 
+                entity.Property(e => e.QranchorId)
+                    .HasColumnName("QRAnchorId")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.SpaceAnchorId).HasMaxLength(250);
+
                 entity.HasOne(d => d.Floor)
                     .WithMany(p => p.Location)
                     .HasForeignKey(d => d.FloorId)
@@ -115,6 +121,8 @@ namespace ServerAPI.Database
                 entity.Property(e => e.LocationId).HasMaxLength(250);
 
                 entity.Property(e => e.Name).HasMaxLength(50);
+
+                entity.Property(e => e.SpaceAnchorId).HasMaxLength(250);
 
                 entity.HasOne(d => d.Location)
                     .WithMany(p => p.Room)

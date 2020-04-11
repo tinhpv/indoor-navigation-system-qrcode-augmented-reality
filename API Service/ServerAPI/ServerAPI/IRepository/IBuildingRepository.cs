@@ -30,5 +30,10 @@ namespace ServerAPI.IRepository
         string CreateNewBuilding(Company company);
         string UpdateBuilding(Building company);
 
+
+        string UpdateLocationQrAnchorId(string locationId, string qrAnchorId);
+        string UpdateLocationSpaceAnchorId(string locationId, string spaceAnchorId);
+        string UpdateRoomSpaceAnchorId(string roomId, string spaceAnchorId);
+
     }
 }

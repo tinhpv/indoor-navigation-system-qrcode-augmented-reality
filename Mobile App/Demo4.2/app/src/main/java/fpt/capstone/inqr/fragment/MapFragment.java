@@ -764,7 +764,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                     listPointOnWay.add(getVertexInList(listSpecialRoom.get(i).getLocationId()));
                     endRoom = listSpecialRoom.get(i);
 
-                    currentPath = 0;
+                    shortestDistance = 0;
                     break;
                 } else {
                     shortestPath.computeShortestPaths(getVertexInList(startLocationId));
