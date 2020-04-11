@@ -4,13 +4,8 @@
       <File FileName="ServerAPI/Startup.cs" Line="1" Column="1" />
       <File FileName="ServerAPI/Controllers/BuildingController.cs" />
       <File FileName="ServerAPI/Models/DefaultModel/LocationModel.cs" />
-<<<<<<< HEAD
       <File FileName="ServerAPI/Repository/BuildingRepository.cs" Line="694" Column="44" />
       <File FileName="ServerAPI/Models/DefaultModel/JsonInputModel.cs" Line="41" Column="22" />
-=======
-      <File FileName="ServerAPI/Repository/BuildingRepository.cs" />
-      <File FileName="ServerAPI/Models/DefaultModel/JsonInputModel.cs" />
->>>>>>> dev_Hieu
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
