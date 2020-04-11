@@ -1,23 +1,23 @@
 ﻿<Properties StartupConfiguration="{DF4C2C2E-2C11-4591-BFF2-1B05BE635690}|Default" NuGet.AddPackagesDialog.IncludePrerelease="True">
-  <MonoDevelop.Ide.Workbench ActiveDocument="ServerAPI/Controllers/BuildingController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ServerAPI/Repository/BuildingRepository.cs">
     <Files>
       <File FileName="ServerAPI/Startup.cs" Line="105" Column="30" />
       <File FileName="ServerAPI/Controllers/BuildingController.cs" Line="198" Column="89" />
       <File FileName="ServerAPI/IService/IBuildingService.cs" />
-      <File FileName="ServerAPI/Repository/BuildingRepository.cs" />
+      <File FileName="ServerAPI/Repository/BuildingRepository.cs" Line="247" Column="12" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="ServerAPI" expanded="True">
             <Node name="ServerAPI" expanded="True">
-              <Node name="Controllers" expanded="True">
-                <Node name="BuildingController.cs" selected="True" />
-              </Node>
+              <Node name="Controllers" expanded="True" />
               <Node name="Database" expanded="True" />
               <Node name="IRepository" expanded="True" />
               <Node name="IService" expanded="True" />
-              <Node name="Repository" expanded="True" />
+              <Node name="Repository" expanded="True">
+                <Node name="BuildingRepository.cs" selected="True" />
+              </Node>
               <Node name="Service" expanded="True" />
             </Node>
           </Node>
