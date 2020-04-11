@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,26 +16,19 @@ import androidx.fragment.app.DialogFragment;
 
 import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.fragment.ListBuildingFragment;
+import fpt.capstone.inqr.model.Building;
 
-public class WarningDialog extends DialogFragment {
+public class ChangeWalkingSpeedDialog extends DialogFragment {
 
-    private String buildingName, description;
-    private TextView tvName, tvDes, tvClose, tvGo;
-
+    //    private String buildingName, description;
+    private TextView tvName, tvDes, tvClose, tvDownload;
+    private Spinner snChooseSex;
     private ListBuildingFragment fragment;
-    private String buildingId;
+    private Building building;
+    private int position;
 
-    public WarningDialog(String buildingName, String description) {
-        this.buildingName = buildingName;
-        this.description = description;
-    }
 
-    public WarningDialog(String buildingName, String description, ListBuildingFragment fragment, String buildingId) {
-        this.buildingName = buildingName;
-        this.description = description;
-        this.fragment = fragment;
-        this.buildingId = buildingId;
-    }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,30 +41,26 @@ public class WarningDialog extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_warning, container, false);
+        View view = inflater.inflate(R.layout.dialog_change_walking_speed, container, false);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         tvName = view.findViewById(R.id.tvName);
         tvDes = view.findViewById(R.id.tvDes);
         tvClose = view.findViewById(R.id.tvClose);
-        tvGo = view.findViewById(R.id.tvGo);
+        tvDownload = view.findViewById(R.id.tvDownload);
+        snChooseSex = view.findViewById(R.id.snChooseSex);
 
 
-        tvName.setText(buildingName);
-        tvDes.setText(description);
+        tvName.setText("Warning");
 
-        tvClose.setOnClickListener(v -> {
-            dismiss();
-        });
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.sex_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        snChooseSex.setAdapter(adapter);
 
-        tvGo.setOnClickListener(v -> {
-
-            if (fragment != null) {
-                fragment.showMapFragment(buildingId);
-            }
-
-            dismiss();
-        });
 
         return view;
     }

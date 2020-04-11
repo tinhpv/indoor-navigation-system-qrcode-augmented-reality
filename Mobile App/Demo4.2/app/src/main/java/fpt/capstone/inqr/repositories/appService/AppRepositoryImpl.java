@@ -23,7 +23,7 @@ public class AppRepositoryImpl implements AppRepository {
 
     @Override
     public void getAllLocation(Context context, final CallbackData<Building> callbackData, String buildingId) {
-        ClientApi clientApi = new ClientApi();
+        ClientApi clientApi = new ClientApi(context);
         Call<ResponseBody> serviceCall = clientApi.getAppService().getAllLocation(buildingId);
         serviceCall.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -67,7 +67,7 @@ public class AppRepositoryImpl implements AppRepository {
 
     @Override
     public void getAllBuilding(Context context, CallbackData<List<Company>> callbackData) {
-        ClientApi clientApi = new ClientApi();
+        ClientApi clientApi = new ClientApi(context);
         Call<ResponseBody> serviceCall = clientApi.getAppService().getAllBuilding();
         serviceCall.enqueue(new Callback<ResponseBody>() {
             @Override

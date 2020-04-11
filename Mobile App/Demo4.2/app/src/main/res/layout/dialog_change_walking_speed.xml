@@ -69,18 +69,29 @@
                 app:layout_constraintTop_toBottomOf="@id/tvName"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/snChooseSex"
+                />
+
+            <Spinner
+                android:id="@+id/snChooseSex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                app:layout_constraintTop_toBottomOf="@id/tvDes"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/tvClose"
                 />
 
             <TextView
-                android:id="@+id/tvGo"
+                android:id="@+id/tvDownload"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="OK"
+                android:text="Download"
                 android:layout_marginBottom="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:fontFamily="@font/nunito_black"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/holo_orange_light"
                 android:textSize="18sp"
 
                 app:layout_constraintHorizontal_bias="1.0"
@@ -93,17 +104,18 @@
                 android:id="@+id/tvClose"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Close"
                 android:layout_margin="@dimen/_20sdp"
                 android:fontFamily="@font/nunito_black"
-                android:text="Close"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@android:color/black"
                 android:textSize="18sp"
+
 
 
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent" />
+                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

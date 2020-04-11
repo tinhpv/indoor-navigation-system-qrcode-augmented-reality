@@ -11,9 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -59,6 +61,7 @@ public class ListBuildingFragment extends BaseFragment {
     private BuildingAdapter adapter;
 
     private EditText edtSearch;
+    private ImageView imgSetting;
 
     private List<Notification> listNotification;
 
@@ -122,6 +125,9 @@ public class ListBuildingFragment extends BaseFragment {
 
 
     public void updateBuildingData(String buildingId, int position) {
+        // update building information
+//        db.updateBuilding()
+
         // xóa data cũ
         db.deleteBuildingData(buildingId);
         // thêm data mới
@@ -220,7 +226,7 @@ public class ListBuildingFragment extends BaseFragment {
 //        txtDbStatus.setText("Đã tạo Database");
                         removeLoadingBar();
 
-                        InfoDialog infoDialog = new InfoDialog("Building Updated", building.getName());
+                        InfoDialog infoDialog = new InfoDialog("Building Downloaded", building.getName());
                         infoDialog.show(getChildFragmentManager(), "info");
                     }
                 }.execute();
@@ -300,6 +306,26 @@ public class ListBuildingFragment extends BaseFragment {
 
         swipeRefreshLayout.setOnRefreshListener(() -> checkDataOnServer());
 
+
+        // setting
+        imgSetting.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(v.getContext(), v);
+            // set layout
+            popupMenu.inflate(R.menu.popup_menu_setting);
+            // set sự kiện chọn menu
+            popupMenu.setOnMenuItemClickListener(menuItem -> {
+                switch (menuItem.getItemId()) {
+                    case R.id.itemChangeSpeed:
+
+                        return true;
+                    default:
+                        return false;
+                }
+
+            });
+            popupMenu.show();
+        });
+
         // chạy ngay lần đầu mở app luôn
         checkDataOnServer();
 
@@ -310,6 +336,7 @@ public class ListBuildingFragment extends BaseFragment {
         swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
         rvBuilding = view.findViewById(R.id.rvBuilding);
         edtSearch = view.findViewById(R.id.edtSearch);
+        imgSetting = view.findViewById(R.id.imgSetting);
     }
 
     private List<Building> searchBuilding(String searchKey) {
@@ -378,7 +405,9 @@ public class ListBuildingFragment extends BaseFragment {
                             // thêm thông tin cập nhập
                             listNotification.add(new Notification(Notification.TYPE_UPDATE, building.getName()));
                         } else if (status == Building.EXISTED) {
-                            // do nothing
+                            // update building information
+                            building.setCompanyName(company.getName());
+                            db.updateBuildingInformation(building);
                         }
                     }
                 }

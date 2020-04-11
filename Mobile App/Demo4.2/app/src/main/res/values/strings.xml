@@ -6,9 +6,15 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="input_error">không hợp lệ</string>
     <string name="qr_error">QR Code không hợp lệ!</string>
-    
+
     <integer name="speed_walking">5000</integer>
 
     <string name="ACCOUNT_ID">d5a6066b-ff8a-4582-92f4-aba73928ce46</string>
     <string name="ACCOUNT_KEY">T3TesRQte4QsoZr9Cp7QGVLB1ILJuAkPpsmXMPTPxV4=</string>
+    <string name="itemChangeSpeed">Change walking speed</string>
+
+    <string-array name="sex_array">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
 </resources>

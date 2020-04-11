@@ -166,7 +166,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return building_id;
     }
 
-    // update data building
+    // update data building + status
     public long updateBuilding(Building building) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -177,6 +177,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(DAY_EXPIRED, building.getDayExpired());
         values.put(VERSION, building.getVersion());
         values.put(STATUS, Building.UPDATE);
+
+        //update row
+        long building_id = db.update(TABLE_BUILDING, values, ID + " = ?", new String[]{building.getId()});
+        db.close();
+        return building_id;
+    }
+
+    // update data building information
+    public long updateBuildingInformation(Building building) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(NAME, building.getName());
+        values.put(DESCRIPTION, building.getDescription());
+        values.put(COMPANY_NAME, building.getCompanyName());
+        values.put(DAY_EXPIRED, building.getDayExpired());
+//        values.put(VERSION, building.getVersion());
+//        values.put(STATUS, Building.UPDATE);
 
         //update row
         long building_id = db.update(TABLE_BUILDING, values, ID + " = ?", new String[]{building.getId()});

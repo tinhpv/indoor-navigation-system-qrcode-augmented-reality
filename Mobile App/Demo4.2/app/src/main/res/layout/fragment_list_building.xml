@@ -8,21 +8,27 @@
     tools:context="fpt.capstone.inqr.fragment.ListBuildingFragment">
 
     <!-- TODO: Update blank fragment layout -->
-   <ImageView
-       android:id="@+id/imgCheck"
-       android:layout_width="@dimen/_30sdp"
-       android:layout_height="@dimen/_30sdp"
-       android:src="@drawable/ic_check"
-       android:clickable="true"
-       android:focusable="true"
-       android:visibility="gone"
-       />
+
 
    <androidx.constraintlayout.widget.ConstraintLayout
        android:layout_width="match_parent"
        android:layout_height="@dimen/_150sdp"
        android:background="@color/bgBuilding"
        >
+       <ImageView
+           android:id="@+id/imgSetting"
+           android:layout_width="@dimen/_30sdp"
+           android:layout_height="@dimen/_30sdp"
+           android:src="@drawable/ic_settings_white_48dp"
+           android:clickable="true"
+           android:focusable="true"
+           android:visibility="visible"
+
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintTop_toTopOf="parent"
+           android:layout_marginTop="@dimen/_5sdp"
+           android:layout_marginEnd="@dimen/_5sdp"
+           />
 
        <TextView
            android:id="@+id/tv1"
