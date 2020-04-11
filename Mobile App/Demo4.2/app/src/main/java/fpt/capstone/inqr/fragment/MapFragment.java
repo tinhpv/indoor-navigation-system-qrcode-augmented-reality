@@ -61,6 +61,7 @@ import fpt.capstone.inqr.dijkstra.Vertex;
 import fpt.capstone.inqr.helper.DatabaseHelper;
 import fpt.capstone.inqr.helper.FileHelper;
 import fpt.capstone.inqr.helper.GeoHelper;
+import fpt.capstone.inqr.helper.PreferenceHelper;
 import fpt.capstone.inqr.model.Floor;
 import fpt.capstone.inqr.model.Location;
 import fpt.capstone.inqr.model.Neighbor;
@@ -675,7 +676,14 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                     double distanceReal = currentPath - distanceRemove;
 
                     // speed : m/h
-                    int speed = getActivity().getResources().getInteger(R.integer.speed_walking);
+                    int speed = PreferenceHelper.getInt(getContext(), "speed_walking");
+
+                    if (speed == 0) {
+                        speed = getActivity().getResources().getInteger(R.integer.speed_walking);
+                        PreferenceHelper.putInt(getContext(), "speed_walking", speed);
+                    }
+
+
                     double time = distanceReal / speed * 60;
 
                     int mins = (int) (time / 1);
