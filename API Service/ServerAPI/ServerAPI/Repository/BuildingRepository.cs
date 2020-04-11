@@ -621,7 +621,7 @@ namespace ServerAPI.Repository
                 {
                     if (building.ListFloor.Count() > 0)
                     {
-                     // add building data
+                        // add building data
                         deleteOldDataAndAddNewData(building.Id, building.ListFloor);
                     }
                 }
@@ -703,10 +703,59 @@ namespace ServerAPI.Repository
             return "Floor ID is duplicated";
         }
 
+        public string UpdateLocationQrAnchorId(string locationId, string qrAnchorId)
+        {
+            var location = context.Location.Where(x => x.Id == locationId).FirstOrDefault();
+
+            if (location != null)
+            {
+                location.QranchorId = qrAnchorId;
+
+                context.SaveChanges();
+
+                return "1";
+            }
+
+            return "0";
+        }
+
+        public string UpdateLocationSpaceAnchorId(string locationId, string spaceAnchorId)
+        {
+            var location = context.Location.Where(x => x.Id == locationId).FirstOrDefault();
+
+            if (location != null)
+            {
+                location.SpaceAnchorId = spaceAnchorId;
+
+                context.SaveChanges();
+
+                return "1";
+            }
+
+            return "0";
+        }
+
+        public string UpdateRoomSpaceAnchorId(string roomId, string spaceAnchorId)
+        {
+            var room = context.Room.Where(x => x.Id == roomId).FirstOrDefault();
+
+            if (room != null)
+            {
+                room.SpaceAnchorId = spaceAnchorId;
+
+                context.SaveChanges();
+
+                return "1";
+            }
+
+            return "0";
+        }
+
 
 
 
         // ------------------------------------------
+        // -------------------------------------------
 
         private void deleteFloorMap(string buildingId, List<Floor> floors)
         {

@@ -3,9 +3,8 @@
     <Files>
       <File FileName="ServerAPI/Startup.cs" Line="1" Column="1" />
       <File FileName="ServerAPI/Controllers/BuildingController.cs" Line="179" Column="17" />
-      <File FileName="ServerAPI/Models/DefaultModel/LocationModel.cs" />
-      <File FileName="ServerAPI/Repository/BuildingRepository.cs" Line="1058" Column="1" />
-      <File FileName="ServerAPI/Models/DefaultModel/JsonInputModel.cs" />
+      <File FileName="ServerAPI/IService/IBuildingService.cs" Line="1" Column="1" />
+      <File FileName="ServerAPI/Repository/BuildingRepository.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -13,9 +12,13 @@
           <Node name="ServerAPI" expanded="True">
             <Node name="ServerAPI" expanded="True">
               <Node name="Controllers" expanded="True" />
+              <Node name="Database" expanded="True" />
+              <Node name="IRepository" expanded="True" />
+              <Node name="IService" expanded="True" />
               <Node name="Repository" expanded="True">
                 <Node name="BuildingRepository.cs" selected="True" />
               </Node>
+              <Node name="Service" expanded="True" />
             </Node>
           </Node>
         </State>
