@@ -357,6 +357,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 location.setRatioX(c.getFloat(c.getColumnIndex(RATIO_X)));
                 location.setRatioY(c.getFloat(c.getColumnIndex(RATIO_Y)));
                 location.setFloorId(c.getString(c.getColumnIndex(FLOOR_ID)));
+                location.setQrAnchorId(c.getString(c.getColumnIndex(QR_ANCHOR_ID)));
+                location.setSpaceAnchorId(c.getString(c.getColumnIndex(SPACE_ANCHOR_ID)));
                 //add to location list
                 locations.add(location);
 
@@ -442,6 +444,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 room.setRatioY(c.getFloat(c.getColumnIndex(RATIO_Y)));
                 room.setLocationId(c.getString(c.getColumnIndex(LOCATION_ID)));
                 room.setFloorId(c.getString(c.getColumnIndex(FLOOR_ID)));
+                room.setSpaceAnchorId(c.getString(c.getColumnIndex(SPACE_ANCHOR_ID)));
 
                 int tmp = c.getInt(c.getColumnIndex(SPECIAL_ROOM));
                 if (tmp == 1) {
