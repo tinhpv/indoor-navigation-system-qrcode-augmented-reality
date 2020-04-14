@@ -7,10 +7,10 @@ namespace ServerAPI.Models
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public double? RatioX { get; set; }
-        public double? RatioY { get; set; }
+        public double RatioX { get; set; }
+        public double RatioY { get; set; }
         public string LocationId { get; set; }
-        public bool? SpecialRoom { get; set; }
+        public bool SpecialRoom { get; set; }
         public string SpaceAnchorId { get; set; }
 
         public virtual Location Location { get; set; }

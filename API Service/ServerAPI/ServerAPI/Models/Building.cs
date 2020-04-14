@@ -13,10 +13,10 @@ namespace ServerAPI.Models
         public string Id { get; set; }
         public string Name { get; set; }
         public string CompanyId { get; set; }
-        public DateTime? DayExpired { get; set; }
-        public int? Version { get; set; }
+        public DateTime DayExpired { get; set; }
+        public int Version { get; set; }
         public string Description { get; set; }
-        public bool? Active { get; set; }
+        public bool Active { get; set; }
 
         public virtual Company Company { get; set; }
         public virtual ICollection<Floor> Floor { get; set; }

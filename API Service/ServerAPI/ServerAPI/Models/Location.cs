@@ -14,8 +14,8 @@ namespace ServerAPI.Models
 
         public string Id { get; set; }
         public string Name { get; set; }
-        public double? RatioX { get; set; }
-        public double? RatioY { get; set; }
+        public double RatioX { get; set; }
+        public double RatioY { get; set; }
         public string FloorId { get; set; }
         public string LinkQrcode { get; set; }
         public string QranchorId { get; set; }

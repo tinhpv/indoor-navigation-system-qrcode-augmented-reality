@@ -243,7 +243,7 @@ namespace ServerAPI.Repository
                                 context.Location.Where(x => x.Id == itemLocation.LocationBesideId).FirstOrDefault().Id,
                                 context.Location.Where(x => x.Id == itemLocation.LocationBesideId).FirstOrDefault().Name.ToString(),
                                 //context.Orientation.Where(x => x.Id == itemLocation.OrientitationId).FirstOrDefault().Name.ToString(),
-                                itemLocation.Orientitation,
+                                itemLocation.Orientation,
                                 itemLocation.Distance
                                 ));
                         }
@@ -295,7 +295,7 @@ namespace ServerAPI.Repository
                 buildingNew.Name = buildingName;
                 buildingNew.Description = description;
 
-                int? version = buildingNew.Version;
+                int version = buildingNew.Version;
                 buildingNew.Version = version + 1;
 
                 context.SaveChanges();
@@ -424,7 +424,7 @@ namespace ServerAPI.Repository
                             //Id = 0,
                             LocationId = buildingId + "_l_" + location.Id,
                             LocationBesideId = buildingId + "_l_" + neighbor.Id,
-                            Orientitation = neighbor.Orientation,
+                            Orientation = neighbor.Orientation,
                             Distance = neighbor.Distance
                         });
                     }
@@ -562,7 +562,7 @@ namespace ServerAPI.Repository
                                                         //Id = 0,
                                                         LocationId = buildingId + "_l_" + location.Id,
                                                         LocationBesideId = buildingId + "_l_" + neighbor.Id,
-                                                        Orientitation = neighbor.Orientation,
+                                                        Orientation = neighbor.Orientation,
                                                         Distance = neighbor.Distance
                                                     });
                                                 }
@@ -617,7 +617,7 @@ namespace ServerAPI.Repository
                 buildingInfo.DayExpired = Convert.ToDateTime(building.DayExpired);
                 buildingInfo.Active = building.Active;
 
-                int? version = buildingInfo.Version;
+                int version = buildingInfo.Version;
                 buildingInfo.Version = version + 1;
 
                 if (building.ListFloor != null)
@@ -932,7 +932,7 @@ namespace ServerAPI.Repository
                                             //Id = 0,
                                             LocationId = buildingId + "_l_" + location.Id,
                                             LocationBesideId = buildingId + "_l_" + neighbor.Id,
-                                            Orientitation = neighbor.Orientation,
+                                            Orientation = neighbor.Orientation,
                                             Distance = neighbor.Distance
                                         });
                                     }
