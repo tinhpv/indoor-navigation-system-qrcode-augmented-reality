@@ -30,6 +30,7 @@ import java.util.List;
 import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.adapter.BuildingAdapter;
 import fpt.capstone.inqr.callbacks.CallbackData;
+import fpt.capstone.inqr.dialog.ChangeWalkingSpeedDialog;
 import fpt.capstone.inqr.dialog.DeleteDialog;
 import fpt.capstone.inqr.dialog.InfoDialog;
 import fpt.capstone.inqr.dialog.NotificationDialog;
@@ -316,7 +317,8 @@ public class ListBuildingFragment extends BaseFragment {
             popupMenu.setOnMenuItemClickListener(menuItem -> {
                 switch (menuItem.getItemId()) {
                     case R.id.itemChangeSpeed:
-
+                        ChangeWalkingSpeedDialog dialog = new ChangeWalkingSpeedDialog();
+                        dialog.show(getChildFragmentManager(), "walking_speed");
                         return true;
                     default:
                         return false;
