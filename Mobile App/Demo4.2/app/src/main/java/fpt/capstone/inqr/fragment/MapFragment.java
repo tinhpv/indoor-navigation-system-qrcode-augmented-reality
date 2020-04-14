@@ -47,10 +47,15 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import fpt.capstone.inqr.R;
@@ -692,9 +697,33 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                     int sens = (int) (time % 1 * 60);
 
                     if (mins != 0) {
-                        tvTime.setText(mins + "min " + sens + "sec");
+                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+                        String currentTime = sdf.format(new Date());
+                        Date date = null;
+                        try {
+                            date = sdf.parse(currentTime);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(date);
+                        calendar.add(Calendar.MINUTE, mins);
+                        calendar.add(Calendar.SECOND, sens);
+                        tvTime.setText(currentTime + " - " + sdf.format(calendar.getTime()));
+//                        tvTime.setText(mins + "min " + sens + "sec");
                     } else {
-                        tvTime.setText(sens + "sec");
+                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+                        String currentTime = sdf.format(new Date());
+                        Date date = null;
+                        try {
+                            date = sdf.parse(currentTime);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(date);
+                        calendar.add(Calendar.SECOND, sens);
+                        tvTime.setText(currentTime + " - " + sdf.format(calendar.getTime()));
                     }
 
                     tvDistance.setText("(" + (int) Math.round(distanceReal) + "m)");
