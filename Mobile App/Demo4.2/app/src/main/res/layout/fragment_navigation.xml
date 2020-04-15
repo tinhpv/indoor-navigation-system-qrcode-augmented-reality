@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,32 +12,181 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/nav_info_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_90sdp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/labelStart"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_25sdp"
+                android:layout_marginBottom="@dimen/_3sdp"
+                android:fontFamily="@font/nunito_black"
+                android:text="Walking to"
+                android:textColor="@color/dark_blue"
+                android:textSize="@dimen/_18sdp"
+                app:layout_constraintBottom_toTopOf="@id/tv_destination"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/img_pin"
+                android:layout_width="17dp"
+                android:layout_height="17dp"
+                android:src="@drawable/ic_pin"
+                android:layout_marginBottom="@dimen/_10sdp"
+                app:layout_constraintStart_toStartOf="@id/labelStart"
+                app:layout_constraintTop_toBottomOf="@id/labelStart"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <TextView
+                android:id="@+id/tv_destination"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_12sdp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:background="@drawable/border_radius_textview"
+                android:fontFamily="@font/nunito_light"
+                android:paddingHorizontal="@dimen/_15sdp"
+                android:paddingVertical="@dimen/_5sdp"
+                android:text="Walking to"
+                android:textColor="@color/dark_blue"
+                android:textSize="@dimen/_13sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/bt_change_destination"
+                app:layout_constraintStart_toEndOf="@+id/img_pin"
+                app:layout_constraintTop_toBottomOf="@id/labelStart" />
+
+            <Button
+                android:id="@+id/bt_change_destination"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginRight="@dimen/_15sdp"
+                android:fontFamily="@font/nunito_light"
+                android:text="Change"
+                android:textAllCaps="false"
+                android:textColor="@color/text_dark_green"
+                android:background="@drawable/color_radius_button"
+                app:layout_constraintBottom_toBottomOf="@id/tv_destination"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_destination"
+                app:layout_constraintTop_toTopOf="@id/tv_destination" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nav_info_view">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/light_gray">
+
+            <ImageView
+                android:id="@+id/img_current"
+                android:layout_width="@dimen/_8sdp"
+                android:layout_height="@dimen/_8sdp"
+                android:src="@drawable/current_point_dark"
+                android:layout_marginTop="@dimen/_7sdp"
+                android:layout_marginStart="@dimen/_30sdp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/tv_current_location"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:fontFamily="@font/nunito_light"
+                android:text="Scan and detect a nearby QR Code"
+                android:textColor="@color/dark_blue"
+                android:textSize="16dp"
+                android:layout_marginStart="@dimen/_10sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/img_current"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/bt_expand"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:background="@drawable/ic_expand_more_black_24dp"
+                android:layout_marginEnd="@dimen/_20sdp"
+                app:layout_constraintTop_toTopOf="@id/tv_current_location"
+                app:layout_constraintBottom_toBottomOf="@id/tv_current_location"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/expandable_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/tv_current_location"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_location_step"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/tv_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:background="@android:color/transparent"
         android:gravity="center"
         android:text="PROGRESS: 10%"
-        android:textColor="#FFFFFF"
+        android:textColor="@android:color/background_dark"
         android:textSize="16dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@id/tv_scanning_result" />
 
     <TextView
         android:id="@+id/tv_scanning_result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
         android:text="ScanningResult"
-        android:textColor="#FFFFFF"
+        android:textColor="@android:color/background_dark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_status" />
+        app:layout_constraintBottom_toBottomOf="parent" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

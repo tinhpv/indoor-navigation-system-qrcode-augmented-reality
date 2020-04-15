@@ -118,6 +118,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     private String buildingId = "";
     private DijkstraShortestPath shortestPath;
 
+    private String nameOfDestinationRoom;
 
     // xoay
     private QREader qrEader;
@@ -254,7 +255,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         });
 
         bgNavigate.setOnClickListener(v -> {
-            NavigationFragment navFragment = new NavigationFragment();
+            NavigationFragment navFragment = new NavigationFragment(locationList, listRoom, nameOfDestinationRoom);
             changeFragment(navFragment, true, false);
         });
 
@@ -392,6 +393,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         ArrayAdapter<String> finalAdapter = adapter;
         tvEnd.setOnItemClickListener((parent, view, position, id) -> {
             String roomName = finalAdapter.getItem(position);
+            nameOfDestinationRoom = roomName;
 
             String locationName = tvStart.getText().toString();
             if (checkInputStartPoint(locationName)) {
@@ -745,7 +747,6 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
         prepareData();
 
-
         if (shortestPath == null) {
             shortestPath = new DijkstraShortestPath();
         }
@@ -754,14 +755,12 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         String locationId = getLocationIdOfRoom(roomName);
         Vertex endPoint = getVertexInList(locationId);
 
-
         // kiểm tra xem có phải special room không?
 //        String roomName = tvEnd.getText().toString();
         if (getRoom(roomName).isSpecialRoom()) {
 
-            //prepare list special room
+            // prepare list special room
             listSpecialRoom = getListSpecialRoom(roomName);
-
 
 //            String startId = getLocationId(tvStart.getText().toString());
             double shortestDistance = 0;

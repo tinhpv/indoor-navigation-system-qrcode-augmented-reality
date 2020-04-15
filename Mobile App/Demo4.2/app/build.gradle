@@ -66,4 +66,9 @@ dependencies {
 
     // Vision API for QR Code Detection
     implementation 'com.google.android.gms:play-services-vision:19.0.0'
+
+    // STEP LINE
+    implementation 'com.github.vipulasri:timelineview:1.1.4'
+    implementation 'com.github.mmin18:realtimeblurview:1.2.1'
+    implementation 'com.eightbitlab:blurview:1.6.3'
 }
