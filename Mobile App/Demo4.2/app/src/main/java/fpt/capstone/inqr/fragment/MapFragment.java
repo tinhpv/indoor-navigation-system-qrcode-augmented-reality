@@ -696,35 +696,29 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                     int mins = (int) (time / 1);
                     int sens = (int) (time % 1 * 60);
 
-                    if (mins != 0) {
-                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-                        String currentTime = sdf.format(new Date());
-                        Date date = null;
-                        try {
-                            date = sdf.parse(currentTime);
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(date);
-                        calendar.add(Calendar.MINUTE, mins);
-                        calendar.add(Calendar.SECOND, sens);
-                        tvTime.setText(currentTime + " - " + sdf.format(calendar.getTime()));
-//                        tvTime.setText(mins + "min " + sens + "sec");
-                    } else {
-                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-                        String currentTime = sdf.format(new Date());
-                        Date date = null;
-                        try {
-                            date = sdf.parse(currentTime);
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(date);
-                        calendar.add(Calendar.SECOND, sens);
-                        tvTime.setText(currentTime + " - " + sdf.format(calendar.getTime()));
+                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+                    String currentTime = sdf.format(new Date());
+                    Date date = null;
+                    try {
+                        date = sdf.parse(currentTime);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(date);
+                    calendar.add(Calendar.SECOND, sens);
+                    calendar.add(Calendar.MINUTE, mins);
+
+//                    if (mins != 0) {
+//
+//                        calendar.add(Calendar.SECOND, sens);
+//                        tvTime.setText(currentTime + " - " + sdf.format(calendar.getTime()));
+//                        tvTime.setText(mins + "min " + sens + "sec");
+//                    } else {
+//
+//                    }
+
+                    tvTime.setText(currentTime + " - " + sdf.format(calendar.getTime()));
 
                     tvDistance.setText("(" + (int) Math.round(distanceReal) + "m)");
                 } else {
