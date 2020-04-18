@@ -4,6 +4,12 @@
     <color name="colorPrimaryDark">#A0A0A0</color>
     <color name="colorAccent">#9E9E9E</color>
 
+    <color name="green">#51C6A7</color>
+    <color name="dark_blue">#0D1C2E</color>
+    <color name="light_gray">#F5F5F5</color>
+    <color name="background_light_green">#AAF5E4</color>
+    <color name="text_dark_green">#007F62</color>
+    <color name="dark_gray">#C4C4C4</color>
     <color name="bgMap">#D4D4D4</color>
     <color name="bgBuilding">#F4A709</color>
     <color name="line_color">#F78B03</color>

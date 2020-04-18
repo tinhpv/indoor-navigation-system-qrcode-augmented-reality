@@ -43,7 +43,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
         Step step = listSteps.get(position);
         // set UI theo Type
         if (step.getType() == Step.TYPE_START_POINT) {
-            holder.imgType.setImageResource(R.drawable.current_point);
+            holder.imgType.setImageResource(R.drawable.current_point_dark);
         } else if (step.getType() == Step.TYPE_END_POINT) {
             holder.imgType.setImageResource(R.drawable.destination_on_map);
         } else if (step.getType() == Step.TYPE_GO_STRAIGHT) {
