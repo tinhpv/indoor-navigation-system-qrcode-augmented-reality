@@ -3,6 +3,7 @@ package fpt.capstone.inqr.fragment;
 import android.graphics.ImageFormat;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
@@ -16,11 +17,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.ar.core.Anchor;
 import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
 import com.google.ar.core.Session;
@@ -37,6 +40,7 @@ import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.ShapeFactory;
+import com.google.ar.sceneform.ux.TransformableNode;
 import com.microsoft.azure.spatialanchors.AnchorLocateCriteria;
 import com.microsoft.azure.spatialanchors.AnchorLocatedEvent;
 import com.microsoft.azure.spatialanchors.CloudSpatialAnchor;
@@ -66,6 +70,7 @@ import fpt.capstone.inqr.helper.QRCodeHelper;
 import fpt.capstone.inqr.helper.Wayfinder;
 import fpt.capstone.inqr.model.Location;
 import fpt.capstone.inqr.model.Room;
+import fpt.capstone.inqr.model.supportModel.AnchorModel;
 import fpt.capstone.inqr.model.supportModel.LocationDemo;
 
 /**
@@ -94,6 +99,7 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
     private int step;
     private boolean didScan, didQrAnchorPlaced;
 
+    private List<AnchorModel> mAnchorModelList;
     private List<Vertex> pathList;
     private List<String> qrCodeIdList;
     private Map<String, String> qrAnchorIdList;
@@ -202,6 +208,7 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
         // extract location's QR Anchor ID list
         qrAnchorIdList = new HashMap<>();
         qrCodeIdList = new ArrayList<>();
+        mAnchorModelList = new ArrayList<>();
 
         mLocationList.forEach(location -> {
             qrAnchorIdList.put(location.getId(), location.getQrAnchorId());
@@ -281,15 +288,8 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
     }
 
     private void handleLocate() {
-        if (desAnchorNode != null) {
-            mArFragment.getArSceneView().getScene().removeChild(desAnchorNode);
-            desAnchorNode.getAnchor().detach();
-            desAnchorNode.setParent(null);
-            desAnchorNode = null;
-            Toast.makeText(getContext(), "Test Delete - anchorNode removed", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getContext(), "Test Delete - markAnchorNode was null", Toast.LENGTH_SHORT).show();
-        }
+        // remove all models on scene
+        resetAnchors();
 
         // stop current cloud session, start another to locate
         cloudSession.stop();
@@ -344,7 +344,9 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
                 didQrAnchorPlaced = true;
                 getActivity().runOnUiThread(() -> {
                     tvCurrentDestination.setText(getLocation(scannedLocationId).getName());
-                    renderModel(new AnchorNode(cloudAnchor.getLocalAnchor()), new Color(android.graphics.Color.GREEN));
+                    AnchorModel model = new AnchorModel(cloudAnchor.getLocalAnchor());
+                    model.render(getContext(), mArFragment, new Color(android.graphics.Color.BLUE));
+                    mAnchorModelList.add(model);
                 });
 
                 pathList = wayfinder.getShortestPathList();
@@ -372,10 +374,14 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
 
             } else if (srcAnchorId.equals(anchorId)) {
                 sourceAnchorNode = new AnchorNode(cloudAnchor.getLocalAnchor());
-                getActivity().runOnUiThread(() -> renderModel(sourceAnchorNode, new Color(android.graphics.Color.BLUE)));
+                AnchorModel model = new AnchorModel(cloudAnchor.getLocalAnchor());
+                model.render(getContext(), mArFragment, new Color(android.graphics.Color.BLUE));
+                mAnchorModelList.add(model);
             } else if (desAnchorId.equals(anchorId)) {
                 desAnchorNode = new AnchorNode(cloudAnchor.getLocalAnchor());
-                getActivity().runOnUiThread(() -> renderModel(desAnchorNode, new Color(android.graphics.Color.BLUE)));
+                AnchorModel model = new AnchorModel(cloudAnchor.getLocalAnchor());
+                model.render(getContext(), mArFragment, new Color(android.graphics.Color.BLUE));
+                mAnchorModelList.add(model);
             }
 
             if (null != sourceAnchorNode && null != desAnchorNode) {
@@ -411,6 +417,13 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
         if (watchers.isEmpty()) return;
         CloudSpatialAnchorWatcher watcher = watchers.get(0);
         watcher.stop();
+    }
+
+    private void resetAnchors() {
+        for (AnchorModel model : mAnchorModelList) {
+            model.destroy();
+        } // end for
+        mAnchorModelList.clear();
     }
 
     private void renderModel(AnchorNode anchorNode, Color color) {
@@ -483,6 +496,34 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
                             nodeForLine.setWorldRotation(rotationFromAToB);
                         }
                 ); // end rendering
+
+
+        // RENDER THE ARROW
+        ModelRenderable.builder()
+                .setSource(getContext(), Uri.parse("arrow.sfb"))
+                .build()
+                .thenAccept(modelRenderable -> {
+                    AnchorNode anchorNode = new AnchorNode(node1.getAnchor());
+                    TransformableNode transformableNode = new TransformableNode(mArFragment.getTransformationSystem());
+                    transformableNode.setParent(anchorNode);
+                    transformableNode.setRenderable(modelRenderable);
+
+                    // RELATIVELY SET THE ORIENTATION OF ARROW OBJECT TO THE ANCHOR NODE 2
+                    // THIS IS THE DEFAULT RATATION ANGLE
+                    transformableNode.setWorldRotation(rotationFromAToB);
+                    transformableNode.select();
+                    mArFragment.getArSceneView().getScene().addChild(anchorNode);
+
+
+                    // ROTATE MORE 45 DEGREES FOR EXACTLY HEADING TO THE ANCHOR 2
+                    transformableNode.setLocalRotation(Quaternion
+                            .multiply(transformableNode.getLocalRotation(), new Quaternion(Vector3.up(), 45f)));
+                })
+                .exceptionally(throwable -> {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setMessage(throwable.getMessage()).show();
+                    return null;
+                });
     }
 
 
