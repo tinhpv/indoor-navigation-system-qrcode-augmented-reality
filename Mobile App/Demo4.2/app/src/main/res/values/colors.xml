@@ -5,8 +5,11 @@
     <color name="colorAccent">#9E9E9E</color>
 
     <color name="green">#51C6A7</color>
+    <color name="dark_green">#0F9375</color>
     <color name="dark_blue">#0D1C2E</color>
     <color name="light_gray">#F5F5F5</color>
+    <color name="light_green">#1A44D7B6</color>
+    <color name="black_gray">#7C7C7C</color>
     <color name="background_light_green">#AAF5E4</color>
     <color name="text_dark_green">#007F62</color>
     <color name="dark_gray">#C4C4C4</color>
@@ -14,4 +17,7 @@
     <color name="bgBuilding">#F4A709</color>
     <color name="line_color">#F78B03</color>
     <color name="color_text_delete">#D95F50</color>
+
+
+    <color name="white">#FFFFFF</color>
 </resources>

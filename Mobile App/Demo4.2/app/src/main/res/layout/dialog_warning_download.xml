@@ -2,7 +2,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
     android:background="@android:color/transparent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -15,8 +14,7 @@
 
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 
     <androidx.cardview.widget.CardView
@@ -29,13 +27,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        >
+        app:layout_constraintEnd_toEndOf="parent">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_25sdp"
-            >
+            android:layout_marginTop="@dimen/_25sdp">
 
             <TextView
                 android:id="@+id/tvName"
@@ -49,8 +46,7 @@
 
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                />
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
                 android:id="@+id/tvDes"
@@ -64,13 +60,10 @@
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:layout_marginStart="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_20sdp"
-
-
                 app:layout_constraintTop_toBottomOf="@id/tvName"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/tvClose"
-                />
+                app:layout_constraintBottom_toTopOf="@id/tvClose" />
 
             <TextView
                 android:id="@+id/tvDownload"
@@ -86,8 +79,7 @@
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/tvClose"
-                />
+                app:layout_constraintEnd_toStartOf="@id/tvClose" />
 
             <TextView
                 android:id="@+id/tvClose"
@@ -98,15 +90,12 @@
                 android:fontFamily="@font/nunito_black"
                 android:textColor="@android:color/black"
                 android:textSize="18sp"
-
-
-
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                 />
+                app:layout_constraintHorizontal_bias="1.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.cardview.widget.CardView>
 
 
