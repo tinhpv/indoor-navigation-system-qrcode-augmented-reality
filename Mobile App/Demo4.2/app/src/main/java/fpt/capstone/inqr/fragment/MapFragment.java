@@ -29,6 +29,8 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -91,6 +93,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     private ImageView imgScan;
     private FrameLayout frame;
     private TextView tvTime, tvDistance;
+    private LinearLayout howItWorkBlock;
 
     private DatabaseHelper db;
     private Bitmap mapImg;
@@ -239,7 +242,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_map, container, false);
+        View view = inflater.inflate(R.layout.fragment_map_modified, container, false);
 
         initView(view);
         setupInput();
@@ -435,6 +438,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         tvEnd = view.findViewById(R.id.tvEnd);
 
         frame = view.findViewById(R.id.frame);
+        howItWorkBlock = view.findViewById(R.id.how_it_work_block);
 
         img = view.findViewById(R.id.img);
         bgImg = view.findViewById(R.id.bgImg);
@@ -446,7 +450,9 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         tvDistance = view.findViewById(R.id.tvDistance);
     }
 
+
     private void showMap() {
+        howItWorkBlock.setVisibility(View.GONE);
         rvMap.setVisibility(View.VISIBLE);
         rvDot.setVisibility(View.VISIBLE);
         bgNavigate.setVisibility(View.VISIBLE);
@@ -508,8 +514,8 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
         }).facing(QREader.BACK_CAM)
                 .enableAutofocus(true)
-//                .height(cameraView.getHeight())
-//                .width(cameraView.getWidth())
+                .height(cameraView.getHeight())
+                .width(cameraView.getWidth())
                 .build();
         qrEader.start();
     }
