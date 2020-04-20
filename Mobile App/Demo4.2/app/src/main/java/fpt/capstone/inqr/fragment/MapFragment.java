@@ -1229,8 +1229,8 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         float angle, anglerad, radius, lineangle;
 
         //values to change for other appearance *CHANGE THESE FOR OTHER SIZE ARROWHEADS*
-        radius = 120;
-        angle = 40;
+        radius = 96;
+        angle = 60;
 
         //some angle calculations
         anglerad = (float) (PI * angle / 180.0f);
@@ -1243,10 +1243,10 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         Path path = new Path();
         path.setFillType(Path.FillType.EVEN_ODD);
         path.moveTo(to_x, to_y);
-        path.lineTo((float) (to_x - radius * cos(lineangle - (anglerad / 2.0))),
-                (float) (to_y - radius * sin(lineangle - (anglerad / 2.0))));
-        path.lineTo((float) (to_x - radius * cos(lineangle + (anglerad / 2.0))),
-                (float) (to_y - radius * sin(lineangle + (anglerad / 2.0))));
+        path.lineTo((float) (to_x - radius * cos(lineangle - (anglerad / 2))),
+                (float) (to_y - radius * sin(lineangle - (anglerad / 2))));
+        path.lineTo((float) (to_x - radius * cos(lineangle + (anglerad / 2))),
+                (float) (to_y - radius * sin(lineangle + (anglerad / 2))));
         path.close();
 
         canvas.drawPath(path, paint);
