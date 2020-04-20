@@ -12,7 +12,7 @@ import fpt.capstone.inqr.model.Neighbor;
 
 public class GeoHelper {
 
-    private static Double calculateAngle(Location A, Location B) {
+    public static Double calculateAngle(Location A, Location B) {
         float xB = B.getRatioX();
         float yB = B.getRatioY();
         float xA = A.getRatioX();

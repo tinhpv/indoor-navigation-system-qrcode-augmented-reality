@@ -7,7 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.CornerPathEffect;
 import android.graphics.LinearGradient;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Shader;
@@ -59,6 +61,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.adapter.MapAdapter;
@@ -1096,73 +1099,82 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         setImage(currentFloorId);
         canvas = new Canvas(mapImg);
 
-//        System.out.println("Starting point: " + getStartingPoint());
-//        drawPoint(0);
+        Paint paint = new Paint();
+        int color = ContextCompat.getColor(getContext(), R.color.green);
+        paint.setColor(color);
+        paint.setStrokeWidth(26);
+        paint.setDither(true);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setPathEffect(new CornerPathEffect(10) );
+        paint.setAntiAlias(true);
+
+
+        float arrowStartX = 0.0f, arrowStartY = 0.0f, arrowEndX = 0.0f, arrowEndY = 0.0f;
 
         if (listPointOnWay.size() == 1) {
             String idStart = listPointOnWay.get(0).getId();
             Location startPoint = getLocation(idStart);
-            float xStart, yStart, xEnd, yEnd;
-            xStart = Math.round(mapImg.getWidth() * startPoint.getRatioX());
-            yStart = Math.round(mapImg.getHeight() * startPoint.getRatioY());
+            float startX = Math.round(mapImg.getWidth() * startPoint.getRatioX());
+            float startY = Math.round(mapImg.getHeight() * startPoint.getRatioY());
+            float endX = Math.round(mapImg.getWidth() * endRoom.getRatioX());
+            float endY = Math.round(mapImg.getHeight() * endRoom.getRatioY());
 
-            xEnd = Math.round(mapImg.getWidth() * endRoom.getRatioX());
-            yEnd = Math.round(mapImg.getHeight() * endRoom.getRatioY());
+            lines.add(new Line(startX, startY, endX, endY));
 
-            drawLine(xStart, yStart, xEnd, yEnd);
-//            imgView.setImageBitmap(mapImg);
+            Path path = new Path();
+            path.moveTo(startX, startY);
+            path.lineTo(endX, endY);
+            canvas.drawPath(path, paint);
 
-            fillArrow(xStart, yStart, xEnd, yEnd);
+            arrowStartX = startX;
+            arrowStartY = startY;
+            arrowEndX = endX;
+            arrowEndY = endY;
         } else {
+            Path path = new Path();
             for (int i = 0; i < listPointOnWay.size(); i++) {
-
                 if (i != listPointOnWay.size() - 1) {
-
-//                int currentFloor = Integer.parseInt(tmp[tmp.length - 1]);
                     if (getLocation(listPointOnWay.get(i).getId()).getFloorId().equals(currentFloorId)) {
-
                         String idStart = listPointOnWay.get(i).getId();
                         String idEnd = listPointOnWay.get(i + 1).getId();
-
                         Location startPoint = getLocation(idStart);
 
-                        float xStart, yStart, xEnd, yEnd;
-                        xStart = Math.round(mapImg.getWidth() * startPoint.getRatioX());
-                        yStart = Math.round(mapImg.getHeight() * startPoint.getRatioY());
+                        float startX, startY, endX, endY;
 
+                        startX = Math.round(mapImg.getWidth() * startPoint.getRatioX());
+                        startY = Math.round(mapImg.getHeight() * startPoint.getRatioY());
 
                         if (i == listPointOnWay.size() - 2) { // node cuối lấy tọa độ của room
-//                        Room room = getRoom(tvEnd.getText().toString());
-
-                            xEnd = Math.round(mapImg.getWidth() * endRoom.getRatioX());
-                            yEnd = Math.round(mapImg.getHeight() * endRoom.getRatioY());
+                            endX = Math.round(mapImg.getWidth() * endRoom.getRatioX());
+                            endY = Math.round(mapImg.getHeight() * endRoom.getRatioY());
                         } else {
                             Location endPoint = getLocation(idEnd);
-
-                            xEnd = Math.round(mapImg.getWidth() * endPoint.getRatioX());
-                            yEnd = Math.round(mapImg.getHeight() * endPoint.getRatioY());
+                            endX = Math.round(mapImg.getWidth() * endPoint.getRatioX());
+                            endY = Math.round(mapImg.getHeight() * endPoint.getRatioY());
                         }
 
-                        drawLine(xStart, yStart, xEnd, yEnd);
-//                        imgView.setImageBitmap(mapImg);
+                        path.moveTo(startX, startY);
+                        path.lineTo(endX, endY);
+
+                        lines.add(new Line(startX, startY, endX, endY));
 
                         if (i == 0) {
-                            fillArrow(xStart, yStart, xEnd, yEnd);
+                            arrowStartX = startX;
+                            arrowStartY = startY;
+                            arrowEndX = endX;
+                            arrowEndY = endY;
                         }
-                    }
-
-
-                } else {
-                    if (getLocation(listPointOnWay.get(i).getId()).getFloorId().equals(currentFloorId)) {
-//                        imgView.setImageBitmap(mapImg);
-                    }
-                }
-            }
+                    } // end if current floor equal
+                } // end if max size
+            } // end for each point
+            canvas.drawPath(path, paint);
         }
 
+        fillArrow(arrowStartX, arrowStartY, arrowEndX, arrowEndY);
         drawPoint(listPointOnWay.get(0).getId(), currentFloorId);
 
-//        imgView.setImageBitmap(mapImg);
         // add map
         listSourceMap.add(mapImg);
         listLines.add(lines);
@@ -1180,32 +1192,22 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
     private void drawPoint(String idStart, String currentFloorId) {
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-//        for (int i = 0; i < listPointOnWay.size() - 1; i++) {
-//            Location location = getLocation(listPointOnWay.get(i).getId());
-//            if (location.getFloorId().equals(currentFloorId)) {
-//
-//                canvas.drawCircle(Math.round(mapImg.getWidth() * location.getRatioX()), Math.round(mapImg.getHeight() * location.getRatioY()), 30, new Paint());
-//            }
-//        }
 
         if (idStart != null) {
             Location location = getLocation(idStart);
+
             if (location.getFloorId().equals(currentFloorId)) {
                 paint.setStyle(Paint.Style.FILL);
                 paint.setColor(Color.RED);
-
                 Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.current_point);
-//                canvas.drawCircle(Math.round(mapImg.getWidth() * location.getRatioX()), Math.round(mapImg.getHeight() * location.getRatioY()), 50, paint);
                 canvas.drawBitmap(bitmap, Math.round(mapImg.getWidth() * location.getRatioX() - bitmap.getWidth() / 2), Math.round(mapImg.getHeight() * location.getRatioY() - bitmap.getHeight() / 2), new Paint());
             }
 
-//            Room room = getRoom(tvEnd.getText().toString());
             if (endRoom.getFloorId().equals(currentFloorId)) {
                 paint.setStyle(Paint.Style.FILL);
                 paint.setColor(Color.YELLOW);
                 Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.destination_on_map);
                 canvas.drawBitmap(bitmap, Math.round(mapImg.getWidth() * endRoom.getRatioX() - bitmap.getWidth() / 2), Math.round(mapImg.getHeight() * endRoom.getRatioY() - bitmap.getHeight()), new Paint());
-//                canvas.drawCircle(Math.round(mapImg.getWidth() * endRoom.getRatioX()), Math.round(mapImg.getHeight() * endRoom.getRatioY()), 30, paint);
             }
         }
 
@@ -1215,14 +1217,20 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
-        paint.setStrokeWidth(30);
-        paint.setColor(Color.GREEN);
+        paint.setStrokeWidth(26);
+        int color = ContextCompat.getColor(getContext(), R.color.dark_yellow);
+        paint.setColor(color);
+        paint.setAntiAlias(true);
+        paint.setDither(true);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setPathEffect(new CornerPathEffect(10));
 
         float angle, anglerad, radius, lineangle;
 
         //values to change for other appearance *CHANGE THESE FOR OTHER SIZE ARROWHEADS*
-        radius = 100;
-        angle = 60;
+        radius = 120;
+        angle = 40;
 
         //some angle calculations
         anglerad = (float) (PI * angle / 180.0f);

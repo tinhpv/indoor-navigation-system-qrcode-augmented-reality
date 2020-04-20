@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#EFEFEF</color>
     <color name="colorAccent">#9E9E9E</color>
 
+    <color name="dark_yellow">#FECD2F</color>
     <color name="light_gray_input">#DADADA</color>
     <color name="green">#51C6A7</color>
     <color name="dark_green">#0F9375</color>

@@ -38,13 +38,17 @@ public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull StepHolder holder, int position) {
-
         Step step = listSteps.get(position);
+
+
+
         // set UI theo Type
         if (step.getType() == Step.TYPE_START_POINT) {
-            holder.imgType.setImageResource(R.drawable.current_point_dark);
+            holder.imgType.setImageResource(R.drawable.current_point_new);
+            holder.imgType.getLayoutParams().height = 50;
         } else if (step.getType() == Step.TYPE_END_POINT) {
             holder.imgType.setImageResource(R.drawable.destination_on_map);
+            holder.imgType.getLayoutParams().height = 58;
         } else if (step.getType() == Step.TYPE_GO_STRAIGHT) {
             holder.imgType.setImageResource(R.drawable.go_ahead);
         } else if (step.getType() == Step.TYPE_TURN_LEFT) {

@@ -18,8 +18,8 @@
             android:id="@+id/bgCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="@dimen/_20sdp"
-            android:paddingVertical="@dimen/_10sdp">
+            android:paddingHorizontal="@dimen/_22sdp"
+            android:paddingVertical="@dimen/_14sdp">
 
             <ImageView
                 android:id="@+id/img_star"
@@ -37,9 +37,9 @@
                 android:id="@+id/tvCompany"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:fontFamily="@font/nunito_extrabold"
+                android:fontFamily="@font/nunito_bold"
                 android:text="FPT Education"
-                android:textColor="@color/green"
+                android:textColor="@color/dark_green"
                 android:textSize="11sp"
                 android:gravity="center_vertical"
                 android:layout_marginStart="@dimen/_3sdp"
@@ -53,7 +53,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:text="FPT Campus Building"
-                android:textSize="17sp"
+                android:textSize="18sp"
                 android:textColor="@color/dark_blue"
                 android:fontFamily="@font/nunito_extrabold"
                 android:gravity="center_vertical"

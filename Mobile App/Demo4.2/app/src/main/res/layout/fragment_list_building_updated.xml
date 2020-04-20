@@ -47,6 +47,7 @@
                 android:layout_marginStart="@dimen/_10sdp"
                 android:background="@null"
                 android:fontFamily="@font/nunito_extralight"
+                android:textColor="@color/dark_blue"
                 android:hint="Search building"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
