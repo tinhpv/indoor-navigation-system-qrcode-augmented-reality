@@ -1,6 +1,8 @@
 package fpt.capstone.inqr.adapter;
 
+import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import fpt.capstone.inqr.R;
@@ -21,9 +24,11 @@ public class PointViewAdapter extends RecyclerView.Adapter<PointViewHolder> {
     private int position = 0;
     private List<String> listName;
     private MapFragment fragment;
+    private Activity mActivity;
 
-    public PointViewAdapter(MapFragment fragment) {
+    public PointViewAdapter(MapFragment fragment, Activity activity) {
         this.fragment = fragment;
+        mActivity = activity;
     }
 
     public void setPosition(int position) {
@@ -58,20 +63,21 @@ public class PointViewAdapter extends RecyclerView.Adapter<PointViewHolder> {
         item.tvName.setText(listName.get(i));
         item.bgPoint.setVisibility(View.INVISIBLE);
         item.bgName.setVisibility(View.VISIBLE);
+
+        Typeface bold = ResourcesCompat.getFont(mActivity, R.font.nunito_bold);
+        Typeface light = ResourcesCompat.getFont(mActivity, R.font.nunito_light);
+
         if (position == i) {
-           item.tvName.setTextSize(15);
-            item.tvName.setTextColor(Color.BLACK);
+            item.tvName.setTypeface(bold);
+//            item.tvName.setTextSize(15);
+//            item.tvName.setTextColor(Color.BLACK);
         } else {
-            item.tvName.setTextSize(12);
-            item.tvName.setTextColor(Color.LTGRAY);
+            item.tvName.setTypeface(light);
+//            item.tvName.setTextSize(12);
+//            item.tvName.setTextColor(Color.LTGRAY);
         }
 
-        item.bgName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               fragment.chooseFloor(i);
-            }
-        });
+        item.bgName.setOnClickListener(v -> fragment.chooseFloor(i));
     }
 
     @Override

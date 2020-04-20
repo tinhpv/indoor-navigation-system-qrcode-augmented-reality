@@ -18,10 +18,9 @@ import fpt.capstone.inqr.model.supportModel.Step;
 public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
 
     private List<Step> listSteps;
-    private BottomSheetFragment fragment;
 
-    public StepAdapter(BottomSheetFragment fragment) {
-        this.fragment = fragment;
+    public StepAdapter(List<Step> listSteps) {
+        this.listSteps = listSteps;
     }
 
     public void setListSteps(List<Step> listSteps) {
@@ -68,13 +67,14 @@ public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
 
             holder.tvDistance.setText("estimated " + step.getDistance());
 
+            // TODO: TEMPORARILY DISABLE
             // set speaker
-            holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo() + " estimated " + step.getDistance()));
+            //holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo() + " estimated " + step.getDistance()));
         } else {
             holder.tvDistance.setVisibility(View.GONE);
 
             // set speaker
-            holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo()));
+            //holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo()));
         }
 
         holder.tvInfo.setText(step.getInfo());
