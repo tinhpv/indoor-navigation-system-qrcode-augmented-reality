@@ -1,0 +1,102 @@
+#imgMap {
+	max-height: 99vh;
+	max-width: 70vw;
+}
+
+#canvasWraper {
+	float: left;
+	width: 70%;
+	text-align: center;
+}
+
+#content {
+	float: left;
+	width: 29%;
+	margin-left: 0.5%;
+	margin-right: 0.5%;
+}
+
+#content-header {
+	float: left;
+	width: 100%;
+}
+
+#content-body {
+	float: left;
+	width: 100%;
+}
+
+#content-body-header {
+	float: left;
+	width: 100%;
+	padding: 2% 2% 2% 2%;
+	background-color: #4e73df;
+	border-radius: 5px;
+	margin-bottom: 5%;
+}
+
+#content-body-header h5 {
+	color: white;
+	font-weight: bold;
+	margin-bottom: 0px;
+}
+
+.col-sm-1 {
+	color: red;
+	padding-left: 0px !important;
+}
+
+.col-sm-7, .col-sm-5 {
+	padding-left: 0px;
+}
+
+#ratioX, #ratioY {
+	border: 0;
+	background-color: white;
+	pointer-events: none;
+	float: left;
+	width: 40%;
+	text-align: center;
+}
+
+.col-form-label {
+	float: left;
+}
+
+#allLocation {
+	max-height: 200px;
+	overflow-y: auto;
+	margin-bottom: 5%;
+}
+
+#neighbourName {
+	border: 0;
+	background-color: white;
+	pointer-events: none;
+}
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+	/* display: none; <- Crashes Chrome on hover */
+	-webkit-appearance: none;
+	margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+.action-wraper {
+	width: 100%;
+	float: left;
+	margin-top: 2%;
+}
+
+.left {
+	float: left;
+	margin-left: 2%;
+}
+
+.right {
+	float: right;
+}
+
+.success {
+	color: green;
+	text-decoration: underline;
+}

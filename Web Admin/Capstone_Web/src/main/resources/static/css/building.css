@@ -1,0 +1,369 @@
+.menu-bar {
+	width: 15%;
+	float: left;
+	background-color: #4e73df;
+	border-radius: 10px;
+	padding-bottom: 10%;
+	min-height: 100vh;
+}
+
+.menu-bar small {
+	color: white;
+	margin-left: 5%;
+	float: left;
+}
+
+.menu-bar div {
+	margin: 5% 5% 5% 5%;
+	width: 90%;
+	float: left;
+	color: white;
+}
+
+.menu-bar hr {
+	margin: 5% 5% 5% 5%;
+	float: left;
+	width: 90%;
+	border: 0.5px solid white;
+}
+
+#front-page {
+	font-size: 30px;
+	text-align: center;
+}
+
+#front-page a {
+	color: white;
+	text-decoration: none;
+}
+
+.content {
+	margin-left: 1%;
+	width: auto;
+	float: left;
+	width: 70%;
+	/* background-color: silver; */
+}
+
+#menu-bar-content a {
+	color: #ede8da;
+	text-decoration: none;
+}
+
+#menu-bar-content a:hover {
+	color: white;
+}
+
+.content-header {
+	width: 99%;
+	float: left;
+	margin-top: 1%;
+}
+
+.content-header p {
+	font-size: 30px;
+	float: left;
+	color: #575c59;
+}
+
+.building {
+	/* background-color: gray; */
+	width: 70%;
+	margin-left: 15%;
+	float: left;
+}
+
+#content-body-floor {
+	/* background-color: gray; */
+	width: 60%;
+	float: left;
+	margin-left: 20%;
+}
+
+#buildingList {
+	width: 100%;
+	float: left;
+}
+
+#floorLink {
+	width: 70%;
+	float: left;
+	height: 50px;
+}
+
+#floorLink-header {
+	text-align: center;
+	width: 70%;
+	font-weight: bold;
+	float: left;
+	height: 50px;
+	width: 70%;
+	float: left;
+}
+
+#floorLink span {
+	float: right;
+}
+
+#detail-header {
+	width: 30%;
+	height: 50px;
+	float: left;
+	text-align: center;
+	font-weight: bold;
+}
+
+#detailButton {
+	width: 30%;
+	height: 50px;
+	float: left;
+	text-align: center;
+	font-weight: bold;
+	color: blue;
+}
+
+#floorImage {
+	height: 90vh;
+}
+
+#floor-info-body {
+	display: block;
+	margin-left: 10%;
+	margin-right: 10%;
+	padding-top: 5px !important;
+}
+
+#qrCodeWraper {
+	text-align: center;
+}
+
+#list-group {
+	width: 100%;
+	float: left;
+}
+
+#navigate-footer {
+	float: left;
+	width: 100%;
+	margin-top: 1%;
+}
+
+#navigate-footer a {
+	float: left;
+}
+
+.right {
+	float: right;
+	margin-left: 1%;
+}
+
+.wraper {
+	float: left;
+	width: 100%;
+	margin-bottom: 1%;
+}
+
+#buildingMessageWraper {
+	width: 60%;
+	float: left;
+}
+
+#buildingActionWraper {
+	width: 40%;
+	float: left;
+}
+
+#floorActionWraper {
+	width: 30%;
+	float: left;
+}
+
+#floorMessageWraper {
+	width: 70%;
+	float: left;
+	position: relative;
+}
+
+#floorMessageWraper span {
+	position: absolute;
+	right: 0px;
+	top: 0px;
+}
+
+.success {
+	color: green;
+	text-decoration: underline;
+}
+
+.failed {
+	color: red;
+}
+
+.modal-header {
+	background-color: #4e73df;
+	padding-left: 1rem;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.modal-header h5 {
+	color: white;
+}
+
+.col-sm-1 {
+	color: red;
+	padding-left: 0px !important;
+}
+
+.form-header {
+	background-color: #4e73df;
+	margin-bottom: 2%;
+	border-radius: 5px;
+}
+
+.form-header h5 {
+	color: white;
+	margin-bottom: 0px;
+}
+
+#list-header {
+	padding: 10px 10px 10px 20px;
+	width: 100%;
+	background-color: #4e73df !important;
+}
+
+#list-header h5 {
+	color: white;
+	font-weight: bold;
+}
+
+.list-group {
+	float: left;
+	width: 100%;
+}
+
+#floorList {
+	float: left;
+	width: 100%;
+}
+
+#floorList button {
+	color: blue;
+}
+
+#floorList-header {
+	float: left;
+	width: 100%;
+	text-align: center;
+	font-weight: bold;
+}
+
+.sticky-header {
+	float: left;
+	width: 100%;
+	position: sticky;
+	top: 0;
+	z-index: 10;
+}
+
+#floorList-1 {
+	float: left;
+	width: 55%;
+	height: 50px;
+}
+
+#floorList-2 {
+	float: left;
+	width: 20%;
+	height: 50px;
+}
+
+#floorList-3 {
+	float: left;
+	width: 25%;
+	height: 50px;
+}
+
+#locationDetailBtn {
+	float: right;
+	margin-bottom: 2%;
+	margin-left: 2%;
+}
+
+#floor-header, #location-header {
+	background-color: #4e73df;
+	color: white;
+	padding-left: 1rem;
+	padding-top: 5px;
+	padding-bottom: 0px;
+	border-radius: 5px 5px 0px 0px;
+}
+
+#floorWraper {
+	width: 80%;
+	float: left;
+	padding-top: 0px !important;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+#floor-list-wraper {
+	float: left;
+	width: 100%;
+	max-height: 48vh;
+	overflow-y: auto;
+}
+
+#locationWraper {
+	width: 100%;
+	float: left;
+	margin-bottom: 2%;
+}
+
+#locationWraper button {
+	float: right;
+}
+
+#header-wraper {
+	background-color: #4e73df;
+	color: white;
+	padding: 10px 10px 10px 20px;
+}
+
+.modal {
+	background-color: rgba(0, 0, 0, 0.7);
+}
+
+#content-body-upload {
+	width: 40%;
+	float: left;
+	margin-left: 30%;
+	padding: 10px 10px 10px 10px;
+}
+
+#content-body-upload h5 {
+	background-color: #17a2b8;
+	padding: 10px 10px 10px 10px;
+	color: white;
+	font-weight: bold;
+}
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+	/* display: none; <- Crashes Chrome on hover */
+	-webkit-appearance: none;
+	margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+#actionWraper {
+	width: 100%;
+	margin-bottom: 5px;
+	float: left;
+}
+
+#floorModal {
+	margin-top: 0px !important;
+}
+
+.warning {
+	background-color: #f7685e !important;
+}
