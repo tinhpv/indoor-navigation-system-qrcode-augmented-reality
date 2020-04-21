@@ -27,37 +27,35 @@ public class BuildingDAO {
 
 	public BuildingDTO createBuilding(BuildingDTO buildingInfo) throws ParseException {
 		BuildingDTO result = null;
-		List<FloorDTO> listFloor = new ArrayList<>();
 
-		// Nếu người dùng ko nhập ngày hết han, lấy ngày hết hạn là 30 ngày tính từ thời
-		// điểm hiện tại
+		// Kiểm tra trường hợp người dùng không nhập expired date
 		if (buildingInfo.getDayExpired().isEmpty()) {
 			Date currentDate = new Date();
 
-			// Thêm vào 30 ngày tính từ ngày hiện tại
+			// Lấy ngày hiện tại và thêm vào 30 ngày
 			Calendar c = Calendar.getInstance();
 			c.setTime(currentDate);
 			c.add(Calendar.DATE, 30);
 
-			// Format lại thành string
+			// Format date thành string với format: (yyyy-MM-dd)
 			String currentDatePlus30Days = new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
 
+			// Đặt thời gian hết hạn cho tòa nhà
 			buildingInfo.setDayExpired(currentDatePlus30Days);
-
 		}
 
-		// Tạo UUID cho buildingId
-		UUID uuid = UUID.randomUUID();
-		System.out.println("Building ID: " + uuid.toString());
+		// Id của tòa nhà được randomize bằng UUID
+		String buildingId = UUID.randomUUID().toString();
 
-		// Tạo object building
-		result = new BuildingDTO(uuid.toString(), buildingInfo.getName(), buildingInfo.getDescription(),
-				buildingInfo.getDayExpired(), true, listFloor);
+		// Tạo building object
+		result = new BuildingDTO(buildingId, buildingInfo.getName(), buildingInfo.getDescription(),
+				buildingInfo.getDayExpired(), true, new ArrayList<FloorDTO>());
 
 		return result;
 	}
 
 	public BuildingDTO editBuilding(BuildingDTO buildingInfo, BuildingDTO buildingDTO) {
+		// Chỉnh sửa thông tin của building object
 		buildingDTO.setName(buildingInfo.getName());
 		buildingDTO.setDescription(buildingInfo.getDescription());
 		buildingDTO.setDayExpired(buildingInfo.getDayExpired());
@@ -66,48 +64,37 @@ public class BuildingDAO {
 		return buildingDTO;
 	}
 
-	public ResponseEntity<String> importBuilding(String postUrl, String companyId, BuildingDTO buildingDTO,
+	public ResponseEntity<String> importBuildingToServer(String postUrl, String companyId, BuildingDTO buildingDTO,
 			RestTemplate restTemplate) {
-		// Tạo header cho post request
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
+		// Tạo company object với listBuilding chứa 1 building object
 		List<BuildingDTO> newBuilding = new ArrayList<BuildingDTO>();
 		newBuilding.add(buildingDTO);
 		CompanyDTO companyDTO = new CompanyDTO(companyId, newBuilding);
 
-		// Đặt object building vào body của request
+		// Header của request
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+
+		// Đặt company object vào body của request
 		HttpEntity<CompanyDTO> entity = new HttpEntity<CompanyDTO>(companyDTO, httpHeaders);
 
 		// Exchange
 		ResponseEntity<String> response = restTemplate.exchange(postUrl, HttpMethod.POST, entity, String.class);
 
-		System.out.println("Return status code: " + response.getStatusCodeValue());
-
 		return response;
 	}
 
-	public ResponseEntity<String> updateBuilding(String postUrl, BuildingDTO buildingDTO, RestTemplate restTemplate) {
-		BuildingDTO newBuildingObject = buildingDTO;
+	public ResponseEntity<String> updateBuilding(String putUrl, BuildingDTO buildingDTO, RestTemplate restTemplate) {
 
 		Gson gson = new GsonBuilder().serializeNulls().excludeFieldsWithoutExposeAnnotation().create();
-		String json = gson.toJson(newBuildingObject);
-		System.out.println("Json String: " + json);
-
-		newBuildingObject = gson.fromJson(json, BuildingDTO.class);
-
-		for (int i = 0; i < newBuildingObject.getListFloor().size(); i++) {
-			System.out.println("Link map " + newBuildingObject.getListFloor().get(i).getId() + ": "
-					+ newBuildingObject.getListFloor().get(i).getLinkMap());
-		}
+		String json = gson.toJson(buildingDTO);
+		buildingDTO = gson.fromJson(json, BuildingDTO.class);
 
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		HttpEntity<BuildingDTO> entity = new HttpEntity<BuildingDTO>(newBuildingObject, httpHeaders);
-//		ResponseEntity<String> response = restTemplate.postForEntity(postUrl, entity, String.class);
-		ResponseEntity<String> response = restTemplate.exchange(postUrl, HttpMethod.PUT, entity, String.class);
-
-		System.out.println("Return status code: " + response);
+		HttpEntity<BuildingDTO> entity = new HttpEntity<BuildingDTO>(buildingDTO, httpHeaders);
+		ResponseEntity<String> response = restTemplate.exchange(putUrl, HttpMethod.PUT, entity, String.class);
 
 		return response;
 	}

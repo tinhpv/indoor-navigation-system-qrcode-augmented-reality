@@ -160,7 +160,8 @@ public class JsonParser {
 				} else {
 					for (int j = 0; j < buildingDTO.getListFloor().get(i).getListLocation().size(); j++) {
 
-						if (buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside() == null) {
+						if (buildingDTO.getListFloor().get(i).getListLocation().get(j)
+								.getListLocationBeside() == null) {
 
 							buildingDTO.getListFloor().get(i).getListLocation().get(j)
 									.setListLocationBeside(new ArrayList<NeighbourDTO>());

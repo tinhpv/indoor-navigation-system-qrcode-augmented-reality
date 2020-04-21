@@ -1,7 +1,5 @@
 package duyvm.capstone_web.controllers;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -15,121 +13,138 @@ import duyvm.capstone_web.daos.LocationDAO;
 import duyvm.capstone_web.dtos.BuildingDTO;
 import duyvm.capstone_web.dtos.FloorDTO;
 import duyvm.capstone_web.dtos.LocationDTO;
+import duyvm.capstone_web.utils.Utilities;
 
 @Controller
 @RequestMapping("/location")
 public class LocationController {
 
-	@GetMapping("/map")
-	public String showMapLocationPage() {
+	@GetMapping("/create")
+	public String getCreateLocation(@RequestParam("floorId") String floorId, HttpSession session) {
 		try {
-			//
+			Utilities utilities = new Utilities();
+
+			// Lấy building object có trong session
+			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
+
+			// Tìm floor object dựa theo id
+			FloorDTO floorDTO = utilities.getFloorById(floorId, buildingDTO);
+
+			// Đặt floor object vào session
+			session.setAttribute("floor", floorDTO);
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("Error at ShowMapLocationPage: " + e.getMessage());
+			System.out.println("Error at getCreateLocation: " + e.getMessage());
+			return "error.jsp";
 		}
-
-		return "locationPoints.jsp";
+		return "createLocation.jsp";
 	}
 
-	@PostMapping({ "", "/" })
-	public String createLocation(LocationDTO locationInfo, HttpSession session, HttpServletRequest request) {
+	@PostMapping("/create")
+	public String postCreateLocation(LocationDTO locationInfo, HttpSession session, HttpServletRequest request) {
 		try {
 			LocationDAO locationDAO = new LocationDAO();
 
-			// Lấy Object Building từ session
+			// Lấy building object có trong session
 			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
 
-			// Lấy Object Floor từ session
+			// Lấy floor object có trong session
 			FloorDTO floorDTO = (FloorDTO) session.getAttribute("floor");
 
-			// Tạo Object Floor mới và cập nhật Object Building
+			// Tạo một location object mới
 			buildingDTO = locationDAO.createLocation(buildingDTO, floorDTO, locationInfo);
 
-			// Cập nhật thông tin trong session
+			// Cập nhật building object trong session
 			session.setAttribute("building", buildingDTO);
 
 			// Hiện thông báo
-			request.setAttribute("createSuccess", "Tạo địa điểm thành công.");
-
+			request.setAttribute("createSuccess", "Location created locally.");
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("Error at createLocation: " + e.getMessage());
+			System.out.println("Error at postCreateLocation: " + e.getMessage());
 			return "error.jsp";
 		}
-		return "locationPoints.jsp";
-	}
-
-	@GetMapping({ "/", "" })
-	public String showLocation(@RequestParam("id") String locationId, HttpSession session) {
-		try {
-			LocationDAO locationDAO = new LocationDAO();
-			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
-			FloorDTO floorDTO = (FloorDTO) session.getAttribute("floor");
-			List<LocationDTO> allLocations = locationDAO.getAllLocations(buildingDTO);
-			LocationDTO locationDTO = locationDAO.getLocationBaseOnId(locationId, floorDTO);
-			session.setAttribute("location", locationDTO);
-			session.setAttribute("allLocations", allLocations);
-		} catch (Exception e) {
-			// TODO: handle exception
-			System.out.println("Error at showLocation: " + e.getMessage() + ", " + e.getLocalizedMessage());
-			return "error.jsp";
-		}
-		return "location.jsp";
+		return "createLocation.jsp";
 	}
 
 	@PostMapping("/remove")
-	public String removeLocation(@RequestParam("id") String locationId, HttpSession session,
+	public String postRemoveLocation(@RequestParam("id") String locationId, HttpSession session,
 			HttpServletRequest request) {
 		try {
 			LocationDAO locationDAO = new LocationDAO();
 
-			// Lấy Object Building từ session
+			// Lấy building object có trong session
 			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
 
-			// Xóa location khỏi Object floor
+			// Gỡ bỏ location object
 			buildingDTO = locationDAO.removeLocation(locationId, buildingDTO);
 
-			// Xóa location khỏi tất cả những vị trí liền kề với nó
-			buildingDTO = locationDAO.removeLocationFromNeighbour(locationId, buildingDTO);
+			// Gỡ bỏ những neighbour object có liên kết với location object được chọn
+			buildingDTO = locationDAO.removeNeighbourById(locationId, buildingDTO);
 
-			// Cập nhật thông tin trong session
+			// Cập nhật building trong session
 			session.setAttribute("building", buildingDTO);
 
 			// Hiện thông báo
-			request.setAttribute("deleteSuccess", "Đã xóa vị trí.");
+			request.setAttribute("removeSuccess", "Location removed locally.");
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("Error at RemoveLocation: " + e.getMessage());
+			System.out.println("Error at postRemoveLocation: " + e.getMessage());
 			return "error.jsp";
 		}
-		return "floorDetail.jsp";
+		return "floor.jsp";
+	}
+
+	@GetMapping("/edit")
+	public String getEditLocation(@RequestParam("floorId") String floorId,
+			@RequestParam("locationId") String locationId, HttpSession session, HttpServletRequest request) {
+		try {
+			Utilities utilities = new Utilities();
+
+			// Lấy building object có trong session
+			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
+
+			// Tìm floor object dựa theo id
+			FloorDTO floorDTO = utilities.getFloorById(floorId, buildingDTO);
+
+			// Tìm location object dựa theo id
+			LocationDTO locationDTO = utilities.getLocationById(locationId, buildingDTO);
+
+			// Thêm floor object và location object vào request
+			request.setAttribute("floor", floorDTO);
+			request.setAttribute("location", locationDTO);
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("Error at getEditLocation: " + e.getMessage());
+			return "error.jsp";
+		}
+		return "updateLocation.jsp";
 	}
 
 	@PostMapping("/edit")
-	public String updateLocation(LocationDTO locationInfo, HttpSession session, HttpServletRequest request) {
+	public String postEditLocation(LocationDTO locationInfo, HttpSession session, HttpServletRequest request) {
 		try {
 			LocationDAO locationDAO = new LocationDAO();
 
-			// Lấy Object Building từ session
+			// Lấy building object có trong session
 			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
 
-			// Cập nhật Object Building
+			// Cập nhật thông tin của location object
 			buildingDTO = locationDAO.updateLocation(locationInfo, buildingDTO);
 
-			// Cập nhật thông tin tất cả Neighbour
+			// Cập nhật thông tin tất cả neighbour object có liên kết với location được chọn
 			buildingDTO = locationDAO.updateAllNeighbourName(locationInfo.getId(), locationInfo.getName(), buildingDTO);
 
-			// Cập nhật thông tin trong session
+			// Cập nhật building trong session
 			session.setAttribute("building", buildingDTO);
 
 			// Hiện thông báo
-			request.setAttribute("updateSuccess", "Cập nhật vị trí thành công.");
+			request.setAttribute("editSuccess", "Location info updated locally.");
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("Error at UpdateLocation: " + e.getMessage());
+			System.out.println("Error at postEditLocation: " + e.getMessage());
 			return "error.jsp";
 		}
-		return "floorDetail.jsp";
+		return "floor.jsp";
 	}
 }

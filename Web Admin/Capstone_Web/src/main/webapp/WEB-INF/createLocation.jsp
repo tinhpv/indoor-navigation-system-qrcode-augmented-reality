@@ -1,9 +1,11 @@
 <%@ page language="java" contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="ISO-8859-1">
 <title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/point.css" />
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
 <link rel="stylesheet"
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
@@ -12,6 +14,68 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
+	<c:if test="${empty sessionScope.building }">
+		<c:redirect url="${pageContext.request.contextPath}/"></c:redirect>
+	</c:if>
+
+	<img id="imgMap" src="${sessionScope.floor.linkMap }" />
+	<input id="imgSrc" type="hidden" value="${sessionScope.floor.linkMap }" />
+
+	<div>
+		<div id="canvasWraper">
+			<canvas id="canvas"></canvas>
+		</div>
+		<div id="content">
+			<div id="content-header" class="shadow p-3 mb-3 bg-white rounded">
+				<a class="btn btn-outline-success" href="${pageContext.request.contextPath}/floor">
+					<i class="fas fa-arrow-circle-left"> Back</i>
+				</a>
+			</div>
+
+			<div id="content-body" class="shadow p-3 mb-3 bg-white rounded">
+				<form action="${pageContext.request.contextPath}/location/create" method="post">
+					<div id="content-body-header">
+						<h5>New location for "${sessionScope.floor.name }"</h5>
+					</div>
+					<div class="form-group row">
+						<label for="name" class="col-sm-3 col-form-label">Name</label>
+						<div class="col-sm-7">
+							<input type="text" class="form-control" id="name" name="name" placeholder="Exp: 001 - 002"
+								required="required" />
+						</div>
+						<p class="col-sm-1">*</p>
+					</div>
+					<div class="form-group row">
+						<label class="col-sm-3 col-form-label">Ratios</label>
+						<div class="col-sm-7">
+							<label class="col-form-label">(</label>
+							<input type="number" step="0.001" class="form-control" id="ratioX" name="ratioX"
+								placeholder="X" required="required" onkeydown="return false;" />
+							<label class="col-form-label">,</label>
+							<input type="number" step="0.001" class="form-control" id="ratioY" name="ratioY"
+								placeholder="Y" required="required" onkeydown="return false;" />
+							<label class="col-form-label">)</label>
+						</div>
+						<p class="col-sm-1">*</p>
+					</div>
+					<i class="fas fa-long-arrow-alt-left"> Click on the map to get the cordinates.</i>
+					<div class="action-wraper">
+						<button class="left btn btn-success" data-toggle="tooltip" data-placement="bottom"
+							title="Draw all locations of this floor" onclick="drawAllLocation()" type="button">
+							<i class="fas fa-search-location"></i>
+						</button>
+						<button class="left btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+							title="Clear all drawn locations" onclick="clearCanvas()" type="button">
+							<i class="fas fa-sync-alt"></i>
+						</button>
+						<button type="submit" class="right btn btn-primary">Create</button>
+					</div>
+				</form>
+			</div>
+			<p class="success">${requestScope.createSuccess }</p>
+		</div>
+	</div>
+
 	<script>
 		window.onload = function() {
 			var canvas = document.getElementById("canvas");
@@ -26,20 +90,30 @@
 
 			img.style.display = "none";
 
-			/* document.getElementById("mapDiv").remove(); */
 		}
 
-		function draw() {
+		function drawAllLocation() {
+			var locationData = [], locationInfo = [], i;
+
+			<c:forEach items="${sessionScope.floor.listLocation}" var="locationDto">
+			locationInfo.push("${locationDto.name}",${locationDto.ratioX}, ${locationDto.ratioY});
+			locationData.push(locationInfo);
+			locationInfo = [];
+			</c:forEach>
+			
 			var canvas = document.getElementById("canvas");
 			var ctx = document.getElementById("canvas").getContext("2d");
-			var ratioX = document.getElementById("ratioX").value;
-			var ratioY = document.getElementById("ratioY").value;
-			ctx.beginPath();
-			ctx.arc(ratioX * canvas.width, ratioY * canvas.height, 5, 0,
-					Math.PI * 2, true)
-			ctx.closePath();
-			ctx.fill();
-
+			for (i = 0; i < locationData.length; i++) {
+				ctx.beginPath();
+				ctx.arc(locationData[i][1] * canvas.width, locationData[i][2]
+						* canvas.height, 3, 0, Math.PI * 2, true)
+				ctx.closePath();
+				ctx.fill();
+				
+				ctx.font = "10px Arial";
+				ctx.textAlign = "center";
+				ctx.fillText(locationData[i][0], (locationData[i][1] * canvas.width), (locationData[i][2] * canvas.height) + 15);
+			}
 		}
 
 		document.addEventListener("DOMContentLoaded", init, false);
@@ -69,11 +143,16 @@
 			y -= canvas.offsetTop;
 
 			document.getElementById("ratioX").value = (x / canvas.width)
-					.toFixed(5);
+					.toFixed(3);
 			document.getElementById("ratioY").value = (y / canvas.height)
-					.toFixed(5);
+					.toFixed(3);
 
-			/* alert("x: " + (x / canvas.width) + "  y: " + (y / canvas.height); */
+			/* draw */
+			var ctx = document.getElementById("canvas").getContext("2d");
+			ctx.beginPath();
+			ctx.arc(x, y, 3, 0, Math.PI * 2, true)
+			ctx.closePath();
+			ctx.fill();
 		}
 
 		function clearCanvas() {
@@ -88,60 +167,10 @@
 
 			ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 		}
+
+		$(function() {
+			$('[data-toggle="tooltip"]').tooltip()
+		})
 	</script>
-
-	<img id="imgMap" style="max-height: 99vh; max-width: 70vw;" src="${sessionScope.floor.linkMap }" />
-	<div>
-		<div style="float: left; width: 70%; text-align: center;">
-			<canvas id="canvas"></canvas>
-		</div>
-		<div style="float: left; width: 29%; margin-left: 0.5%; margin-right: 0.5%;">
-			<nav class="navbar navbar-dark bg-dark">
-				<form class="form-inline">
-					<a class="btn btn-light" href="${pageContext.request.contextPath}/floor/floorDetail?id=${sessionScope.floor.id }">
-						<i class="fas fa-backward"> Quay lại</i>
-					</a>
-				</form>
-			</nav>
-
-			<hr class="col-xs-12">
-
-			<form action="${pageContext.request.contextPath}/location" method="post">
-				<h2>Thêm vị trí mới cho "${sessionScope.floor.name }"</h2>
-				<div style="padding: 10px 10px 10px 10px;">
-					<div class="form-group">
-						<label for="ratioX">Ratio X</label>
-						<input type="number" step="0.00001" class="form-control" id="ratioX" name="ratioX"
-							placeholder="Tọa độ X" required="required" />
-					</div>
-					<div class="form-group">
-						<label for="ratioY">Ratio Y</label>
-						<input type="number" step="0.00001" class="form-control" id="ratioY" name="ratioY"
-							placeholder="Tọa độ Y" required="required" />
-					</div>
-					<button class="btn btn-success" onclick="draw()" type="button">Biểu diễn trên bản đồ</button>
-					<input id="imgSrc" type="hidden" value="${sessionScope.floor.linkMap }" />
-					<button class="btn btn-secondary" onclick="clearCanvas()" type="button">Làm mới</button>
-					<i class="fas fa-long-arrow-alt-left">Ấn vào hình để biết được tọa độ của điểm.</i>
-				</div>
-
-				<hr class="col-xs-12">
-
-				<div class="form-group">
-					<label for="name">Tên địa điểm</label>
-					<input type="text" class="form-control" id="name" name="name" placeholder="Enter Location Name"
-						required="required" />
-				</div>
-				<button type="submit" class="btn btn-primary">Tạo địa điểm</button>
-			</form>
-			<p style="color: green;">${requestScope.createSuccess }</p>
-
-			<!-- <button onclick="clearCanvas()" type="button">Clear</button>
-			<button onclick="draw()" type="button">Click here</button>
-			<br> RatioX: <input id="ratioX" type="number" step="0.01" /> <br> RatioY: <input
-				id="ratioY" type="number" step="0.01" /> <input id="imgSrc" type="text"
-				value="http://13.229.117.90:7070/Map/fpt_demo_f_2.png" /> -->
-		</div>
-	</div>
 </body>
 </html>

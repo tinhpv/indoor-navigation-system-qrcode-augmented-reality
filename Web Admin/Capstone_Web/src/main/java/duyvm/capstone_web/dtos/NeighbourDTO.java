@@ -30,15 +30,7 @@ public class NeighbourDTO implements Serializable {
 	public NeighbourDTO() {
 		super();
 	}
-
-//	public NeighbourDTO(String id, String name, int orientation, float distance) {
-//		super();
-//		this.id = id;
-//		this.name = name;
-//		this.orientation = orientation;
-//		this.distance = distance;
-//	}
-
+	
 	public NeighbourDTO(String id, String name, String orientation, float distance) {
 		super();
 		this.id = id;

@@ -12,7 +12,6 @@
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/js/project.js"></script>
 </head>
 <body>
 	<div class="bg">
@@ -24,67 +23,113 @@
 			</div>
 		</div>
 		<div class="content">
-
-			<div class="content-header">
-				<c:if test="${not empty sessionScope.building }">
-					<p>Current building: ${sessionScope.building.name }</p>
-					<a class="btn btn-primary" href="${pageContext.request.contextPath}/building">More info</a>
-				</c:if>
-				<c:if test="${empty sessionScope.building }">
-					<p>No chosen building.</p>
-				</c:if>
+			<div class="content-header shadow p-3 mb-3 bg-white rounded">
+				<h1>INQR Dashboard</h1>
 			</div>
-
-			<div class="content-body">
+			<div class="wraper">
+				<div id="actionWraper">
+					<button class="btn btn-outline-success" data-toggle="modal" data-target="#createCompanyModal">
+						<i class="fas fa-plus"> New Company</i>
+					</button>
+				</div>
+				<div id="messageWraper">
+					<span class="success">${requestScope.uploadSuccess }</span>
+				</div>
+			</div>
+			<!-- <input style="float: right;" id="txtCompany" type="text" onkeyup="filterCompanyListByName()"
+				placeholder="Search company"> -->
+			<div class="content-body shadow p-3 mb-3 bg-white rounded">
 				<c:if test="${not empty sessionScope.companyList }">
-					<div id="companyUl" class="list-group">
-						<div class="list-group-item">
-							<strong>Company list</strong>
-							<a href="${pageContext.request.contextPath}/getAllCompany">
-								<i class="fas fa-sync-alt"></i>
-							</a>
-							<input style="float: right;" id="txtCompany" type="text" onkeyup="filterCompanyListByName()"
-								placeholder="Search company">
+					<div id="company-list" class="list-group">
+						<div id="list-header" class="list-group-item">
+							<h5>
+								List of all companies
+								<a href="${pageContext.request.contextPath}/company/getAllCompanies">
+									<i class="fas fa-sync-alt"></i>
+								</a>
+							</h5>
+						</div>
+						<div class="list-group list-group-horizontal-lg">
+							<div id="company-list-header-1" class="list-group-item">Company name</div>
+							<div id="company-list-header-2" class="list-group-item">More Detail</div>
 						</div>
 						<c:forEach var="companyDto" items="${sessionScope.companyList }" varStatus="counter">
-							<div id="companyLi-row">
-								<div id="companyLi-row-1">
-									<button class="list-group-item list-group-item-action list-group-item-dark"
-										aria-expanded="false" aria-controls="collapseCompany${counter.count }"
-										data-target="#collapseCompany${counter.count }" data-toggle="collapse">
-										${counter.count }. ${companyDto.name }
-										<span class="badge badge-primary badge-pill">${companyDto.listBuilding.size() }</span>
-									</button>
+							<div class="list-group list-group-horizontal-lg">
+								<div id="company-list-item-1" class="list-group-item">${companyDto.name }
+									<span class="badge badge-primary badge-pill" data-toggle="tooltip" data-placement="bottom"
+										title="This company have ${companyDto.listBuilding.size()} building(s)">${companyDto.listBuilding.size()}
+										building(s)</span>
 								</div>
-								<div id="companyLi-row-2">
-									<form action="${pageContext.request.contextPath}/building/createBuilding" method="get">
-										<input type="hidden" name="companyId" value="${companyDto.id }" /> <input type="hidden"
-											name="companyName" value="${companyDto.name }" />
-										<button
-											class="list-group-item list-group- list-group-item-action  list-group-item-primary"
-											type="submit">
-											<i class="far fa-plus-square"> New Building</i>
-										</button>
-									</form>
-								</div>
+								<button id="company-list-item-2" data-toggle="modal"
+									data-target="#buildingListModal${counter.count}"
+									class="list-group-item list-group-item-action">
+									<i class="fas fa-info-circle"></i>
+								</button>
 							</div>
-							<div class="collapse" id="collapseCompany${counter.count }">
-								<div id="list-group">
-									<c:forEach var="buildingDto" items="${companyDto.listBuilding }" varStatus="counter2">
-										<a id="list-group-1"
-											href="${pageContext.request.contextPath}/building/getBuilding?buildingId=${buildingDto.id}"
-											class="list-group-item list-group-item-action">${counter.count}.${counter2.count}.
-											${buildingDto.name } </a>
-										<div id="list-group-2">
-											<form action="${pageContext.request.contextPath}/downloadQrCode/${buildingDto.name}" method="get">
-												<input type="hidden" name="buildingId" value="${buildingDto.id}" />
-												<button type="submit"
-													class="list-group-item list-group-item-action list-group-item-success">
-													<i class="fas fa-download"> Download QR Codes</i>
-												</button>
-											</form>
+
+							<!-- Company Building Modal -->
+							<div class="modal fade" id="buildingListModal${counter.count}" tabindex="-1" role="dialog"
+								aria-labelledby="Building List" aria-hidden="true">
+								<div class="modal-dialog modal-lg" role="document">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title">Information of ${companyDto.name }</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
 										</div>
-									</c:forEach>
+										<div class="modal-body">
+											<div id="buildingWraper" class="shadow p-3 mb-3 bg-white rounded">
+												<form action="${pageContext.request.contextPath}/company/update" method="post">
+													<div id="form-header">
+														<h5>Edit company information</h5>
+													</div>
+													<div class="form-group row">
+														<label class="col-sm-4 col-form-label">Company name</label>
+														<input type="hidden" name="id" value="${companyDto.id }" />
+														<div class="col-sm-7">
+															<input type="text" class="form-control" required="required" name="name"
+																value="${companyDto.name }" />
+														</div>
+														<p class="col-sm-1">*</p>
+													</div>
+													<button type="submit" class="btn btn-primary">Save Changes</button>
+												</form>
+											</div>
+
+											<div id="actionWraper">
+												<a
+													href="${pageContext.request.contextPath}/building/create?companyId=${companyDto.id}&companyName=${companyDto.name}"
+													type="button" class="btn btn-outline-success" data-toggle="tooltip"
+													data-placement="top" title="Create a new building for this company">
+													<i class="fas fa-plus"> New Building</i>
+												</a>
+											</div>
+
+											<div id="building-list" class="list-group">
+												<div id="list-header" class="list-group-item">
+													<h5>All building(s) of ${companyDto.name}</h5>
+												</div>
+												<c:forEach var="buildingDto" items="${companyDto.listBuilding }">
+													<div class="list-group list-group-horizontal-lg">
+														<div id="building-list-item-1" class="list-group-item">${buildingDto.name}</div>
+														<a
+															href="${pageContext.request.contextPath}/building/getQRCode/${buildingDto.name}?id=${buildingDto.id }"
+															id="building-list-item-2" data-toggle="tooltip" data-placement="bottom"
+															title="Download QR Codes of this building" class="list-group-item">
+															<i class="fas fa-download"></i>
+														</a>
+														<a
+															href="${pageContext.request.contextPath}/building/getBuilding?buildingId=${buildingDto.id}"
+															id="building-list-item-3" class="list-group-item" data-toggle="tooltip"
+															data-placement="bottom" title="Manage this building">
+															<i class="fas fa-info-circle"></i>
+														</a>
+													</div>
+												</c:forEach>
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 						</c:forEach>
@@ -92,67 +137,40 @@
 				</c:if>
 			</div>
 
-			<form action="${pageContext.request.contextPath}/test" method="get">
-				<button type="submit">TEST</button>
-			</form>
-
-			<%-- <div class="content-body">
-				<c:if test="${not empty sessionScope.companyList }">
-					<table class="table table-sm" style="width: 70%">
-						<thead class="thead-dark">
-							<tr>
-								<th class="align-middle">#</th>
-								<th class="align-middle">Tập đoàn</th>
-								<th class="align-middle">
-									<form action="${pageContext.request.contextPath}/getAllCompany" method="get">
-										<button class="btn btn-info" type="submit">
-											<i class="fas fa-sync-alt"> Làm mới</i>
-										</button>
-									</form>
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							<c:forEach var="companyDto" items="${sessionScope.companyList }" varStatus="counter">
-								<tr class="table-info">
-									<td>${counter.count }</td>
-									<td>
-										<b>${companyDto.name }</b>
-									</td>
-									<td>
-										<button type="button" data-toggle="collapse"
-											data-target="#collapseCompany${counter.count }" aria-expanded="false"
-											aria-controls="collapseCompany${counter.count }">
-											<i class="fas fa-caret-down"></i>
-										</button>
-									</td>
-								</tr>
-								<c:if test="${not empty companyDto.listBuilding }">
-									<c:forEach var="buildingDto" items="${companyDto.listBuilding }">
-										<tr class="collapse" id="collapseCompany${counter.count }">
-											<td>ID: ${buildingDto.id }</td>
-											<td>Tòa nhà: ${buildingDto.name }</td>
-											<td>
-												<form action="${pageContext.request.contextPath}/building/getBuilding" method="get">
-													<input type="hidden" name="buildingId" value="${buildingDto.id }" />
-													<button type="submit" class="btn btn-outline-primary">Lấy thông tin</button>
-												</form>
-											</td>
-										<tr>
-									</c:forEach>
-									<tr>
-								</c:if>
-								<c:if test="${empty companyDto.listBuilding }">
-									<tr class="collapse table-warning" id="collapseCompany${counter.count }">
-										<td>Chưa có tòa nhà nào!</td>
-									</tr>
-								</c:if>
-							</c:forEach>
-						</tbody>
-					</table>
-				</c:if>
-			</div> --%>
+			<!-- create company modal -->
+			<div class="modal fade" id="createCompanyModal" tabindex="-1" role="dialog"
+				aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<form action="${pageContext.request.contextPath}/company/create" method="post">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLongTitle">Create new company</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="form-group row">
+									<label for="name" class="col-sm-5 col-form-label">Company Name</label>
+									<div class="col-sm-7">
+										<input type="text" class="form-control" id="name" name="name">
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="submit" class="btn btn-primary">Create</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
+	<script type="text/javascript">
+		$(function() {
+			$('[data-toggle="tooltip"]').tooltip()
+		})
+	</script>
 </body>
 </html>

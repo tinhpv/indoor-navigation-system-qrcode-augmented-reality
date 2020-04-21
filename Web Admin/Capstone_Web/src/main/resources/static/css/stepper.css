@@ -1,70 +1,152 @@
-.wrapper-progressBar {
-	width: 98%;
-	float: left;
-	margin: 1%
+/* html {
+	-webkit-font-smoothing: antialiased !important;
+	-moz-osx-font-smoothing: grayscale !important;
+	-ms-font-smoothing: antialiased !important;
 }
 
-.progressBar {
-	
+body {
+	font-family: 'Open Sans', sans-serif;
+	font-size: 16px;
+	color: #555555;
+} */
+.md-stepper-horizontal {
+	display: table;
+	width: 100%;
+	margin: 0 auto;
+	background-color: #FFFFFF;
 }
 
-.progressBar li {
-	list-style-type: none;
-	float: left;
-	width: 48%;
+.md-stepper-horizontal .md-step {
+	display: table-cell;
 	position: relative;
-	text-align: center;
+	/* padding: 24px; */
+	padding-left: 24px;
+	padding-right: 24px;
+	padding-bottom: 10px;
+	padding-top: 10px;
 }
 
-.progressBar li:before {
-	content: " ";
-	line-height: 30px;
-	border-radius: 50%;
+.md-stepper-horizontal .md-step:hover, .md-stepper-horizontal .md-step:active {
+	background-color: rgba(0, 0, 0, 0.04);
+}
+
+.md-stepper-horizontal .md-step:active {
+	border-radius: 15%/75%;
+}
+
+.md-stepper-horizontal .md-step:first-child:active {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.md-stepper-horizontal .md-step:last-child:active {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.md-stepper-horizontal .md-step:hover .md-step-circle {
+	background-color: #757575;
+}
+
+.md-stepper-horizontal .md-step:first-child .md-step-bar-left, .md-stepper-horizontal .md-step:last-child .md-step-bar-right
+	{
+	display: none;
+}
+
+.md-stepper-horizontal .md-step .md-step-circle {
 	width: 30px;
 	height: 30px;
-	border: 1px solid #ddd;
-	display: block;
+	margin: 0 auto;
+	background-color: #999999;
+	border-radius: 50%;
 	text-align: center;
-	margin: 0 auto 10px;
-	background-color: white
+	line-height: 30px;
+	font-size: 16px;
+	font-weight: 600;
+	color: #FFFFFF;
 }
 
-.progressBar li:after {
-	content: "";
+.md-stepper-horizontal.green .md-step.active .md-step-circle {
+	background-color: #00AE4D;
+}
+
+.md-stepper-horizontal.orange .md-step.active .md-step-circle {
+	background-color: #4e73df;
+}
+
+.md-stepper-horizontal .md-step.active .md-step-circle {
+	background-color: rgb(33, 150, 243);
+}
+
+.md-stepper-horizontal .md-step.done .md-step-circle:before {
+	font-family: 'FontAwesome';
+	font-weight: 100;
+	content: "\f00c";
+}
+
+.md-stepper-horizontal .md-step.done .md-step-circle *, .md-stepper-horizontal .md-step.editable .md-step-circle *
+	{
+	display: none;
+}
+
+.md-stepper-horizontal .md-step.editable .md-step-circle {
+	-moz-transform: scaleX(-1);
+	-o-transform: scaleX(-1);
+	-webkit-transform: scaleX(-1);
+	transform: scaleX(-1);
+}
+
+.md-stepper-horizontal .md-step.editable .md-step-circle:before {
+	font-family: 'FontAwesome';
+	font-weight: 100;
+	content: "\f040";
+}
+
+.md-stepper-horizontal .md-step .md-step-title {
+	margin-top: 16px;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.md-stepper-horizontal .md-step .md-step-title, .md-stepper-horizontal .md-step .md-step-optional {
+	text-align: center;
+	color: rgba(0, 0, 0, .26);
+}
+
+.md-stepper-horizontal .md-step.active .md-step-title {
+	font-weight: 600;
+	color: rgba(0, 0, 0, .87);
+}
+
+.md-stepper-horizontal .md-step.active.done .md-step-title, .md-stepper-horizontal .md-step.active.editable .md-step-title
+	{
+	font-weight: 600;
+}
+
+.md-stepper-horizontal .md-step .md-step-optional {
+	font-size: 12px;
+}
+
+.md-stepper-horizontal .md-step.active .md-step-optional {
+	color: rgba(0, 0, 0, .54);
+}
+
+.md-stepper-horizontal .md-step .md-step-bar-left, .md-stepper-horizontal .md-step .md-step-bar-right
+	{
 	position: absolute;
-	width: 100%;
-	height: 2px;
-	background-color: #ddd;
-	top: 15px;
-	left: -50%;
+	top: 25px;
+	height: 1px;
+	border-top: 1px solid #DDDDDD;
 }
 
-.progressBar li:first-child:after {
-	content: none;
+.md-stepper-horizontal .md-step .md-step-bar-right {
+	right: 0;
+	left: 50%;
+	margin-left: 20px;
 }
 
-.progressBar li.active {
-	color: dodgerblue;
-}
-
-.progressBar li.done {
-	color: green;
-}
-
-.progressBar li.active:before {
-	border-color: dodgerblue;
-	background-color: dodgerblue
-}
-
-.progressBar li.done:before {
-	border-color: green;
-	background-color: green;
-}
-
-.progressBar li.active+li:after {
-	background-color: dodgerblue;
-}
-
-.progressBar li.done+li:after {
-	background-color: green;
+.md-stepper-horizontal .md-step .md-step-bar-left {
+	left: 0;
+	right: 50%;
+	margin-right: 20px;
 }

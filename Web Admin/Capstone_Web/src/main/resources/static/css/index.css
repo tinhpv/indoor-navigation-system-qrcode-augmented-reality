@@ -45,11 +45,13 @@ body, html {
 }
 
 .content {
+	max-width: 50%;
 	height: 95%;
 	background-color: white;
 	float: left;
 	width: 57%;
 	margin: 0.5% 0.5% 0.5% 2.5%;
+	height: 95%;
 }
 
 .content-header {
@@ -74,33 +76,147 @@ body, html {
 	background-color: teal;
 }
 
-#companyLi-row {
-	float: left;
-	width: 100%;
-}
-
-#companyLi-row-1 {
-	width: 70%;
-	float: left;
-}
-
-#companyLi-row-2 {
-	width: 30%;
-	float: left;
-}
-
 #list-group {
 	float: left;
 	width: 100%;
 }
 
-#list-group-1 {
+#list-header {
+	width: 100%;
+	float: left;
+	background-color: #4e73df;
+	font-weight: bold;
+	padding: 10px 10px 10px 10px;
+}
+
+#list-header a, h5 {
+	color: white;
+	margin-bottom: 0px;
+}
+
+#company-list {
+	width: 100%;
+}
+
+#company-list-item-1 {
 	float: left;
 	width: 70%;
 }
 
-#list-group-2 {
+#company-list-item-1 span {
+	float: right;
+}
+
+#company-list-item-2 {
 	float: left;
 	width: 30%;
 	text-align: center;
+	font-weight: bold;
+	color: blue;
+}
+
+#company-list-header-1 {
+	float: left;
+	width: 70%;
+	text-align: center;
+	font-weight: bold;
+}
+
+#company-list-header-2 {
+	float: left;
+	width: 30%;
+	text-align: center;
+	font-weight: bold;
+}
+
+#company-list-item-2:hover {
+	cursor: pointer;
+}
+
+.modal-header {
+	background-color: #4e73df;
+}
+
+#buildingWraper {
+	float: left;
+	width: 80%;
+	margin-left: 10%;
+}
+
+#buildingWraper button {
+	float: right;
+}
+
+.col-sm-1 {
+	color: red;
+	padding-left: 0px;
+}
+
+#form-header {
+	padding: 10px 10px 10px 10px;
+	background-color: #4e73df;
+	margin-bottom: 5%;
+}
+
+#form-header h5 {
+	font-weight: bold;
+	color: white;
+}
+
+#building-list {
+	width: 100%;
+}
+
+#building-list-item-1 {
+	float: left;
+	width: 60%;
+}
+
+#building-list-item-2 {
+	float: left;
+	width: 20%;
+	text-align: center;
+}
+
+#building-list-item-3 {
+	float: left;
+	width: 20%;
+	text-align: center;
+}
+
+.wraper {
+	width: 100%;
+	margin: 2% 0% 2% 0%;
+	float: left;
+	position: relative;
+}
+
+#actionWraper {
+	float: left;
+	width: 30%;
+}
+
+#messageWraper {
+	float: left;
+	width: 70%;
+}
+
+#messageWraper span {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}
+
+.success {
+	color: green;
+	text-decoration: underline;
+}
+
+.modal-body {
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+.col-sm-7 {
+	padding-left: 0px !important;
 }

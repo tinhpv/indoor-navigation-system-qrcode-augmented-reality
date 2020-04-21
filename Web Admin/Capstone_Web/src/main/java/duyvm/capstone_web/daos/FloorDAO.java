@@ -1,7 +1,7 @@
 package duyvm.capstone_web.daos;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.core.io.FileSystemResource;
@@ -22,73 +22,50 @@ import duyvm.capstone_web.utils.Utilities;
 
 public class FloorDAO {
 
-	public ResponseEntity<String> importBuildingFloor(MultipartFile mapFile, BuildingDTO buildingDTO,
-			FloorDTO floorInfo, RestTemplate restTemplate, String postUrl) {
+	public ResponseEntity<String> importFloorToServer(MultipartFile mapFile, BuildingDTO buildingDTO,
+			FloorDTO floorInfo, RestTemplate restTemplate, String postUrl) throws IOException {
 		Utilities utilities = new Utilities();
+
 		// Tạo request header
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-		MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<String, Object>();
 
-		String floorId = generateFloorId(buildingDTO);
+		// Tạo body cho request
+		MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<String, Object>();
+		String floorId = utilities.generateFloorId(buildingDTO);
 		bodyMap.add("buildingId", buildingDTO.getId());
 		String filePath = utilities.convertMapFile(mapFile, floorId, buildingDTO.getId()).getAbsolutePath();
 		bodyMap.add("floorId", floorId);
 		bodyMap.add("floorName", floorInfo.getName());
 		bodyMap.add(floorId, new FileSystemResource(filePath));
 
+		// Đặt body vào request body
 		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
 
-//				ResponseEntity<String> response = restTemplate.exchange(postUrl, HttpMethod.POST, requestEntity, String.class);
-
+		// Exchange
 		ResponseEntity<String> response = restTemplate.postForEntity(postUrl, requestEntity, String.class);
 
 		return response;
 	}
 
 	public BuildingDTO createFloor(String floorMap, BuildingDTO buildingDTO, FloorDTO floorInfo) {
-		List<LocationDTO> listLocation = new ArrayList<>();
 		FloorDTO floorDTO = new FloorDTO();
-//		Utilities utilities = new Utilities();
+		Utilities utilities = new Utilities();
 
-		// Tạo id cho lầu
-		String floorId = generateFloorId(buildingDTO);
+		// Generate floor object id
+		String floorId = utilities.generateFloorId(buildingDTO);
 
-		floorDTO = new FloorDTO(floorId, floorInfo.getName(), floorMap, null, listLocation);
+		floorDTO = new FloorDTO(floorId, floorInfo.getName(), floorMap, null, new ArrayList<LocationDTO>());
 
-		// Thêm object floor vào object building
-		List<FloorDTO> newListFloor = new ArrayList<FloorDTO>();
-		if (buildingDTO.getListFloor() != null) {
-			newListFloor.addAll(buildingDTO.getListFloor());
+		// Thêm object floor vào building object
+		List<FloorDTO> listFloor = new ArrayList<FloorDTO>();
+		if (!buildingDTO.getListFloor().isEmpty()) {
+			listFloor.addAll(buildingDTO.getListFloor());
 		}
-		newListFloor.add(floorDTO);
-		buildingDTO.setListFloor(newListFloor);
+		listFloor.add(floorDTO);
+		buildingDTO.setListFloor(listFloor);
 
 		return buildingDTO;
-	}
-
-	private String generateFloorId(BuildingDTO buildingDTO) {
-		String result = null;
-		List<Integer> idList = new ArrayList<Integer>();
-		if (buildingDTO.getListFloor() == null || buildingDTO.getListFloor().size() == 0) {
-			result = "1";
-		} else {
-			for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
-				idList.add(Integer.valueOf(buildingDTO.getListFloor().get(i).getId()));
-			}
-			int newId = Collections.max(idList) + 1;
-			result = String.valueOf(newId);
-		}
-		return result;
-	}
-
-	public FloorDTO getFloorBaseOnId(String floorId, BuildingDTO buildingDTO) {
-		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
-			if (buildingDTO.getListFloor().get(i).getId().equals(floorId)) {
-				return buildingDTO.getListFloor().get(i);
-			}
-		}
-		return null;
 	}
 
 	public BuildingDTO removeFloor(String floorId, BuildingDTO buildingDTO) {
@@ -100,7 +77,8 @@ public class FloorDAO {
 		return buildingDTO;
 	}
 
-	public BuildingDTO updateFloor(MultipartFile mapFile, FloorDTO floorInfo, BuildingDTO buildingDTO) {
+	public BuildingDTO editFloor(MultipartFile mapFile, FloorDTO floorInfo, BuildingDTO buildingDTO)
+			throws IOException {
 		Utilities utilities = new Utilities();
 		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
 			if (buildingDTO.getListFloor().get(i).getId().equals(floorInfo.getId())) {
@@ -123,11 +101,12 @@ public class FloorDAO {
 		// Tạo request header
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-		MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<String, Object>();
 
+		// Tạo body cho request
+		MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<String, Object>();
 		bodyMap.add("buildingId", buildingDTO.getId());
 
-		// Detect xem người dùng có thay đổi hoặc thêm ảnh không
+		// Thêm vào body những image mà người dùng thay đổi
 		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
 			if (buildingDTO.getListFloor().get(i).getMapFilePath() != null
 					&& !buildingDTO.getListFloor().get(i).getMapFilePath().isEmpty()) {
@@ -136,29 +115,12 @@ public class FloorDAO {
 			}
 		}
 
+		// Đặt body vào request body
 		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
 
+		// Exchange
 		ResponseEntity<String> response = restTemplate.exchange(postUrl, HttpMethod.PUT, requestEntity, String.class);
-
-//		ResponseEntity<String> response = restTemplate.postForEntity(postUrl, requestEntity, String.class);
-
-		System.out.println("Response status code: " + response);
 
 		return response;
 	}
-
-//	private File convertFile(MultipartFile file, String floorId, String buildingId) {
-//		File convFile = new File("img/" + buildingId + "_" + floorId + ".png");
-//		try {
-//			convFile.createNewFile();
-//			FileOutputStream fos = new FileOutputStream(convFile);
-//			fos.write(file.getBytes());
-//			fos.close();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		return convFile;
-//	}
 }

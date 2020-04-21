@@ -24,7 +24,6 @@ public class FloorDTO implements Serializable {
 	@SerializedName("LinkMap")
 	private String linkMap;
 
-//	@JsonIgnore
 	private String mapFilePath;
 
 	@Expose

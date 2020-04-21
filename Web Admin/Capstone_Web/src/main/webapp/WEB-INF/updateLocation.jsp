@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,8 +18,8 @@
 		<c:redirect url="${pageContext.request.contextPath}/"></c:redirect>
 	</c:if>
 
-	<img id="imgMap" src="${sessionScope.floor.linkMap }" />
-	<input id="imgSrc" type="hidden" value="${sessionScope.floor.linkMap }" />
+	<img id="imgMap" src="${requestScope.floor.linkMap }" />
+	<input id="imgSrc" type="hidden" value="${requestScope.floor.linkMap }" />
 
 	<div>
 		<div id="canvasWraper">
@@ -33,16 +33,16 @@
 			</div>
 
 			<div id="content-body" class="shadow p-3 mb-3 bg-white rounded">
-				<form action="${pageContext.request.contextPath}/room/create" method="post">
+				<form action="${pageContext.request.contextPath}/location/edit" method="post">
 					<div id="content-body-header">
-						<h5>New room for "${sessionScope.location.name }"</h5>
+						<h5>Edit location information</h5>
 					</div>
-					<input type="hidden" value="${sessionScope.location.id }" name="locationId">
+					<input type="hidden" name="id" value="${requestScope.location.id }">
 					<div class="form-group row">
-						<label for="name" class="col-sm-3 col-form-label">Name</label>
+						<label for="name" class="col-sm-3 col-form-label">Name:</label>
 						<div class="col-sm-7">
-							<input type="text" class="form-control" id="name" name="name" placeholder="Exp: Room 001"
-								required="required" />
+							<input type="text" class="form-control" id="name" name="name" placeholder="Location name"
+								required="required" value="${requestScope.location.name }" />
 						</div>
 						<p class="col-sm-1">*</p>
 					</div>
@@ -61,19 +61,14 @@
 					</div>
 					<i class="fas fa-long-arrow-alt-left"> Click on the map to get the cordinates.</i>
 					<div class="action-wraper">
-						<button class="left btn btn-success" data-toggle="tooltip" data-placement="bottom"
-							title="Draw all rooms of this location" onclick="drawAllRoom()" type="button">
-							<i class="fas fa-search-location"></i>
-						</button>
 						<button class="left btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
-							title="Clear the map" onclick="clearCanvas()" type="button">
+							title="Clear all drawn locations" onclick="clearCanvas()" type="button">
 							<i class="fas fa-sync-alt"></i>
 						</button>
-						<button type="submit" class="right btn btn-primary">Create</button>
+						<button type="submit" class="right btn btn-primary">Save changes</button>
 					</div>
 				</form>
 			</div>
-			<p class="success">${requestScope.createSuccess }</p>
 		</div>
 	</div>
 
@@ -91,23 +86,10 @@
 
 			img.style.display = "none";
 
-			/* document.getElementById("mapDiv").remove(); */
-			drawLocation(${sessionScope.location.ratioX}, ${sessionScope.location.ratioY});
+			drawCurrentRatios(${requestScope.location.ratioX}, ${requestScope.location.ratioY});
 		}
 
-		/* function drawRoom(ratioX, ratioY) {
-			var canvas = document.getElementById("canvas");
-			var ctx = document.getElementById("canvas").getContext("2d");
-			/* var ratioX = document.getElementById("ratioX").value;
-			var ratioY = document.getElementById("ratioY").value;
-			ctx.beginPath();
-			ctx.arc(ratioX * canvas.width, ratioY * canvas.height, 5, 0,
-					Math.PI * 2, true)
-			ctx.closePath();
-			ctx.fill();
-		} */
-
-		function drawLocation(ratioX, ratioY) {
+		function drawCurrentRatios(ratioX, ratioY) {
 			var canvas = document.getElementById("canvas");
 			var ctx = document.getElementById("canvas").getContext("2d");
 			ctx.beginPath();
@@ -123,29 +105,6 @@
 		function init() {
 			var canvas = document.getElementById("canvas");
 			canvas.addEventListener("mousedown", getPosition, false);
-		}
-		
-		function drawAllRoom() {
-			var roomData = [], roomInfo = [], i;
-			<c:forEach items="${sessionScope.location.listRoom}" var="roomDto">
-			roomInfo.push("${roomDto.name}", ${roomDto.ratioX}, ${roomDto.ratioY});
-			roomData.push(roomInfo);
-			roomInfo = [];
-			</c:forEach>
-			
-			var canvas = document.getElementById("canvas");
-			var ctx = document.getElementById("canvas").getContext("2d");
-			for (i = 0; i < roomData.length; i++) {
-				ctx.beginPath();
-				ctx.fillStyle = "#000000";
-				ctx.arc(roomData[i][1] * canvas.width, roomData[i][2] * canvas.height, 3, 0, Math.PI * 2, true)
-				ctx.closePath();
-				ctx.fill();
-				
-				ctx.font = "10px Arial";
-				ctx.textAlign = "center";
-				ctx.fillText(roomData[i][0], (roomData[i][1] * canvas.width), (roomData[i][2] * canvas.height) + 15);
-			}
 		}
 
 		function getPosition(event) {
@@ -172,30 +131,16 @@
 			document.getElementById("ratioY").value = (y / canvas.height)
 					.toFixed(3);
 
+			/* clearCanvas */
+			clearCanvas();
+			
+			/* draw */
 			var ctx = document.getElementById("canvas").getContext("2d");
-			
-			/* draw location */
-			ctx.beginPath();
-			ctx.fillStyle = "#FF0000";
-			ctx.arc(${sessionScope.location.ratioX} * canvas.width, ${sessionScope.location.ratioY} * canvas.height, 3, 0,
-					Math.PI * 2, true)
-			ctx.closePath();
-			ctx.fill();
-			
-			/* draw room */
 			ctx.beginPath();
 			ctx.fillStyle = "#000000";
 			ctx.arc(x, y, 3, 0, Math.PI * 2, true)
 			ctx.closePath();
 			ctx.fill();
-			
-			/* draw line */
-			/* ctx.beginPath();
-			ctx.lineWidth = 3;
-			ctx.moveTo(${sessionScope.location.ratioX} * canvas.width, ${sessionScope.location.ratioY} * canvas.height);
-			ctx.lineTo(x, y);
-			ctx.stroke();
-			ctx.closePath(); */
 		}
 
 		function clearCanvas() {
@@ -210,9 +155,9 @@
 
 			ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 			
-			drawLocation(${sessionScope.location.ratioX}, ${sessionScope.location.ratioY});
+			drawCurrentRatios(${requestScope.location.ratioX}, ${requestScope.location.ratioY});
 		}
-		
+
 		$(function() {
 			$('[data-toggle="tooltip"]').tooltip()
 		})

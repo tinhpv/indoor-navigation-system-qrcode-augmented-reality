@@ -1,13 +1,25 @@
 package duyvm.capstone_web.controllers;
 
-import java.text.ParseException;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,33 +37,31 @@ import duyvm.capstone_web.utils.Utilities;
 public class BuildingController {
 
 	@Autowired
-	RestTemplate restTemplate;
+	private RestTemplate restTemplate;
 
 	@GetMapping({ "/", "" })
-	public String showBuildingPage() {
+	public String getBuildingPage() {
 		try {
-
+			// To do
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("Error at showBuildingPage: " + e.getMessage());
+			System.out.println("Error at getBuildingPage: " + e.getMessage());
+			return "error.jsp";
 		}
 		return "building.jsp";
 	}
 
 	@GetMapping("/getBuilding")
-	public String getBuildingInformation(@RequestParam("buildingId") String buildingId, HttpSession session)
-			throws Exception {
+	public String getBuildingInformation(@RequestParam("buildingId") String buildingId, HttpSession session) {
 		try {
 			JsonParser jsonParser = new JsonParser();
 
-			// Rest api
+			// API getAllLocations
 			String getUrl = "http://13.229.117.90:7070/api/INQR/getAllLocations?buildingId=";
 			getUrl += buildingId;
 
-			// Lấy thông tin tòa nhà và parse thành building object
+			// Parse chuỗi json trả về thành 1 building object và đưa vào session
 			BuildingDTO buildingDTO = jsonParser.parseToBuildingObject(getUrl, restTemplate);
-
-			// Gửi building object vào session
 			session.setAttribute("building", buildingDTO);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -61,7 +71,7 @@ public class BuildingController {
 		return "building.jsp";
 	}
 
-	@GetMapping("/createBuilding")
+	@GetMapping("/create")
 	public String getCreateBuilding(@RequestParam("companyId") String companyId,
 			@RequestParam("companyName") String companyName, HttpServletRequest request, HttpSession session) {
 		try {
@@ -76,136 +86,158 @@ public class BuildingController {
 		return "building.jsp";
 	}
 
-	@PostMapping("/createBuilding")
+	@PostMapping("/create")
 	public String postCreateBuilding(@RequestParam("companyId") String companyId, BuildingDTO buildingInfo,
-			HttpSession session, HttpServletRequest request) throws ParseException {
+			HttpSession session, HttpServletRequest request) {
 		try {
 			BuildingDAO buildingDAO = new BuildingDAO();
 
-			// Tạo object building
-			BuildingDTO buildingDTO = buildingDAO.createBuilding(buildingInfo);
-
-			// Rest api
+			// API createNewBuilding
 			String postUrl = "http://13.229.117.90:7070/api/INQR/createNewBuilding";
 
-			// Tạo tòa nhà mới trên server
-			ResponseEntity<String> response = buildingDAO.importBuilding(postUrl, companyId, buildingDTO, restTemplate);
+			// Tạo building object
+			BuildingDTO buildingDTO = buildingDAO.createBuilding(buildingInfo);
 
-			// Trả về mã 200 == thành công
+			// Đẩy building object lên server
+			ResponseEntity<String> response = buildingDAO.importBuildingToServer(postUrl, companyId, buildingDTO,
+					restTemplate);
+
+			// Respond code 200 => OK
 			if (response.getStatusCodeValue() == 200) {
+
 				// Cập nhật building trong session
 				session.setAttribute("building", buildingDTO);
 
-				// Hiện thông báo thành công
-				request.setAttribute("createSuccess", "Building created.");
-			} else {
-				// Hiện thông báo thất bại
-				request.setAttribute("createSuccess", "Failed at create building.");
+				// Hiện thông báo
+				request.setAttribute("createSuccess", "Building successfully created on server.");
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("Error at createBuilding: " + e.getMessage());
+			System.out.println("Error at postCreateBuilding: " + e.getMessage());
 			return "error.jsp";
 		}
 		return "building.jsp";
 	}
 
-//	@PostMapping("/importBuilding")
-//	public String importBuilding(HttpSession session) {
-//		BuildingDAO buildingDAO = new BuildingDAO();
-//
-//		BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
-//
-//		String postUrl = "http://13.229.117.90:7070/api/INQR/createNewBuilding";
-//
-//		String response = buildingDAO.importBuilding(postUrl, buildingDTO, restTemplate);
-//
-//		System.out.println("Response: " + response);
-//
-////		if (response.equals("OK")) {
-//		postUrl = "http://13.229.117.90:7070/api/INQR/uploadFloorMap";
-//
-//		FloorDAO floorDAO = new FloorDAO();
-//		floorDAO.importFloorMapToServer(postUrl, buildingDTO, restTemplate);
-////		}
-//
-//		return "building.jsp";
-//	}
+	@GetMapping("/upload")
+	public String getBuildingUpload() {
+		try {
+			// To do
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("Error at getBuildingUpload: " + e.getMessage());
+			return "error.jsp";
+		}
+		return "upload.jsp";
+	}
 
-	@PostMapping("/updateBuilding")
-	public String updateBuildingToServer(HttpSession session, HttpServletRequest request) {
+	@PostMapping("/upload")
+	public String postBuildingUpload(HttpSession session, HttpServletRequest request) {
 		try {
 			String messageString = "";
+
+			FloorDAO floorDAO = new FloorDAO();
 			BuildingDAO buildingDAO = new BuildingDAO();
 			Utilities utilities = new Utilities();
 
-			// Lấy building object trong session
+			// API updateBuilding
+			String putUrl = "http://13.229.117.90:7070/api/INQR/updateBuilding";
+
+			// Lấy building object có trong session
 			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
 
-			// Rest api
-			String postUrl = "http://13.229.117.90:7070/api/INQR/updateBuilding";
+			// Đẩy building object lên server để cập nhật
+			ResponseEntity<String> response = buildingDAO.updateBuilding(putUrl, buildingDTO, restTemplate);
 
-			// Cập nhật thông tin tòa nhà trên server
-			ResponseEntity<String> response = buildingDAO.updateBuilding(postUrl, buildingDTO, restTemplate);
-
-			// Cập nhật thông tin thành công thì cập nhật ảnh của các lầu
+			// Code value 200 => OK
+			// Sau khi cập nhật thành công, kiểm tra xem người dùng có đổi bản đồ các lầu
 			if (response.getStatusCodeValue() == 200 && utilities.checkForChangedImage(buildingDTO)) {
-				messageString += "Building update successfully.";
+				messageString += "Successfully update building information ";
 
-				// Rest api
-				postUrl = "http://13.229.117.90:7070/api/INQR/uploadFloorMap";
+				// API uploadFloorMap
+				putUrl = "http://13.229.117.90:7070/api/INQR/uploadFloorMap";
 
-				FloorDAO floorDAO = new FloorDAO();
+				// Cập nhật bản đồ các lầu mà người dùng thay đổi
+				response = floorDAO.importFloorMapToServer(putUrl, buildingDTO, restTemplate);
 
-				// Cập nhật thông tin ảnh của các lầu
-				response = floorDAO.importFloorMapToServer(postUrl, buildingDTO, restTemplate);
-
+				// Code 200 => OK
 				// Thông báo cho việc cập nhật hình ảnh các lầu
 				if (response.getStatusCodeValue() == 200) {
-					messageString += " Floor image update successfully.";
-				} else {
-					messageString += " Failed to update floor image";
+					messageString += "and image of floor(s).";
 				}
 			} else if (response.getStatusCodeValue() == 200 && !utilities.checkForChangedImage(buildingDTO)) {
-				messageString += "Building update successfully.";
-			} else {
-				messageString += "Failed to update building.";
+				messageString += "Successfully update building information.";
 			}
 
-			System.out.println(messageString);
-
 			// Hiện thông báo
-			request.setAttribute("updateMessage", messageString);
+			request.setAttribute("uploadSuccess", messageString);
+
+			// Invalid session
+			session.removeAttribute("building");;
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.print("Error at updateBuildingToserver: " + e.getMessage());
+			System.out.print("Error at postBuildingUpload: " + e.getMessage());
 			return "error.jsp";
 		}
-		return "building.jsp";
+		return "index.jsp";
 	}
 
 	@PostMapping("/edit")
-	public String editBuilding(BuildingDTO buildingInfo, HttpSession session, HttpServletRequest request) {
+	public String postEditBuilding(BuildingDTO buildingInfo, HttpSession session, HttpServletRequest request) {
 		try {
 			BuildingDAO buildingDAO = new BuildingDAO();
 
-			// Lấy building từ session
+			// Lấy building object có trong session
 			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
 
-			// Cập nhật thông tin
+			// Cập nhật thông tin của building object ở local và đẩy vào session
 			buildingDTO = buildingDAO.editBuilding(buildingInfo, buildingDTO);
-
-			// Cập nhật building trong session
 			session.setAttribute("building", buildingDTO);
 
 			// Hiện thông báo
-			request.setAttribute("updateSuccess", "Cập nhật thông tin tòa nhà thành công");
+			request.setAttribute("editSuccess", "Building's information changed locally.");
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("Error at EditBuilding: " + e.getMessage());
+			System.out.println("Error at postEditBuilding: " + e.getMessage());
 			return "error.jsp";
 		}
 		return "building.jsp";
 	}
 
+	@GetMapping("/getQRCode/{buildingName}")
+	public ResponseEntity<Object> getBuildingQrCodes(@RequestParam("id") String buildingId,
+			HttpServletResponse response) throws Exception {
+		JsonParser jsonParser = new JsonParser();
+		Utilities utilities = new Utilities();
+
+		// Rest api
+		String getUrl = "http://13.229.117.90:7070/api/INQR/getAllLocations?buildingId=";
+		getUrl += buildingId;
+
+		// Lấy thông tin tòa nhà và parse thành building object
+		BuildingDTO buildingDTO = jsonParser.parseToBuildingObject(getUrl, restTemplate);
+
+		// Convert tất cả các file qr về dưới local để compress
+		File qrCodeDir = utilities.converQrCodeFile(buildingDTO);
+
+		Stream<Path> walk = Files.walk(Paths.get(qrCodeDir.getAbsolutePath() + "/"));
+		List<String> result = walk.filter(Files::isRegularFile).map(x -> x.toString()).collect(Collectors.toList());
+		walk.close();
+
+		ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());
+		for (int i = 0; i < result.size(); i++) {
+			FileSystemResource resource = new FileSystemResource(result.get(i));
+			ZipEntry zipEntry = new ZipEntry(resource.getFilename());
+			zipEntry.setSize(resource.contentLength());
+			zipOut.putNextEntry(zipEntry);
+			StreamUtils.copy(resource.getInputStream(), zipOut);
+			zipOut.closeEntry();
+		}
+		zipOut.finish();
+		zipOut.close();
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setHeader("Content-disposition", "attachment; filename=\"" + "download.zip" + "");
+
+		return new ResponseEntity<Object>(HttpStatus.OK);
+	}
 }

@@ -31,11 +31,7 @@ public class LocationDTO implements Serializable {
 
 	@SerializedName("LinkQR")
 	private String linkQr;
-
-//	@Expose
-//	@SerializedName("ListLocationBeside")
-//	private List<NeighbourDTO> listNeighbour;
-
+	
 	@Expose
 	@SerializedName("ListLocationBeside")
 	private List<NeighbourDTO> listLocationBeside;
@@ -47,18 +43,6 @@ public class LocationDTO implements Serializable {
 	public LocationDTO() {
 		super();
 	}
-
-//	public LocationDTO(String id, String name, double ratioX, double ratioY, String linkQr,
-//			List<NeighbourDTO> listNeighbour, List<RoomDTO> listRoom) {
-//		super();
-//		this.id = id;
-//		this.name = name;
-//		this.ratioX = ratioX;
-//		this.ratioY = ratioY;
-//		this.linkQr = linkQr;
-//		this.listNeighbour = listNeighbour;
-//		this.listRoom = listRoom;
-//	}
 
 	public LocationDTO(String id, String name, double ratioX, double ratioY, String linkQr,
 			List<NeighbourDTO> listLocationBeside, List<RoomDTO> listRoom) {

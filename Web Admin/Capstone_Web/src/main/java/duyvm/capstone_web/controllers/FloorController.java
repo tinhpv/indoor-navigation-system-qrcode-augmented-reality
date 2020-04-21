@@ -23,143 +23,104 @@ import duyvm.capstone_web.dtos.FloorDTO;
 public class FloorController {
 
 	@Autowired
-	RestTemplate restTemplate;
+	private RestTemplate restTemplate;
 
 	@GetMapping({ "/", "" })
 	public String showFloorPage() {
+		try {
+			// To do
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("Error at showFloorPage: " + e.getMessage());
+		}
 		return "floor.jsp";
 	}
 
-	@PostMapping({ "/", "" })
-	public String createFloor(@RequestParam("mapFile") MultipartFile mapFile, FloorDTO floorInfo, HttpSession session,
-			HttpServletRequest request) {
+	@PostMapping("/create")
+	public String postCreateFloor(@RequestParam("mapFile") MultipartFile mapFile, FloorDTO floorInfo,
+			HttpSession session, HttpServletRequest request) {
 		try {
 			FloorDAO floorDAO = new FloorDAO();
-
-			// Lấy building từ session
-			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
-
+			
+			//API createNewFloor
 			String postUrl = "http://13.229.117.90:7070/api/INQR/createNewFloor";
-			ResponseEntity<String> result = floorDAO.importBuildingFloor(mapFile, buildingDTO, floorInfo, restTemplate,
+
+			// Lấy building object có trong session
+			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
+			
+			// Đẩy thông tin của floor lên server để tạo mới
+			ResponseEntity<String> result = floorDAO.importFloorToServer(mapFile, buildingDTO, floorInfo, restTemplate,
 					postUrl);
 
 			if (result.getStatusCode() == HttpStatus.OK) {
+				// Nếu tạo mới thành công, result trả về sẽ là đường link hình ảnh của floor
+				// Thêm mới một floor object vào building object
 				buildingDTO = floorDAO.createFloor(result.getBody(), buildingDTO, floorInfo);
+				
 				// Cập nhật building trong session
 				session.setAttribute("building", buildingDTO);
 
 				// Hiện thông báo
-				request.setAttribute("createSuccess", "Floor created successfully.");
-			} else {
-				return "error.jsp";
+				request.setAttribute("createSuccess", "Create floor successful on both server and local.");
 			}
-
-			// Kiểm tra người dùng có chọn hình ảnh hay không
-//			if (mapFile.getOriginalFilename() != null && !mapFile.getOriginalFilename().isEmpty()) {
-//				// Tạo object floor với đường dẫn file hình ảnh
-//				buildingDTO = floorDAO.createFloor(mapFile, buildingDTO, floorInfo);
-//			} else {
-//				// Tạo object floor ko có đường dẫn file hình ảnh
-//				buildingDTO = floorDAO.createFloor(null, buildingDTO, floorInfo);
-//			}
-
-//			buildingDTO = floorDAO.createFloor(null, buildingDTO, floorInfo);
-
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.print("Error at createFloor: " + e.getMessage());
+			System.out.print("Error at postCreateFloor: " + e.getMessage());
 			return "error.jsp";
 		}
 		return "floor.jsp";
 	}
 
-//	public static File convert(MultipartFile file) {
-//		String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
-//		File convFile = new File("TênFile" + "." + fileExtension);
-//		try {
-//			convFile.createNewFile();
-//			FileOutputStream fos = new FileOutputStream(convFile);
-//			fos.write(file.getBytes());
-//			fos.close();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		return convFile;
-//	}
-
-	@GetMapping("/floorDetail")
-	public String getFloorDetail(@RequestParam("id") String floorId, HttpSession session) {
+	@PostMapping("/remove")
+	public String postRemoveFloor(@RequestParam("id") String floorId, HttpSession session, HttpServletRequest request) {
 		try {
 			FloorDAO floorDAO = new FloorDAO();
 
-			// Lấy building từ session
+			// Lấy building object có trong session
 			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
 
-			// Lấy object floor dựa vào id
-			FloorDTO floorDTO = floorDAO.getFloorBaseOnId(floorId, buildingDTO);
-
-			// Đặt object floor vào session
-			session.setAttribute("floor", floorDTO);
-		} catch (Exception e) {
-			// TODO: handle exception
-			System.out.print("Error at getFloorDetail: " + e.getMessage());
-			return "error.jsp";
-		}
-		return "floorDetail.jsp";
-	}
-
-	@PostMapping("removeFloor")
-	public String removeFloor(@RequestParam("id") String floorId, HttpSession session, HttpServletRequest request) {
-		try {
-			FloorDAO floorDAO = new FloorDAO();
-
-			// Lấy building từ session
-			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
-
-			// Xóa object floor khỏi object building
+			// Xóa floor object khỏi building object dựa vào id của floor
 			buildingDTO = floorDAO.removeFloor(floorId, buildingDTO);
 
-			// Cập nhật building trong session
+			// Cập nhật building object trong session
 			session.setAttribute("building", buildingDTO);
 
 			// Hiện thông báo
-			request.setAttribute("deleteSuccess", "Floor removed successfully.");
+			request.setAttribute("removeSuccess", "Floor removed locally.");
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("Error at RemoveFloor: " + e.getMessage());
+			System.out.println("Error at postRemoveFloor: " + e.getMessage());
 			return "error.jsp";
 		}
 		return "floor.jsp";
 	}
 
-	@PostMapping("edit")
-	public String editFloor(@RequestParam("fileMap") MultipartFile fileMap, FloorDTO floorInfo, HttpSession session,
+	@PostMapping("/edit")
+	public String postEditFloor(@RequestParam("fileMap") MultipartFile fileMap, FloorDTO floorInfo, HttpSession session,
 			HttpServletRequest request) {
 		try {
 			FloorDAO floorDAO = new FloorDAO();
 
-			// Lấy building từ session
+			// Lấy building object có trong session
 			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
 
-			// Kiểm tra người dùng có chọn file hình ảnh ko
+			// Kiểm tra người dùng có chọn file hình ảnh hay không
 			if (fileMap.getOriginalFilename() != null && !fileMap.getOriginalFilename().isEmpty()) {
-				// Update thông tin của floor trong object building bao gồm cả hình ảnh
-				buildingDTO = floorDAO.updateFloor(fileMap, floorInfo, buildingDTO);
+				// Update thông tin của floor object trong building object bao gồm cả file hình ảnh
+				buildingDTO = floorDAO.editFloor(fileMap, floorInfo, buildingDTO);
 			} else {
-				// Update thông tin của floor trong object building không bao gồm file hình ảnh
-				buildingDTO = floorDAO.updateFloor(null, floorInfo, buildingDTO);
+				// Update thông tin của floor object trong building object không bao gồm file hình ảnh
+				buildingDTO = floorDAO.editFloor(null, floorInfo, buildingDTO);
 			}
 
-			// Cập nhật thông tin trong session
+			// Cập nhật thông tin building trong session
 			session.setAttribute("building", buildingDTO);
 
 			// Hiện thông báo
-			request.setAttribute("updateSuccess", "Building info changed successfully.");
+			request.setAttribute("editSuccess", "Floor's information changed locally.");
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("Error at EditFloor: " + e.getMessage());
+			System.out.println("Error at postEditFloor: " + e.getMessage());
 			return "error.jsp";
 		}
 		return "floor.jsp";

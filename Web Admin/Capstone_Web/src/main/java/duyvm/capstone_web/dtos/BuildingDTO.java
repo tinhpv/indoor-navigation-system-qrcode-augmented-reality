@@ -46,10 +46,6 @@ public class BuildingDTO implements Serializable {
 		this.name = name;
 	}
 
-	public String getId() {
-		return id;
-	}
-
 	public BuildingDTO(String id, String name, String description, String dayExpired, boolean active,
 			List<FloorDTO> listFloor) {
 		super();
@@ -59,6 +55,10 @@ public class BuildingDTO implements Serializable {
 		this.dayExpired = dayExpired;
 		this.active = active;
 		this.listFloor = listFloor;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 	public void setId(String id) {
