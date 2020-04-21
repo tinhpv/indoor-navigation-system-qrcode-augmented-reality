@@ -33,7 +33,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.core.app.RemoteInput;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
@@ -75,7 +74,6 @@ import fpt.capstone.inqr.model.Room;
 import fpt.capstone.inqr.model.supportModel.Line;
 import fpt.capstone.inqr.model.supportModel.Step;
 import github.nisrulz.qreader.QREader;
-import retrofit2.http.HEAD;
 
 import static android.content.Context.SENSOR_SERVICE;
 import static java.lang.Math.PI;
@@ -138,9 +136,15 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     private Handler checkQrExistHandler;
     private Runnable runnable;
 
+    // walking-speed
+    private double oldDistanceRemove;
+    private String oldTimeScan;
+    private String currentTime;
+    private SimpleDateFormat sdf;
+
 
     public MapFragment() {
-        // Required empty public constructor
+
     }
 
     @Override
@@ -210,6 +214,8 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         super.onCreate(savedInstanceState);
         this.setTitle("Chỉ đường");
 
+        sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+
         // GET BUILDING_ID THAT USER PICKED
         Bundle bundle = this.getArguments();
         if (bundle != null) {
@@ -256,6 +262,10 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                 frame.setVisibility(View.GONE);
             } else if (frame.getVisibility() == View.GONE) {
                 frame.setVisibility(View.VISIBLE);
+
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(tvEnd.getWindowToken(), 0);
+                imm.hideSoftInputFromWindow(tvStart.getWindowToken(), 0);
             }
         });
 
@@ -683,13 +693,34 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                 if (currentPath != 0) {
                     double distanceRemove = listPointOnWay.get(0).getDistance();
                     double distanceReal = currentPath - distanceRemove;
+                    int speed = 0;
 
-                    // speed : m/h
-                    int speed = PreferenceHelper.getInt(getContext(), "speed_walking");
+                    if (distanceRemove != 0) {
+                        double tmpDistance = distanceRemove - oldDistanceRemove;
 
-                    if (speed == 0) {
-                        speed = getActivity().getResources().getInteger(R.integer.speed_walking);
-                        PreferenceHelper.putInt(getContext(), "speed_walking", speed);
+                        currentTime = sdf.format(new Date());
+                        Date startTime = null;
+                        Date endTime = null;
+                        try {
+                            startTime = sdf.parse(oldTimeScan);
+                            endTime = sdf.parse(currentTime);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        long tmpTime = endTime.getTime() - startTime.getTime();
+
+                        speed = (int) ((tmpDistance * (1000 * 60 * 60)) / tmpTime);
+                    } else {
+
+                        // speed : m/h
+                        speed = PreferenceHelper.getInt(getContext(), "speed_walking");
+
+                        if (speed == 0) {
+                            speed = getActivity().getResources().getInteger(R.integer.speed_walking);
+                            PreferenceHelper.putInt(getContext(), "speed_walking", speed);
+                        }
                     }
 
 
@@ -698,8 +729,8 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                     int mins = (int) (time / 1);
                     int sens = (int) (time % 1 * 60);
 
-                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-                    String currentTime = sdf.format(new Date());
+
+                    currentTime = sdf.format(new Date());
                     Date date = null;
                     try {
                         date = sdf.parse(currentTime);
@@ -720,9 +751,13 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 //
 //                    }
 
+//                    tvTime.setText(currentTime + " - " + sdf.format(calendar.getTime()) + " - " + (Math.round(time * 100.0) / 100.0) + " - " + speed);
                     tvTime.setText(currentTime + " - " + sdf.format(calendar.getTime()));
 
                     tvDistance.setText("(" + (int) Math.round(distanceReal) + "m)");
+
+                    oldTimeScan = currentTime;
+                    oldDistanceRemove = distanceRemove;
                 } else {
                     tvTime.setText("You are at the destination");
                     tvDistance.setText("");
@@ -890,10 +925,10 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     private void getStepDetail() {
 
         /*
-        * directionGuide map
-        *   - key: location number on listPointOnWay
-        *   - value: guide on direction in {left, right, turnleft, turnright, turnback, go forward}
-        * */
+         * directionGuide map
+         *   - key: location number on listPointOnWay
+         *   - value: guide on direction in {left, right, turnleft, turnright, turnback, go forward}
+         * */
         Map<Integer, String> directionGuide = new HashMap<>();
 
 
