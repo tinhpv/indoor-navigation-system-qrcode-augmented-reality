@@ -66,12 +66,13 @@ dependencies {
     implementation "com.microsoft.azure.spatialanchors:spatialanchors_java:2.1.1"
 
     // Vision API for QR Code Detection
-    implementation 'com.google.android.gms:play-services-vision:19.0.0'
+    implementation 'com.google.android.gms:play-services-vision:20.0.0'
 
     // STEP LINE
     implementation 'com.github.vipulasri:timelineview:1.1.4'
     implementation 'com.github.mmin18:realtimeblurview:1.2.1'
     implementation 'com.eightbitlab:blurview:1.6.3'
+    implementation 'com.airbnb.android:lottie:3.4.0'
 }
 
 
@@ -79,3 +80,13 @@ sceneform.asset('sampledata/model.obj',
         'default',
         'sampledata/model.sfa',
         'src/main/assets/arrow')
+
+sceneform.asset('sampledata/Locator.obj',
+        'default',
+        'sampledata/Locator.sfa',
+        'src/main/assets/Locator')
+
+sceneform.asset('sampledata/cube.obj',
+        'default',
+        'sampledata/cube.sfa',
+        'src/main/assets/cube')

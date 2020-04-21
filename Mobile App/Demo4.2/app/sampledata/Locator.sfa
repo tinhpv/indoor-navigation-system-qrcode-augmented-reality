@@ -1,16 +1,16 @@
 {
   materials: [
     {
-      name: 'mat5',
+      name: 'aiStandardSurface1SG',
       parameters: [
         {
           baseColor: null,
         },
         {
           baseColorTint: [
-            0.01,
-            0.60999999999999999,
-            0.90000000000000002,
+            1,
+            0,
+            0,
             1,
           ],
         },
@@ -34,10 +34,10 @@
       'Orientation',
     ],
     collision: {},
-    file: 'sampledata/model.obj',
-    name: 'model',
+    file: 'sampledata/Locator.obj',
+    name: 'Locator',
     recenter: 'root',
-    scale: 0.14551,
+    scale: 0.5,
   },
   version: '0.54:2',
 }

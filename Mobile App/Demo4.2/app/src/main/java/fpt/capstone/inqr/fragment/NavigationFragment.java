@@ -1,5 +1,6 @@
 package fpt.capstone.inqr.fragment;
 
+import android.animation.Animator;
 import android.graphics.ImageFormat;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
@@ -23,6 +24,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
@@ -117,6 +119,8 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
     private RecyclerView rvLocationStep;
     private LocationStepAdapter mStepAdapter;
 
+    private LottieAnimationView scanQRScanSuccess;
+
 
     public NavigationFragment(List<Location> locationList, List<Room> roomList, String destinationRoomName) {
         this.mLocationList = locationList;
@@ -200,6 +204,30 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
         mSceneView = mArFragment.getArSceneView();
         mSceneView.getScene().addOnUpdateListener(this);
 
+
+        scanQRScanSuccess = view.findViewById(R.id.lottie_scan_qr);
+        scanQRScanSuccess.addAnimatorListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                scanQRScanSuccess.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+
     }
 
     private void prepareData() {
@@ -276,10 +304,8 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
                     getActivity().runOnUiThread(() -> tvScanningResult.setText(code));
                     String[] arrOfStr = code.split("\\|")[0].split(":");
                     scannedLocationId = arrOfStr[arrOfStr.length - 1].trim();
-//                    scannedAnchorID = qrAnchorIdList.get(scannedLocationId);
-                    // TODO: change hard code here
-                    scannedAnchorID = "72521f11-8da9-495e-8f75-8a630ed5d7fa";
-
+                    scannedAnchorID = qrAnchorIdList.get(scannedLocationId);
+                    // FIXED: change hard code here
                     if (!scannedLocationId.equals(previousLocationID)) {
                         didQrAnchorPlaced = false;
                         handleLocate();
@@ -319,9 +345,7 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
     }
 
     private boolean isQRCodeAnchor(String id) {
-        // TODO: ADD
-        return id.equals("72521f11-8da9-495e-8f75-8a630ed5d7fa");
-//        return qrCodeIdList.contains(id);
+        return qrCodeIdList.contains(id);
     }
 
     private int didPathListContainLocation(String locationID) {
@@ -349,12 +373,9 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
             didQrAnchorPlaced = true;
             previousLocationID = scannedLocationId;
 
-            getActivity().runOnUiThread(() -> {
-                tvCurrentDestination.setText(getLocation(scannedLocationId).getName());
-                AnchorModel model = new AnchorModel(cloudAnchor.getLocalAnchor());
-                model.render(getContext(), mArFragment, new Color(android.graphics.Color.BLUE));
-                mAnchorModelList.add(model);
-            });
+            tvCurrentDestination.setText(getLocation(scannedLocationId).getName());
+            scanQRScanSuccess.setVisibility(View.VISIBLE);
+            if (!scanQRScanSuccess.isAnimating()) scanQRScanSuccess.playAnimation();
 
             pathList = wayfinder.getShortestPathList();
             int index = didPathListContainLocation(scannedLocationId);
@@ -369,7 +390,14 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
                 setupLocationStep();
             }
 
-            if (step + 1 <= pathList.size() - 1) {
+            // this point is the destination
+            if (anchorId.equals(getLocation(pathList.get(pathList.size() - 1).getId()).getQrAnchorId())) {
+                desAnchorId = getLocation(pathList.get(pathList.size() - 1).getId()).getSpaceAnchorId();
+                sourceAnchorNode = null;
+                desAnchorNode = null;
+                sourceAnchor = cloudAnchor;
+                handleLookForNearby();
+            } else if (step + 1 <= pathList.size() - 1) {
                 srcAnchorId = getLocation(pathList.get(step).getId()).getSpaceAnchorId();
                 desAnchorId = getLocation(pathList.get(step + 1).getId()).getSpaceAnchorId();
                 step = step + 1;
@@ -382,23 +410,25 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
         } else if (srcAnchorId.equals(anchorId)) {
             sourceAnchorNode = new AnchorNode(cloudAnchor.getLocalAnchor());
             AnchorModel model = new AnchorModel(cloudAnchor.getLocalAnchor());
-            model.render(getContext(), mArFragment, new Color(android.graphics.Color.BLUE));
+            model.render(getContext(), mArFragment, new Color(android.graphics.Color.YELLOW));
             mAnchorModelList.add(model);
         } else if (desAnchorId.equals(anchorId)) {
             desAnchorNode = new AnchorNode(cloudAnchor.getLocalAnchor());
             AnchorModel model = new AnchorModel(cloudAnchor.getLocalAnchor());
-            model.render(getContext(), mArFragment, new Color(android.graphics.Color.BLUE));
             mAnchorModelList.add(model);
-        }
+            // destination
+            if (desAnchorId.equals(getLocation(pathList.get(pathList.size() - 1).getId()).getSpaceAnchorId())) {
+                model.render(getContext(), mArFragment, new Color(android.graphics.Color.RED));
+                model.renderDes(getContext(), mArFragment);
+            } else {
+                model.render(getContext(), mArFragment, new Color(android.graphics.Color.YELLOW));
+            }
+        } // end if src and des anchorid
 
         if (null != sourceAnchorNode && null != desAnchorNode) {
-            getActivity().runOnUiThread(() -> drawLine(sourceAnchorNode, desAnchorNode));
+            drawLine(sourceAnchorNode, desAnchorNode);
             didScan = false;
-        }
-
-
-
-
+        } // end if
     }
 
     private void setupLocationStep() {
@@ -433,16 +463,8 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
         for (AnchorModel model : mAnchorModelList) {
             model.destroy();
         } // end for
-        mAnchorModelList.clear();
-    }
 
-    private void renderModel(AnchorNode anchorNode, Color color) {
-        MaterialFactory.makeOpaqueWithColor(getContext(), color)
-                .thenAccept(material -> {
-                    Renderable nodeRenderable = ShapeFactory.makeCylinder(0.1f, 0.0001f, new Vector3(0.0f, 0.002f, 0.0f), material);
-                    anchorNode.setRenderable(nodeRenderable);
-                    anchorNode.setParent(mArFragment.getArSceneView().getScene());
-                }); // end rendering
+        mAnchorModelList.clear();
     }
 
     private void onSessionUpdated(SessionUpdatedEvent sessionUpdatedEvent) {

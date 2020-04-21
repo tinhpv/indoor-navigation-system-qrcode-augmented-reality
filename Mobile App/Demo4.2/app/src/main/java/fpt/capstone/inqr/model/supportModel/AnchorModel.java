@@ -1,15 +1,20 @@
 package fpt.capstone.inqr.model.supportModel;
 
 import android.content.Context;
+import android.net.Uri;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.google.ar.core.Anchor;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.MaterialFactory;
+import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.ux.ArFragment;
+import com.google.ar.sceneform.ux.TransformableNode;
 import com.microsoft.azure.spatialanchors.CloudSpatialAnchor;
 
 import fpt.capstone.inqr.helper.MainThreadContext;
@@ -25,6 +30,7 @@ public class AnchorModel {
     private final AnchorNode anchorNode;
     private CloudSpatialAnchor cloudAnchor;
     private Renderable nodeRenderable;
+    TransformableNode transformableNode;
 
     public AnchorModel(Anchor localAnchor) {
         anchorNode = new AnchorNode(localAnchor);
@@ -58,6 +64,26 @@ public class AnchorModel {
                         this.nodeRenderable = ShapeFactory.makeCylinder(0.1f, 0.0001f, new Vector3(0.0f, 0.002f, 0.0f), material);
                         this.anchorNode.setRenderable(nodeRenderable);
                         this.anchorNode.setParent(arFragment.getArSceneView().getScene());
+                    });
+        }); // end MainThread
+    }
+
+    public void renderDes(Context context, ArFragment arFragment) {
+        MainThreadContext.runOnUiThread(() -> {
+            ModelRenderable.builder()
+                    .setSource(context, Uri.parse("Locator.sfb"))
+                    .build()
+                    .thenAccept(modelRenderable -> {
+                        this.transformableNode = new TransformableNode(arFragment.getTransformationSystem());
+                        this.transformableNode.setParent(this.anchorNode);
+                        this.transformableNode.setRenderable(modelRenderable);
+                        this.transformableNode.select();
+                        arFragment.getArSceneView().getScene().addChild(this.anchorNode);
+                    })
+                    .exceptionally(throwable -> {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setMessage(throwable.getMessage()).show();
+                        return null;
                     });
         }); // end MainThread
     }
