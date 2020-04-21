@@ -1,12 +1,9 @@
 ﻿<Properties StartupConfiguration="{DF4C2C2E-2C11-4591-BFF2-1B05BE635690}|Default" NuGet.AddPackagesDialog.IncludePrerelease="True">
-  <MonoDevelop.Ide.Workbench ActiveDocument="ServerAPI/Models/DefaultModel/JsonInputModel.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ServerAPI/Startup.cs">
     <Files>
-      <File FileName="ServerAPI/Startup.cs" Line="105" Column="30" />
-      <File FileName="ServerAPI/Controllers/BuildingController.cs" />
-      <File FileName="ServerAPI/IService/IBuildingService.cs" />
-      <File FileName="ServerAPI/Repository/BuildingRepository.cs" Line="935" Column="56" />
-      <File FileName="ServerAPI/Models/Building.cs" Line="17" Column="41" />
-      <File FileName="ServerAPI/Models/DefaultModel/JsonInputModel.cs" Line="45" Column="10" />
+      <File FileName="ServerAPI/Startup.cs" Line="36" Column="17" />
+      <File FileName="ServerAPI/appsettings.json" Line="11" Column="18" />
+      <File FileName="ServerAPI/Database/AppContext.cs" Line="31" Column="16" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -18,12 +15,12 @@
               <Node name="IRepository" expanded="True" />
               <Node name="IService" expanded="True" />
               <Node name="Models" expanded="True">
-                <Node name="DefaultModel" expanded="True">
-                  <Node name="JsonInputModel.cs" selected="True" />
-                </Node>
+                <Node name="DefaultModel" expanded="True" />
               </Node>
               <Node name="Repository" expanded="True" />
               <Node name="Service" expanded="True" />
+              <Node name="appsettings.json" expanded="True" />
+              <Node name="Startup.cs" selected="True" />
             </Node>
           </Node>
         </State>
