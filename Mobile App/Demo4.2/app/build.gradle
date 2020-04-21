@@ -85,8 +85,3 @@ sceneform.asset('sampledata/Locator.obj',
         'default',
         'sampledata/Locator.sfa',
         'src/main/assets/Locator')
-
-sceneform.asset('sampledata/cube.obj',
-        'default',
-        'sampledata/cube.sfa',
-        'src/main/assets/cube')

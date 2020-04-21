@@ -42,7 +42,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/_90sdp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:background="@color/light_gray">
 
             <TextView
                 android:id="@+id/labelStart"
@@ -52,10 +53,10 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginEnd="@dimen/_25sdp"
                 android:layout_marginBottom="@dimen/_3sdp"
-                android:fontFamily="@font/nunito_black"
-                android:text="Walking to"
+                android:fontFamily="@font/nunito_extrabold"
+                android:text="Walking to..."
                 android:textColor="@color/dark_blue"
-                android:textSize="@dimen/_18sdp"
+                android:textSize="22sp"
                 app:layout_constraintBottom_toTopOf="@id/tv_destination"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -63,21 +64,22 @@
 
             <ImageView
                 android:id="@+id/img_pin"
-                android:layout_width="17dp"
-                android:layout_height="17dp"
-                android:src="@drawable/ic_pin"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="5dp"
                 android:layout_marginBottom="@dimen/_10sdp"
+                android:src="@drawable/ic_walk"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@id/labelStart"
-                app:layout_constraintTop_toBottomOf="@id/labelStart"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/labelStart" />
 
             <TextView
                 android:id="@+id/tv_destination"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:layout_marginBottom="@dimen/_12sdp"
-                android:layout_marginStart="@dimen/_10sdp"
                 android:background="@drawable/border_radius_textview"
                 android:fontFamily="@font/nunito_light"
                 android:paddingHorizontal="@dimen/_15sdp"
@@ -95,11 +97,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_marginRight="@dimen/_15sdp"
-                android:fontFamily="@font/nunito_light"
+                android:fontFamily="@font/nunito_bold"
                 android:text="Change"
                 android:textAllCaps="false"
-                android:textColor="@color/text_dark_green"
-                android:background="@drawable/color_radius_button"
+                android:textColor="@color/dark_blue"
+                android:background="@drawable/border_radius_dark_blue_ar"
                 app:layout_constraintBottom_toBottomOf="@id/tv_destination"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tv_destination"
@@ -121,29 +123,30 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/light_gray">
+            android:background="@color/white"
+            android:paddingVertical="@dimen/_5sdp">
 
             <ImageView
                 android:id="@+id/img_current"
-                android:layout_width="@dimen/_8sdp"
-                android:layout_height="@dimen/_8sdp"
-                android:src="@drawable/current_point_dark"
-                android:layout_marginTop="@dimen/_7sdp"
+                android:layout_width="@dimen/_9sdp"
+                android:layout_height="@dimen/_9sdp"
                 android:layout_marginStart="@dimen/_30sdp"
+                android:layout_marginTop="7dp"
+                android:src="@drawable/current_point_dark"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_current_location"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
                 android:background="@android:color/transparent"
                 android:fontFamily="@font/nunito_light"
-                android:text="Scan and detect a nearby QR Code"
+                android:text="Scan a nearby QR Code"
                 android:textColor="@color/dark_blue"
                 android:textSize="16dp"
-                android:layout_marginStart="@dimen/_10sdp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/bt_expand"
                 app:layout_constraintStart_toEndOf="@+id/img_current"
                 app:layout_constraintTop_toTopOf="parent" />
 

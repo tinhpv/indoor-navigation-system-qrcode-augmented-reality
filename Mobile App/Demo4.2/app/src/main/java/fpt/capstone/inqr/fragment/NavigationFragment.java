@@ -2,7 +2,6 @@ package fpt.capstone.inqr.fragment;
 
 import android.animation.Animator;
 import android.graphics.ImageFormat;
-import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.google.ar.core.Anchor;
 import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
 import com.google.ar.core.Session;
@@ -40,7 +39,6 @@ import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
-import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.microsoft.azure.spatialanchors.AnchorLocateCriteria;
@@ -61,8 +59,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import eightbitlab.com.blurview.BlurView;
-import eightbitlab.com.blurview.RenderScriptBlur;
 import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.adapter.LocationStepAdapter;
 import fpt.capstone.inqr.callbacks.BottomSheetRoomListener;
@@ -73,7 +69,6 @@ import fpt.capstone.inqr.helper.Wayfinder;
 import fpt.capstone.inqr.model.Location;
 import fpt.capstone.inqr.model.Room;
 import fpt.capstone.inqr.model.supportModel.AnchorModel;
-import fpt.capstone.inqr.model.supportModel.LocationDemo;
 
 /**
  * Demo4
@@ -113,6 +108,7 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
     private String scannedLocationId, previousLocationID;
     private Wayfinder wayfinder;
 
+    private ImageView imgCurrent;
     private ConstraintLayout expandableView;
     private Button btExpand, btChangeDestination;
     private CardView mCardView;
@@ -167,6 +163,8 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
 
     private void initializeUI() {
         rvLocationStep = view.findViewById(R.id.rv_location_step);
+        mStepAdapter = new LocationStepAdapter(getContext());
+        rvLocationStep.setAdapter(mStepAdapter);
         rvLocationStep.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
 
         tvDestination = view.findViewById(R.id.tv_destination);
@@ -185,16 +183,22 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
             changeDestinationFragment.show(getActivity().getSupportFragmentManager(), null);
         });
 
+        imgCurrent = view.findViewById(R.id.img_current);
+        imgCurrent.setImageResource(R.drawable.ic_scan_qr_fornav);
+
         btExpand = view.findViewById(R.id.bt_expand);
+        btExpand.setVisibility(View.INVISIBLE);
         btExpand.setOnClickListener(v -> {
             if (expandableView.getVisibility() == View.GONE) {
                 TransitionManager.beginDelayedTransition(mCardView, new AutoTransition());
                 expandableView.setVisibility(View.VISIBLE);
                 btExpand.setBackgroundResource(R.drawable.ic_expand_less_black_24dp);
+                tvCurrentDestination.setText("The route to destination");
             } else {
                 TransitionManager.beginDelayedTransition(mCardView, new AutoTransition());
                 expandableView.setVisibility(View.GONE);
                 btExpand.setBackgroundResource(R.drawable.ic_expand_more_black_24dp);
+                tvCurrentDestination.setText(getLocation(scannedLocationId).getName());
             }
         });
 
@@ -374,13 +378,15 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
             previousLocationID = scannedLocationId;
 
             tvCurrentDestination.setText(getLocation(scannedLocationId).getName());
+            imgCurrent.setImageResource(R.drawable.current_point_dark);
+            btExpand.setVisibility(View.VISIBLE);
             scanQRScanSuccess.setVisibility(View.VISIBLE);
             if (!scanQRScanSuccess.isAnimating()) scanQRScanSuccess.playAnimation();
 
             pathList = wayfinder.getShortestPathList();
             int index = didPathListContainLocation(scannedLocationId);
 
-            // TODO: CHECK OR CALCULATE NEW PATH
+            // FIXED: CHECK OR CALCULATE NEW PATH
             if (index != -1) {
                 step = index;
             } else {
@@ -398,6 +404,7 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
                 sourceAnchor = cloudAnchor;
                 handleLookForNearby();
             } else if (step + 1 <= pathList.size() - 1) {
+                resetAnchors();
                 srcAnchorId = getLocation(pathList.get(step).getId()).getSpaceAnchorId();
                 desAnchorId = getLocation(pathList.get(step + 1).getId()).getSpaceAnchorId();
                 step = step + 1;
@@ -434,8 +441,7 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
     private void setupLocationStep() {
         mLocationPathList = new ArrayList<>();
         pathList.forEach(vertex -> mLocationPathList.add(getLocation(vertex.getId())));
-        mStepAdapter = new LocationStepAdapter(getContext(), mLocationPathList);
-        rvLocationStep.setAdapter(mStepAdapter);
+        mStepAdapter.setLocationList(mLocationPathList);
     }
 
     private void handleLookForNearby() {
@@ -572,5 +578,20 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
         tvDestination.setText(roomName);
         wayfinder.setCurrentShortestDistance(0.0);
         wayfinder.setShortestPathList(null);
+        resetAnchors();
+        mStepAdapter.setLocationList(new ArrayList<>());
+
+        step = 0;
+        scannedAnchorID = "";
+        scannedLocationId = "a";
+        previousLocationID = "b";
+        didScan = false;
+        didQrAnchorPlaced = false;
+        desAnchorNode = null;
+        sourceAnchorNode = null;
+
+        imgCurrent.setImageResource(R.drawable.ic_scan_qr_fornav);
+        tvCurrentDestination.setText("Scan a nearby QR Code to start navigating");
+        btExpand.setVisibility(View.INVISIBLE);
     }
 }
