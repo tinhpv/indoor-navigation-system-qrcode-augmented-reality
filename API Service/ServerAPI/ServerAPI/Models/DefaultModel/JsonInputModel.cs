@@ -39,13 +39,13 @@ namespace ServerAPI.Models.DefaultModel
         public string Id { get; set; }
         public string Name { get; set; }
         public string Orientation { get; set; }
-        public double? Distance { get; set; }
+        public double Distance { get; set; }
 
         public LocationBeside()
         {
         }
 
-        public LocationBeside(string id, string name, string orientation, double? distance)
+        public LocationBeside(string id, string name, string orientation, double distance)
         {
             Id = id;
             Name = name;
@@ -58,9 +58,9 @@ namespace ServerAPI.Models.DefaultModel
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public double? RatioX { get; set; }
-        public double? RatioY { get; set; }
-        public bool? SpecialRoom { get; set; }
+        public double RatioX { get; set; }
+        public double RatioY { get; set; }
+        public bool SpecialRoom { get; set; }
         public string SpaceAnchorId { get; set; }
     }
 
@@ -69,7 +69,7 @@ namespace ServerAPI.Models.DefaultModel
         public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public int? Version { get; set; }
+        public int Version { get; set; }
         public string DayExpired { get; set; }
 
         // dựa vào ngày hết hạn, kiểm tra xem có được tải hay không
@@ -77,7 +77,7 @@ namespace ServerAPI.Models.DefaultModel
         // còn hạn thì = false và được tải
         //public bool HadExpired { get; set; }
 
-        public bool? Active { get; set; }
+        public bool Active { get; set; }
 
         public List<Floor> ListFloor { get; set; }
     }

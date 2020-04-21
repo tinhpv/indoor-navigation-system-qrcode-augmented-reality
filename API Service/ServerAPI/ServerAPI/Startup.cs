@@ -13,6 +13,7 @@ using ServerAPI.Service;
 using ServerAPI.Database;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
+using Microsoft.EntityFrameworkCore;
 
 namespace ServerAPI
 {
@@ -31,7 +32,8 @@ namespace ServerAPI
             services.AddControllers();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
 
-            services.AddDbContext<AppContext>();
+            services.AddDbContext<AppContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("IMQRDatabase")));
 
             //services.AddTransient<ILocationRepository, LocationRepository>();
             //services.AddTransient<ILocationService, LocationService>();
