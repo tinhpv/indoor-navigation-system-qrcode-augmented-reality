@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/way_info_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="450dp"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:visibility="gone"
+    app:behavior_peekHeight="?actionBarSize"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <!-- TOP -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_44sdp"
+        android:background="@color/white">
+
+
+        <!-- DISTANCE BLOCK -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/distance_block"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/_20sdp">
+
+            <TextView
+                android:id="@+id/tv_distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_bold"
+                android:inputType="number"
+                android:padding="0dp"
+                android:text="12"
+                android:textColor="@color/dark_green"
+                android:textSize="25sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_distance_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginBottom="7dp"
+                android:fontFamily="@font/nunito_light"
+                android:text="m"
+                android:textColor="@color/dark_green"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_distance"
+                app:layout_constraintStart_toEndOf="@+id/tv_distance" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/img_time"
+            android:layout_width="@dimen/_2sdp"
+            android:layout_height="@dimen/_2sdp"
+            android:src="@drawable/ic_time_dot"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/distance_block"
+            android:layout_marginStart="@dimen/_8sdp"/>
+
+        <!-- TIME BLOCK -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/img_time"
+            android:layout_marginStart="@dimen/_7sdp">
+
+            <TextView
+                android:id="@+id/tv_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_bold"
+                android:inputType="number"
+                android:padding="0dp"
+                android:text="25"
+                android:textColor="@color/black_gray"
+                android:textSize="25sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_time_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginBottom="7dp"
+                android:fontFamily="@font/nunito_light"
+                android:text="sec"
+                android:textColor="@color/black_gray"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_time"
+                app:layout_constraintStart_toEndOf="@+id/tv_time" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </RelativeLayout>
+
+    <!-- EXPANDABLE -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvStep"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+
+</LinearLayout>

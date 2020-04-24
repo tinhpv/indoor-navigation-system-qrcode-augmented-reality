@@ -72,6 +72,7 @@ dependencies {
     implementation 'com.github.vipulasri:timelineview:1.1.4'
     implementation 'com.github.mmin18:realtimeblurview:1.2.1'
     implementation 'com.eightbitlab:blurview:1.6.3'
+    implementation 'com.airbnb.android:lottie:3.4.0'
 }
 
 
@@ -79,3 +80,8 @@ sceneform.asset('sampledata/model.obj',
         'default',
         'sampledata/model.sfa',
         'src/main/assets/arrow')
+
+sceneform.asset('sampledata/Locator.obj',
+        'default',
+        'sampledata/Locator.sfa',
+        'src/main/assets/Locator')

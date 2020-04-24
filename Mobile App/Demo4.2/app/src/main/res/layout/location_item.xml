@@ -5,30 +5,30 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp">
+    android:layout_marginStart="@dimen/_22sdp"
+    android:layout_marginEnd="@dimen/_22sdp">
 
     <com.github.vipulasri.timelineview.TimelineView
         android:id="@+id/timeline"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        app:markerSize="20dp"
-        app:lineWidth="3dp"
-        app:marker="@drawable/oval"
+        app:markerSize="10dp"
+        app:lineWidth="1dp"
+        app:marker="@drawable/current_point_new"
         app:lineStyle="dash"/>
 
     <TextView
         android:id="@+id/tv_location_step"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="5dp"
-        android:textSize="16dp"
+        android:textSize="17sp"
         android:fontFamily="@font/nunito_light"
         android:layout_gravity="center_vertical"
         android:textColor="@android:color/black"
-        tools:text="Order Successfully Completed"/>
+        tools:text="Location here"/>
 
 </LinearLayout>

@@ -74,8 +74,8 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         tvDistance.setText(distance);
         tvTime.setText(time);
 
-        StepAdapter adapter = new StepAdapter(this);
-        adapter.setListSteps(listSteps);
+        StepAdapter adapter = new StepAdapter(listSteps);
+//        adapter.setListSteps(listSteps);
 
         rvStep.setLayoutManager(new LinearLayoutManager(view.getContext(), RecyclerView.VERTICAL, false));
         rvStep.setAdapter(adapter);

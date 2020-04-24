@@ -11,10 +11,10 @@
     <application
         android:name=".activity.INQRApplication"
         android:allowBackup="true"
-        android:icon="@drawable/icon_app"
+        android:icon="@drawable/ic_app_new"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:roundIcon="@drawable/icon_app"
+        android:roundIcon="@drawable/ic_app_new"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activity.AppActivity"

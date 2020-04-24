@@ -66,7 +66,7 @@ public class MapAdapter extends RecyclerView.Adapter<MapHolder> {
 //            createAnimationPoint(bitmap, holder.imgMap);
 //        }
 
-        createAnimation(listSource.get(position), holder.imgMap, position);
+//        createAnimation(listSource.get(position), holder.imgMap, position);
 
         if (position == 0) {
             Line firstLine = listLines.get(0).get(0);

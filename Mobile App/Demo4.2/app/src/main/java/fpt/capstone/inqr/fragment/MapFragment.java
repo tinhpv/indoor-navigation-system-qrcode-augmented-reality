@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.hardware.Sensor;
@@ -29,16 +30,20 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -60,6 +65,7 @@ import java.util.Map;
 import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.adapter.MapAdapter;
 import fpt.capstone.inqr.adapter.PointViewAdapter;
+import fpt.capstone.inqr.adapter.StepAdapter;
 import fpt.capstone.inqr.dijkstra.DijkstraShortestPath;
 import fpt.capstone.inqr.dijkstra.Edge;
 import fpt.capstone.inqr.dijkstra.Vertex;
@@ -90,10 +96,11 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     private RecyclerView rvMap, rvDot;
     private MapAdapter adapterMap;
     private PointViewAdapter adapterPoint;
-    private CardView bgNavigate, bgStep;
+    private LinearLayout btNavigate, btStepList;
     private ImageView imgScan;
     private FrameLayout frame;
     private TextView tvTime, tvDistance;
+    private LinearLayout howItWorkBlock;
 
     private DatabaseHelper db;
     private Bitmap mapImg;
@@ -136,11 +143,21 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     private Handler checkQrExistHandler;
     private Runnable runnable;
 
+
     // walking-speed
     private double oldDistanceRemove;
     private String oldTimeScan;
     private String currentTime;
     private SimpleDateFormat sdf;
+
+    // TODO: ADD SOME BOTTOM-SHEET HANDLER
+    private BottomSheetBehavior bottomSheetBehavior;
+    private LinearLayout linearLayoutBottomSheet;
+    private RelativeLayout mapFooterSection;
+    private RecyclerView rvStep;
+    private StepAdapter stepAdapter;
+    private ImageView imgWayInfoToggle;
+    private TextView tvWayInfoToggleName;
 
 
     public MapFragment() {
@@ -250,7 +267,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_map, container, false);
+        View view = inflater.inflate(R.layout.fragment_map_modified, container, false);
 
         initView(view);
         setupInput();
@@ -269,19 +286,9 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
             }
         });
 
-        bgNavigate.setOnClickListener(v -> {
-            NavigationFragment navFragment = new NavigationFragment(locationList, listRoom, nameOfDestinationRoom);
-            changeFragment(navFragment, true, false);
-        });
-
-        bgStep.setOnClickListener(v -> {
-            BottomSheetFragment bottomSheetFragment = new BottomSheetFragment(listStep, tvDistance.getText().toString(), tvTime.getText().toString());
-            bottomSheetFragment.show(getActivity().getSupportFragmentManager(), bottomSheetFragment.getTag());
-        });
-
         // prepare rv
         adapterMap = new MapAdapter(getActivity());
-        adapterPoint = new PointViewAdapter(this);
+        adapterPoint = new PointViewAdapter(this, getActivity());
 
         rvMap.setLayoutManager(new LinearLayoutManager(this.getContext(), RecyclerView.HORIZONTAL, false) {
             @Override
@@ -442,33 +449,75 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     private void initView(View view) {
         rvMap = view.findViewById(R.id.rvMap);
         rvDot = view.findViewById(R.id.rvDot);
-        bgNavigate = view.findViewById(R.id.bgNavigate);
-        bgStep = view.findViewById(R.id.bgStep);
+        btNavigate = view.findViewById(R.id.bt_navigate);
+        btStepList = view.findViewById(R.id.bt_step_list);
         imgScan = view.findViewById(R.id.imgScan);
-//        imgView = view.findViewById(R.id.imgView);
         tvStart = view.findViewById(R.id.tvStart);
         tvEnd = view.findViewById(R.id.tvEnd);
 
         frame = view.findViewById(R.id.frame);
+        howItWorkBlock = view.findViewById(R.id.how_it_work_block);
 
         img = view.findViewById(R.id.img);
         bgImg = view.findViewById(R.id.bgImg);
-//        bgCam = view.findViewById(R.id.bgCam);
         cameraView = view.findViewById(R.id.cameraView);
 
+        // TODO: CHANGE THE ID OF TEXT VIEW
+        tvTime = view.findViewById(R.id.tv_time);
+        tvDistance = view.findViewById(R.id.tv_distance);
+        tvWayInfoToggleName = view.findViewById(R.id.tv_way_info_toggle_name);
+        imgWayInfoToggle = view.findViewById(R.id.img_way_info_toggle);
 
-        tvTime = view.findViewById(R.id.tvTime);
-        tvDistance = view.findViewById(R.id.tvDistance);
+        rvStep = view.findViewById(R.id.rvStep);
+        stepAdapter = new StepAdapter(new ArrayList<>());
+        rvStep.setLayoutManager(new LinearLayoutManager(view.getContext(), RecyclerView.VERTICAL, false));
+        rvStep.setAdapter(stepAdapter);
+
+        mapFooterSection = view.findViewById(R.id.map_footer_section);
+        linearLayoutBottomSheet = view.findViewById(R.id.way_info_bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(linearLayoutBottomSheet);
+        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    tvWayInfoToggleName.setText("SHOW MAP");
+                    imgWayInfoToggle.setImageResource(R.drawable.ic_show_map);
+                } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    tvWayInfoToggleName.setText("STEP AND MORE");
+                    imgWayInfoToggle.setImageResource(R.drawable.ic_step_and_more);
+                } // end if
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
+
+        btNavigate.setOnClickListener(v -> {
+            NavigationFragment navFragment = new NavigationFragment(locationList, listRoom, nameOfDestinationRoom);
+            changeFragment(navFragment, true, false);
+        });
+
+        btStepList.setOnClickListener(v -> {
+            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            } else {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
+        });
     }
 
+
     private void showMap() {
+        howItWorkBlock.setVisibility(View.GONE);
+        linearLayoutBottomSheet.setVisibility(View.VISIBLE);
+        mapFooterSection.setVisibility(View.VISIBLE);
         rvMap.setVisibility(View.VISIBLE);
         rvDot.setVisibility(View.VISIBLE);
-        bgNavigate.setVisibility(View.VISIBLE);
-        bgStep.setVisibility(View.VISIBLE);
-
         tvTime.setVisibility(View.VISIBLE);
         tvDistance.setVisibility(View.VISIBLE);
+        stepAdapter.setListSteps(listStep);
     }
 
     private void setupCamera() {
@@ -523,8 +572,8 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
         }).facing(QREader.BACK_CAM)
                 .enableAutofocus(true)
-//                .height(cameraView.getHeight())
-//                .width(cameraView.getWidth())
+                .height(cameraView.getHeight())
+                .width(cameraView.getWidth())
                 .build();
         qrEader.start();
     }
@@ -672,75 +721,101 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         imm.hideSoftInputFromWindow(tvEnd.getWindowToken(), 0);
         imm.hideSoftInputFromWindow(tvStart.getWindowToken(), 0);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        new Handler().postDelayed(() -> {
 //                findWay(startLocationId, roomName);
 
-                List<Vertex> listTmp = checkLocationInListFindWay(startLocationId);
-                if (listTmp == null) {
-                    destination = roomName;
-                    findWay(startLocationId, destination);
-                } else {
-                    listPointOnWay = listTmp;
-                    // update UI
-                    drawOnMap();
-                }
+            List<Vertex> listTmp = checkLocationInListFindWay(startLocationId);
+            if (listTmp == null) {
+                destination = roomName;
+                findWay(startLocationId, destination);
+            } else {
+                listPointOnWay = listTmp;
+                // update UI
+                drawOnMap();
+            }
 
-                // cal time and distance
-                // khoảng cách chính xác sẽ bằng: khoảng cách từ điểm bắt đầu đến điểm kết thúc - khoảng cách từ điểm bắt đầu
-                // đến điểm đầu tiên trong listPointOnWay
-                if (currentPath != 0) {
-                    double distanceRemove = listPointOnWay.get(0).getDistance();
-                    double distanceReal = currentPath - distanceRemove;
-                    int speed = 0;
+            // cal time and distance
+            // khoảng cách chính xác sẽ bằng: khoảng cách từ điểm bắt đầu đến điểm kết thúc - khoảng cách từ điểm bắt đầu
+            // đến điểm đầu tiên trong listPointOnWay
+            if (currentPath != 0) {
+                double distanceRemove = listPointOnWay.get(0).getDistance();
+                double distanceReal = currentPath - distanceRemove;
+                int speed = 0;
 
-                    if (distanceRemove != 0) {
-                        double tmpDistance = distanceRemove - oldDistanceRemove;
-
-                        currentTime = sdf.format(new Date());
-                        Date startTime = null;
-                        Date endTime = null;
-                        try {
-                            startTime = sdf.parse(oldTimeScan);
-                            endTime = sdf.parse(currentTime);
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-
-
-                        long tmpTime = endTime.getTime() - startTime.getTime();
-
-                        speed = (int) ((tmpDistance * (1000 * 60 * 60)) / tmpTime);
-                    } else {
-
-                        // speed : m/h
-                        speed = PreferenceHelper.getInt(getContext(), "speed_walking");
-
-                        if (speed == 0) {
-                            speed = getActivity().getResources().getInteger(R.integer.speed_walking);
-                            PreferenceHelper.putInt(getContext(), "speed_walking", speed);
-                        }
-                    }
-
-
-                    double time = distanceReal / speed * 60;
-
-                    int mins = (int) (time / 1);
-                    int sens = (int) (time % 1 * 60);
-
+                if (distanceRemove != 0) {
+                    double tmpDistance = distanceRemove - oldDistanceRemove;
 
                     currentTime = sdf.format(new Date());
-                    Date date = null;
+                    Date startTime = null;
+                    Date endTime = null;
                     try {
-                        date = sdf.parse(currentTime);
+                        startTime = sdf.parse(oldTimeScan);
+                        endTime = sdf.parse(currentTime);
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(date);
-                    calendar.add(Calendar.SECOND, sens);
-                    calendar.add(Calendar.MINUTE, mins);
+
+
+                    long tmpTime = endTime.getTime() - startTime.getTime();
+
+                    speed = (int) ((tmpDistance * (1000 * 60 * 60)) / tmpTime);
+                } else {
+
+                    // speed : m/h
+                    speed = PreferenceHelper.getInt(getContext(), "speed_walking");
+
+                    if (speed == 0) {
+                        speed = getActivity().getResources().getInteger(R.integer.speed_walking);
+                        PreferenceHelper.putInt(getContext(), "speed_walking", speed);
+                    }
+                }
+//=======
+//            List<Vertex> listTmp = checkLocationInListFindWay(startLocationId);
+//            if (listTmp == null) {
+//                destination = roomName;
+//                findWay(startLocationId, destination);
+//            } else {
+//                listPointOnWay = listTmp;
+//                // update UI
+//                drawOnMap();
+//            }
+//
+//            // cal time and distance
+//            // khoảng cách chính xác sẽ bằng: khoảng cách từ điểm bắt đầu đến điểm kết thúc - khoảng cách từ điểm bắt đầu
+//            // đến điểm đầu tiên trong listPointOnWay
+//            if (currentPath != 0) {
+//                double distanceRemove = listPointOnWay.get(0).getDistance();
+//                double distanceReal = currentPath - distanceRemove;
+//
+//                // speed : m/h
+//                int speed = PreferenceHelper.getInt(getContext(), "speed_walking");
+//>>>>>>> a08bc4e151a122ca3e356a11e433ae25fc8eff8c
+
+                if (speed == 0) {
+                    speed = getActivity().getResources().getInteger(R.integer.speed_walking);
+                    PreferenceHelper.putInt(getContext(), "speed_walking", speed);
+                }
+
+
+                double time = distanceReal / speed * 60;
+
+                int mins = (int) (time / 1);
+                int sens = (int) (time % 1 * 60);
+
+
+//<<<<<<< HEAD
+
+                currentTime = sdf.format(new Date());
+                Date date = null;
+                try {
+                    date = sdf.parse(currentTime);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(date);
+                calendar.add(Calendar.SECOND, sens);
+                calendar.add(Calendar.MINUTE, mins);
 
 //                    if (mins != 0) {
 //
@@ -752,19 +827,30 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 //                    }
 
 //                    tvTime.setText(currentTime + " - " + sdf.format(calendar.getTime()) + " - " + (Math.round(time * 100.0) / 100.0) + " - " + speed);
-                    tvTime.setText(currentTime + " - " + sdf.format(calendar.getTime()));
+                tvTime.setText(currentTime + " - " + sdf.format(calendar.getTime()));
 
-                    tvDistance.setText("(" + (int) Math.round(distanceReal) + "m)");
+                tvDistance.setText("(" + (int) Math.round(distanceReal) + "m)");
 
-                    oldTimeScan = currentTime;
-                    oldDistanceRemove = distanceRemove;
-                } else {
-                    tvTime.setText("You are at the destination");
-                    tvDistance.setText("");
-                }
-
-
+                oldTimeScan = currentTime;
+                oldDistanceRemove = distanceRemove;
+//=======
+//                int mins = (int) (time / 1);
+//                int sens = (int) (time % 1 * 60);
+//
+//                if (mins != 0) {
+//                    tvTime.setText(mins + "min " + sens + "sec");
+//>>>>>>> a08bc4e151a122ca3e356a11e433ae25fc8eff8c
+//                } else {
+//                    tvTime.setText(sens + "sec");
+//                }
+//
+//                tvDistance.setText("" + (int) Math.round(distanceReal));
+            } else {
+                tvTime.setText("You are at the destination");
+                tvDistance.setText("");
             }
+
+
         }, 200);
     }
 
@@ -1050,6 +1136,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     }
 
     private void getListSourceMap() {
+
         if (listSourceMap == null) {
             listSourceMap = new ArrayList<>();
         } else {
@@ -1103,77 +1190,85 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
         lines = new ArrayList<>();
 
-
         setImage(currentFloorId);
         canvas = new Canvas(mapImg);
 
-//        System.out.println("Starting point: " + getStartingPoint());
-//        drawPoint(0);
+        Paint paint = new Paint();
+        int color = ContextCompat.getColor(getContext(), R.color.green);
+        paint.setColor(color);
+        paint.setStrokeWidth(26);
+        paint.setDither(true);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setPathEffect(new CornerPathEffect(10));
+        paint.setAntiAlias(true);
+
+
+        float arrowStartX = 0.0f, arrowStartY = 0.0f, arrowEndX = 0.0f, arrowEndY = 0.0f;
 
         if (listPointOnWay.size() == 1) {
             String idStart = listPointOnWay.get(0).getId();
             Location startPoint = getLocation(idStart);
-            float xStart, yStart, xEnd, yEnd;
-            xStart = Math.round(mapImg.getWidth() * startPoint.getRatioX());
-            yStart = Math.round(mapImg.getHeight() * startPoint.getRatioY());
+            float startX = Math.round(mapImg.getWidth() * startPoint.getRatioX());
+            float startY = Math.round(mapImg.getHeight() * startPoint.getRatioY());
+            float endX = Math.round(mapImg.getWidth() * endRoom.getRatioX());
+            float endY = Math.round(mapImg.getHeight() * endRoom.getRatioY());
 
-            xEnd = Math.round(mapImg.getWidth() * endRoom.getRatioX());
-            yEnd = Math.round(mapImg.getHeight() * endRoom.getRatioY());
+            lines.add(new Line(startX, startY, endX, endY));
 
-            drawLine(xStart, yStart, xEnd, yEnd);
-//            imgView.setImageBitmap(mapImg);
+            Path path = new Path();
+            path.moveTo(startX, startY);
+            path.lineTo(endX, endY);
+            canvas.drawPath(path, paint);
 
-            fillArrow(xStart, yStart, xEnd, yEnd);
+            arrowStartX = startX;
+            arrowStartY = startY;
+            arrowEndX = endX;
+            arrowEndY = endY;
         } else {
+            Path path = new Path();
             for (int i = 0; i < listPointOnWay.size(); i++) {
-
                 if (i != listPointOnWay.size() - 1) {
-
-//                int currentFloor = Integer.parseInt(tmp[tmp.length - 1]);
                     if (getLocation(listPointOnWay.get(i).getId()).getFloorId().equals(currentFloorId)) {
-
                         String idStart = listPointOnWay.get(i).getId();
                         String idEnd = listPointOnWay.get(i + 1).getId();
-
                         Location startPoint = getLocation(idStart);
 
-                        float xStart, yStart, xEnd, yEnd;
-                        xStart = Math.round(mapImg.getWidth() * startPoint.getRatioX());
-                        yStart = Math.round(mapImg.getHeight() * startPoint.getRatioY());
+                        float startX, startY, endX, endY;
 
+                        startX = Math.round(mapImg.getWidth() * startPoint.getRatioX());
+                        startY = Math.round(mapImg.getHeight() * startPoint.getRatioY());
 
                         if (i == listPointOnWay.size() - 2) { // node cuối lấy tọa độ của room
-//                        Room room = getRoom(tvEnd.getText().toString());
-
-                            xEnd = Math.round(mapImg.getWidth() * endRoom.getRatioX());
-                            yEnd = Math.round(mapImg.getHeight() * endRoom.getRatioY());
+                            endX = Math.round(mapImg.getWidth() * endRoom.getRatioX());
+                            endY = Math.round(mapImg.getHeight() * endRoom.getRatioY());
                         } else {
                             Location endPoint = getLocation(idEnd);
-
-                            xEnd = Math.round(mapImg.getWidth() * endPoint.getRatioX());
-                            yEnd = Math.round(mapImg.getHeight() * endPoint.getRatioY());
+                            endX = Math.round(mapImg.getWidth() * endPoint.getRatioX());
+                            endY = Math.round(mapImg.getHeight() * endPoint.getRatioY());
                         }
 
-                        drawLine(xStart, yStart, xEnd, yEnd);
-//                        imgView.setImageBitmap(mapImg);
+                        path.moveTo(startX, startY);
+                        path.lineTo(endX, endY);
+
+                        lines.add(new Line(startX, startY, endX, endY));
 
                         if (i == 0) {
-                            fillArrow(xStart, yStart, xEnd, yEnd);
+                            arrowStartX = startX;
+                            arrowStartY = startY;
+                            arrowEndX = endX;
+                            arrowEndY = endY;
                         }
-                    }
-
-
-                } else {
-                    if (getLocation(listPointOnWay.get(i).getId()).getFloorId().equals(currentFloorId)) {
-//                        imgView.setImageBitmap(mapImg);
-                    }
-                }
-            }
+                    } // end if current floor equal
+                } // end if max size
+            } // end for each point
+            canvas.drawPath(path, paint);
         }
 
+        fillArrow(arrowStartX, arrowStartY, arrowEndX, arrowEndY);
         drawPoint(listPointOnWay.get(0).getId(), currentFloorId);
 
-//        imgView.setImageBitmap(mapImg);
         // add map
         listSourceMap.add(mapImg);
         listLines.add(lines);
@@ -1191,32 +1286,22 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
     private void drawPoint(String idStart, String currentFloorId) {
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-//        for (int i = 0; i < listPointOnWay.size() - 1; i++) {
-//            Location location = getLocation(listPointOnWay.get(i).getId());
-//            if (location.getFloorId().equals(currentFloorId)) {
-//
-//                canvas.drawCircle(Math.round(mapImg.getWidth() * location.getRatioX()), Math.round(mapImg.getHeight() * location.getRatioY()), 30, new Paint());
-//            }
-//        }
 
         if (idStart != null) {
             Location location = getLocation(idStart);
+
             if (location.getFloorId().equals(currentFloorId)) {
                 paint.setStyle(Paint.Style.FILL);
                 paint.setColor(Color.RED);
-
                 Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.current_point);
-//                canvas.drawCircle(Math.round(mapImg.getWidth() * location.getRatioX()), Math.round(mapImg.getHeight() * location.getRatioY()), 50, paint);
                 canvas.drawBitmap(bitmap, Math.round(mapImg.getWidth() * location.getRatioX() - bitmap.getWidth() / 2), Math.round(mapImg.getHeight() * location.getRatioY() - bitmap.getHeight() / 2), new Paint());
             }
 
-//            Room room = getRoom(tvEnd.getText().toString());
             if (endRoom.getFloorId().equals(currentFloorId)) {
                 paint.setStyle(Paint.Style.FILL);
                 paint.setColor(Color.YELLOW);
                 Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.destination_on_map);
                 canvas.drawBitmap(bitmap, Math.round(mapImg.getWidth() * endRoom.getRatioX() - bitmap.getWidth() / 2), Math.round(mapImg.getHeight() * endRoom.getRatioY() - bitmap.getHeight()), new Paint());
-//                canvas.drawCircle(Math.round(mapImg.getWidth() * endRoom.getRatioX()), Math.round(mapImg.getHeight() * endRoom.getRatioY()), 30, paint);
             }
         }
 
@@ -1226,13 +1311,19 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
-        paint.setStrokeWidth(30);
-        paint.setColor(Color.GREEN);
+        paint.setStrokeWidth(26);
+        int color = ContextCompat.getColor(getContext(), R.color.dark_yellow);
+        paint.setColor(color);
+        paint.setAntiAlias(true);
+        paint.setDither(true);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setPathEffect(new CornerPathEffect(10));
 
         float angle, anglerad, radius, lineangle;
 
         //values to change for other appearance *CHANGE THESE FOR OTHER SIZE ARROWHEADS*
-        radius = 100;
+        radius = 96;
         angle = 60;
 
         //some angle calculations
@@ -1246,10 +1337,10 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         Path path = new Path();
         path.setFillType(Path.FillType.EVEN_ODD);
         path.moveTo(to_x, to_y);
-        path.lineTo((float) (to_x - radius * cos(lineangle - (anglerad / 2.0))),
-                (float) (to_y - radius * sin(lineangle - (anglerad / 2.0))));
-        path.lineTo((float) (to_x - radius * cos(lineangle + (anglerad / 2.0))),
-                (float) (to_y - radius * sin(lineangle + (anglerad / 2.0))));
+        path.lineTo((float) (to_x - radius * cos(lineangle - (anglerad / 2))),
+                (float) (to_y - radius * sin(lineangle - (anglerad / 2))));
+        path.lineTo((float) (to_x - radius * cos(lineangle + (anglerad / 2))),
+                (float) (to_y - radius * sin(lineangle + (anglerad / 2))));
         path.close();
 
         canvas.drawPath(path, paint);
@@ -1260,8 +1351,11 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
         final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.parseColor("#F78B03"));
-        paint.setStrokeWidth(25);
+        int color = ContextCompat.getColor(getContext(), R.color.dark_green);
+        paint.setColor(color);
+        paint.setStrokeWidth(20);
+
+        //paint.setShader(new LinearGradient(0, 0, 0, 100, Color.BLUE, Color.BLACK, Shader.TileMode.MIRROR));
         canvas.drawLine(xStart, yStart, xEnd, yEnd, paint);
     }
 

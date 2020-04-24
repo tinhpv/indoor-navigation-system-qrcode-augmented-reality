@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,7 +18,8 @@ import fpt.capstone.inqr.R;
 public class InfoDialog extends DialogFragment {
 
     private String buildingName, description;
-    private TextView tvName, tvDes, tvClose;
+    private TextView tvName, tvDes;
+    private Button btClose;
 
     public InfoDialog(String buildingName, String description) {
         this.buildingName = buildingName;
@@ -28,25 +30,21 @@ public class InfoDialog extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogStyle);
-
-//        setCancelable(false);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_info, container, false);
+        View view = inflater.inflate(R.layout.dialog_info_modified, container, false);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         tvName = view.findViewById(R.id.tvName);
         tvDes = view.findViewById(R.id.tvDes);
-        tvClose = view.findViewById(R.id.tvClose);
-
+        btClose = view.findViewById(R.id.bt_close);
 
         tvName.setText(buildingName);
         tvDes.setText(description);
-
-        tvClose.setOnClickListener(v -> dismiss());
+        btClose.setOnClickListener(v -> dismiss());
 
         return view;
     }

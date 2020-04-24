@@ -28,9 +28,13 @@ public class LocationStepAdapter extends RecyclerView.Adapter<LocationStepAdapte
     private Context mContext;
     private List<Location> mLocationList;
 
-    public LocationStepAdapter(Context context, List<Location> locationList) {
+    public LocationStepAdapter(Context context) {
         mContext = context;
+    }
+
+    public void setLocationList(List<Location> locationList) {
         mLocationList = locationList;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -53,7 +57,7 @@ public class LocationStepAdapter extends RecyclerView.Adapter<LocationStepAdapte
 
     @Override
     public int getItemCount() {
-        return mLocationList.size();
+        return mLocationList != null ? mLocationList.size() : 0;
     }
 
     public class LocationStepViewHolder extends RecyclerView.ViewHolder {

@@ -18,10 +18,9 @@ import fpt.capstone.inqr.model.supportModel.Step;
 public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
 
     private List<Step> listSteps;
-    private BottomSheetFragment fragment;
 
-    public StepAdapter(BottomSheetFragment fragment) {
-        this.fragment = fragment;
+    public StepAdapter(List<Step> listSteps) {
+        this.listSteps = listSteps;
     }
 
     public void setListSteps(List<Step> listSteps) {
@@ -39,13 +38,17 @@ public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull StepHolder holder, int position) {
-
         Step step = listSteps.get(position);
+
+
+
         // set UI theo Type
         if (step.getType() == Step.TYPE_START_POINT) {
-            holder.imgType.setImageResource(R.drawable.current_point_dark);
+            holder.imgType.setImageResource(R.drawable.current_point_new);
+            holder.imgType.getLayoutParams().height = 50;
         } else if (step.getType() == Step.TYPE_END_POINT) {
             holder.imgType.setImageResource(R.drawable.destination_on_map);
+            holder.imgType.getLayoutParams().height = 58;
         } else if (step.getType() == Step.TYPE_GO_STRAIGHT) {
             holder.imgType.setImageResource(R.drawable.go_ahead);
         } else if (step.getType() == Step.TYPE_TURN_LEFT) {
@@ -68,13 +71,14 @@ public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
 
             holder.tvDistance.setText("estimated " + step.getDistance());
 
+            // TODO: TEMPORARILY DISABLE
             // set speaker
-            holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo() + " estimated " + step.getDistance()));
+            //holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo() + " estimated " + step.getDistance()));
         } else {
             holder.tvDistance.setVisibility(View.GONE);
 
             // set speaker
-            holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo()));
+            //holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo()));
         }
 
         holder.tvInfo.setText(step.getInfo());

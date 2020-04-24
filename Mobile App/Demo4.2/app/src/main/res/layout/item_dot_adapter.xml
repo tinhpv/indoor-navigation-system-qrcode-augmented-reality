@@ -4,9 +4,8 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:layout_marginTop="@dimen/_13sdp"
-    android:layout_marginBottom="@dimen/_13sdp"
-    >
+    android:layout_marginTop="@dimen/_10sdp"
+    android:layout_marginBottom="@dimen/_10sdp">
 
     <ImageView
         android:id="@+id/bgPoint"
@@ -14,33 +13,34 @@
         android:layout_height="@dimen/_8sdp"
         android:layout_gravity="center"
         android:visibility="gone"
-        android:background="@drawable/point_no_choose"
-        />
+        android:background="@drawable/point_no_choose" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/bgName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="@dimen/_10sdp"
-        android:elevation="0dp"
+        app:cardCornerRadius="@dimen/_4sdp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/light_gray"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/_5sdp"
         android:layout_marginStart="@dimen/_5sdp"
         android:layout_marginEnd="@dimen/_5sdp"
-        android:layout_marginBottom="@dimen/_5sdp"
-        >
+        android:layout_marginBottom="@dimen/_5sdp">
+
         <TextView
             android:id="@+id/tvName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:fontFamily="@font/nunito_bold"
-            android:textColor="@android:color/black"
-            android:text="Tầng 1"
-            />
+            android:layout_marginStart="@dimen/_8sdp"
+            android:layout_marginEnd="@dimen/_8sdp"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:layout_marginBottom="@dimen/_3sdp"
+            android:fontFamily="@font/nunito_light"
+            android:textColor="@color/dark_blue"
+            android:textSize="10sp"
+            android:text="Tầng 1" />
+
     </androidx.cardview.widget.CardView>
 
 </FrameLayout>

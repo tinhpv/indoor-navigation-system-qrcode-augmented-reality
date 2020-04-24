@@ -12,6 +12,9 @@
     <string name="ACCOUNT_ID">d5a6066b-ff8a-4582-92f4-aba73928ce46</string>
     <string name="ACCOUNT_KEY">T3TesRQte4QsoZr9Cp7QGVLB1ILJuAkPpsmXMPTPxV4=</string>
     <string name="itemChangeSpeed">Change walking speed</string>
+    <string name="instruction_findway">In turn, set the starting point and destination by tapping on label, type and choose a place on suggested list. A path will display on map </string>
+    <string name="instruction_navigate">Tap on the scanner button on the right of starting location to open QR-Scanner, scan a QR-Code around you, a direction guide will display. Keep scanning QR-Code and follow the guide to reach the destination </string>
+    <string name="instruction_ar">After setting the destination, tap on Navigate button below to be navigated by AR</string>
 
     <string-array name="sex_array">
         <item>Male</item>

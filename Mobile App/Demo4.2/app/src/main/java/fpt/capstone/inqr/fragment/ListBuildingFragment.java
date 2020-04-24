@@ -136,8 +136,9 @@ public class ListBuildingFragment extends BaseFragment {
     }
 
     public void showInfo(Building building) {
-        InfoDialog infoDialog = new InfoDialog(building.getName(), building.getDescription() + "\n\n" + "Day Expired: " + building.getDayExpired());
-
+        InfoDialog infoDialog =
+                new InfoDialog(building.getName(),
+                        building.getDescription() + "\n\n" + "Day Expired: " + building.getDayExpired());
         infoDialog.show(getChildFragmentManager(), "info");
     }
 
@@ -274,7 +275,7 @@ public class ListBuildingFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_list_building, container, false);
+        View view = inflater.inflate(R.layout.fragment_list_building_updated, container, false);
 
         setView(view);
 
@@ -325,6 +326,7 @@ public class ListBuildingFragment extends BaseFragment {
                 }
 
             });
+
             popupMenu.show();
         });
 
