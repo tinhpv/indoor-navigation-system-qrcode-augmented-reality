@@ -39,7 +39,9 @@ import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.rendering.PlaneRenderer;
 import com.google.ar.sceneform.rendering.ShapeFactory;
+import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.microsoft.azure.spatialanchors.AnchorLocateCriteria;
 import com.microsoft.azure.spatialanchors.AnchorLocatedEvent;
@@ -58,6 +60,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.adapter.LocationStepAdapter;
@@ -290,6 +293,24 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
             this.cloudSession.processFrame(mSceneView.getArFrame());
         }
 
+
+//        Texture.Sampler sampler =
+//                Texture.Sampler.builder()
+//                        .setMagFilter(Texture.Sampler.MagFilter.LINEAR)
+//                        .setMinFilter(Texture.Sampler.MinFilter.LINEAR)
+//                        .setWrapMode(Texture.Sampler.WrapMode.REPEAT)
+//                        .build();
+//
+//        CompletableFuture<Texture> trigrid = Texture.builder()
+//                .setSource(getContext(), R.drawable.trigrid)
+//                .setSampler(sampler).build();
+//
+//        PlaneRenderer planeRenderer = mArFragment.getArSceneView().getPlaneRenderer();
+//        planeRenderer.getMaterial().thenAcceptBoth(trigrid, (material, texture) -> {
+//            material.setTexture(PlaneRenderer.MATERIAL_TEXTURE, texture);
+//            material.setFloat(PlaneRenderer.MATERIAL_SPOTLIGHT_RADIUS, Float.MAX_VALUE);
+//        });
+
         // ----- get image from arcore frame to analyze QR-Code ----- //
         if (!didScan) {
             Frame frame = mSceneView.getArFrame();
@@ -398,6 +419,7 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
 
             // this point is the destination
             if (anchorId.equals(getLocation(pathList.get(pathList.size() - 1).getId()).getQrAnchorId())) {
+                srcAnchorId = "";
                 desAnchorId = getLocation(pathList.get(pathList.size() - 1).getId()).getSpaceAnchorId();
                 sourceAnchorNode = null;
                 desAnchorNode = null;

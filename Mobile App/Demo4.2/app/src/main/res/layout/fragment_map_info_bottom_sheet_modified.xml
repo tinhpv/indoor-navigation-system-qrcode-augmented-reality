@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/way_info_bottom_sheet"
     android:layout_width="match_parent"
-    android:layout_height="450dp"
+    android:layout_height="wrap_content"
     android:background="@android:color/white"
     android:orientation="vertical"
     android:visibility="gone"
@@ -13,9 +13,8 @@
     <!-- TOP -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_44sdp"
+        android:layout_height="?actionBarSize"
         android:background="@color/white">
-
 
         <!-- DISTANCE BLOCK -->
         <androidx.constraintlayout.widget.ConstraintLayout

@@ -3,9 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:clickable="true"
-    android:focusable="true">
+    android:orientation="vertical">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -356,7 +354,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
-                    android:layout_marginBottom="@dimen/_38sdp"
+                    android:layout_marginBottom="?actionBarSize"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
@@ -372,75 +370,77 @@
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <!-- STEP GUIDE + NAVIGATE SECTION-->
-    <RelativeLayout
-        android:id="@+id/map_footer_section"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/light_gray_input"
-        android:padding="@dimen/_6sdp"
-        android:visibility="gone">
 
-        <LinearLayout
-            android:id="@+id/bt_step_list"
-            android:layout_width="wrap_content"
+
+        <RelativeLayout
+            android:id="@+id/map_footer_section"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginStart="@dimen/_15sdp"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical">
+            android:background="@color/light_gray_input"
+            android:padding="@dimen/_7sdp"
+            android:visibility="gone">
 
-            <ImageView
-                android:id="@+id/img_way_info_toggle"
-                android:layout_width="@dimen/_11sdp"
-                android:layout_height="@dimen/_11sdp"
-                android:src="@drawable/ic_step_and_more"/>
-
-            <TextView
-                android:id="@+id/tv_way_info_toggle_name"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:fontFamily="@font/nunito_bold"
-                android:text="STEP AND MORE"
-                android:textSize="12sp"
-                android:textColor="@color/dark_blue"/>
+                android:orientation="horizontal"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical">
 
-        </LinearLayout>
+                <ImageView
+                    android:id="@+id/img_way_info_toggle"
+                    android:layout_width="@dimen/_11sdp"
+                    android:layout_height="@dimen/_11sdp"
+                    android:src="@drawable/ic_step_and_more"/>
 
-        <LinearLayout
-            android:id="@+id/bt_navigate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginEnd="@dimen/_12sdp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true"
-            android:gravity="center_vertical"
-            android:background="@drawable/border_radius_dark_blue">
+                <TextView
+                    android:id="@+id/tv_way_info_toggle_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:fontFamily="@font/nunito_bold"
+                    android:text="STEP AND MORE"
+                    android:textSize="12sp"
+                    android:textColor="@color/dark_blue"/>
 
-            <ImageView
-                android:layout_width="@dimen/_21sdp"
-                android:layout_height="@dimen/_21sdp"
-                android:src="@drawable/ic_nav_ar"
-                android:layout_marginStart="@dimen/_4sdp"
-                android:layout_marginTop="@dimen/_4sdp"
-                android:layout_marginBottom="@dimen/_4sdp"
-                android:layout_marginEnd="@dimen/_10sdp" />
+            </LinearLayout>
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/bt_navigate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:fontFamily="@font/nunito_bold"
-                android:text="START"
+                android:orientation="horizontal"
                 android:layout_marginEnd="@dimen/_12sdp"
-                android:textSize="13sp"
-                android:textColor="@color/dark_blue"/>
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:gravity="center_vertical"
+                android:background="@drawable/border_radius_dark_blue">
 
-        </LinearLayout>
+                <ImageView
+                    android:layout_width="@dimen/_21sdp"
+                    android:layout_height="@dimen/_21sdp"
+                    android:src="@drawable/ic_nav_ar"
+                    android:layout_marginStart="@dimen/_4sdp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:layout_marginBottom="@dimen/_4sdp"
+                    android:layout_marginEnd="@dimen/_10sdp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:fontFamily="@font/nunito_bold"
+                    android:text="START"
+                    android:layout_marginEnd="@dimen/_12sdp"
+                    android:textSize="13sp"
+                    android:textColor="@color/dark_blue"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
 
 
-    </RelativeLayout>
 
 </LinearLayout>
 

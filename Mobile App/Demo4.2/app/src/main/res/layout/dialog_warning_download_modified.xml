@@ -25,7 +25,8 @@
                 android:layout_width="@dimen/_60sdp"
                 android:layout_height="@dimen/_60sdp"
                 android:src="@drawable/ic_download_dialog"
-                android:layout_marginTop="@dimen/_20sdp"/>
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_gravity="center"/>
 
             <TextView
                 android:id="@+id/tvName"
