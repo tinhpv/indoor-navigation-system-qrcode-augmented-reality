@@ -42,7 +42,7 @@
                 android:id="@+id/tvName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="26dp"
+                android:layout_marginStart="@dimen/_20sdp"
                 android:layout_marginTop="@dimen/_15sdp"
                 android:fontFamily="@font/nunito_black"
                 android:text="FPT University"
@@ -83,7 +83,7 @@
                 android:id="@+id/setting_block"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="26dp"
+                android:layout_marginEnd="@dimen/_10sdp"
                 android:orientation="horizontal"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginBottom="@dimen/_16sdp"
@@ -111,7 +111,7 @@
                         android:id="@+id/snChooseSex"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_weight="1" />
+                        />
                 </LinearLayout>
 
                 <LinearLayout
@@ -128,7 +128,8 @@
                         android:gravity="center"
                         android:text="Age"
                         android:textColor="@color/dark_blue"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        />
 
                     <EditText
                         android:id="@+id/edtAge"
