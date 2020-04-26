@@ -59,7 +59,8 @@
                 android:textSize="13sp"
                 android:layout_gravity="end"
                 android:textColor="@color/dark_green"
-                android:background="@android:color/transparent"/>
+                android:background="@android:color/transparent"
+                />
 
         </LinearLayout>
 

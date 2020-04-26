@@ -21,7 +21,7 @@ import fpt.capstone.inqr.model.supportModel.Notification;
 public class NotificationDialog extends DialogFragment {
 
     //    private String buildingName, description;
-    private TextView tvName, tvDes, tvClose;
+    private TextView tvName, tvDes;
     private Button btClose;
 
     private List<Notification> listNotification;
@@ -41,7 +41,7 @@ public class NotificationDialog extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_notification, container, false);
+        View view = inflater.inflate(R.layout.dialog_notification_modified, container, false);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         tvName = view.findViewById(R.id.tvName);
@@ -77,7 +77,7 @@ public class NotificationDialog extends DialogFragment {
 
         tvDes.setText(message);
 
-        tvClose.setOnClickListener(v -> dismiss());
+        btClose.setOnClickListener(v -> dismiss());
 
         return view;
     }
