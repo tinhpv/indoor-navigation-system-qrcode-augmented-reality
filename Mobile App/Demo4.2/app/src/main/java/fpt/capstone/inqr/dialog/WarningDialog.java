@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,7 +19,8 @@ import fpt.capstone.inqr.fragment.ListBuildingFragment;
 public class WarningDialog extends DialogFragment {
 
     private String buildingName, description;
-    private TextView tvName, tvDes, tvClose, tvGo;
+    private TextView tvName, tvDes;
+    private Button btClose, btAccept;
 
     private ListBuildingFragment fragment;
     private String buildingId;
@@ -46,23 +48,23 @@ public class WarningDialog extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_warning, container, false);
+        View view = inflater.inflate(R.layout.dialog_warning_modified, container, false);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         tvName = view.findViewById(R.id.tvName);
         tvDes = view.findViewById(R.id.tvDes);
-        tvClose = view.findViewById(R.id.tvClose);
-        tvGo = view.findViewById(R.id.tvGo);
+        btClose = view.findViewById(R.id.bt_close);
+        btAccept = view.findViewById(R.id.bt_accept);
 
 
         tvName.setText(buildingName);
         tvDes.setText(description);
 
-        tvClose.setOnClickListener(v -> {
+        btClose.setOnClickListener(v -> {
             dismiss();
         });
 
-        tvGo.setOnClickListener(v -> {
+        btAccept.setOnClickListener(v -> {
 
             if (fragment != null) {
                 fragment.showMapFragment(buildingId);

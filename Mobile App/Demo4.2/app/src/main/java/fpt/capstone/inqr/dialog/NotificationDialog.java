@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,6 +22,7 @@ public class NotificationDialog extends DialogFragment {
 
     //    private String buildingName, description;
     private TextView tvName, tvDes, tvClose;
+    private Button btClose;
 
     private List<Notification> listNotification;
 
@@ -44,7 +46,7 @@ public class NotificationDialog extends DialogFragment {
 
         tvName = view.findViewById(R.id.tvName);
         tvDes = view.findViewById(R.id.tvDes);
-        tvClose = view.findViewById(R.id.tvClose);
+        btClose = view.findViewById(R.id.bt_close);
 
 
         tvName.setText("What's new");

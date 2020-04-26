@@ -19,7 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingHorizontal="@dimen/_22sdp"
-            android:paddingVertical="@dimen/_8sdp">
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingBottom="@dimen/_10sdp">
 
             <ImageView
                 android:id="@+id/img_star"

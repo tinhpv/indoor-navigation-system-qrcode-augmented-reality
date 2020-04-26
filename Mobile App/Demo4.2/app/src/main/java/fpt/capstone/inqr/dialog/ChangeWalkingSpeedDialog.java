@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -28,7 +29,8 @@ import fpt.capstone.inqr.model.Building;
 public class ChangeWalkingSpeedDialog extends DialogFragment {
 
     //    private String buildingName, description;
-    private TextView tvName, tvDes, tvClose, tvDownload;
+    private TextView tvName, tvDes;
+    private Button btCancel, btSave;
     private Spinner snChooseSex;
     private EditText edtAge;
     private ListBuildingFragment fragment;
@@ -56,8 +58,8 @@ public class ChangeWalkingSpeedDialog extends DialogFragment {
 
         tvName = view.findViewById(R.id.tvName);
         tvDes = view.findViewById(R.id.tvDes);
-        tvClose = view.findViewById(R.id.tvClose);
-        tvDownload = view.findViewById(R.id.tvDownload);
+        btCancel = view.findViewById(R.id.bt_cancel);
+        btSave = view.findViewById(R.id.bt_save);
         snChooseSex = view.findViewById(R.id.snChooseSex);
         edtAge = view.findViewById(R.id.edtAge);
         tvCurrentSpeed = view.findViewById(R.id.tvCurrentSpeed);
@@ -130,16 +132,13 @@ public class ChangeWalkingSpeedDialog extends DialogFragment {
             }
         });
 
-        tvDownload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PreferenceHelper.putInt(getContext(), "speed_walking", (int) (speed * 1000));
-                ///
-                dismiss();
-            }
+        btSave.setOnClickListener(v -> {
+            PreferenceHelper.putInt(getContext(), "speed_walking", (int) (speed * 1000));
+            ///
+            dismiss();
         });
 
-        tvClose.setOnClickListener(v -> dismiss());
+        btCancel.setOnClickListener(v -> dismiss());
 
         // chạy lần đầu mở luôn
         speed = getSpeed();

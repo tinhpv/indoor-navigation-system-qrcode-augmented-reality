@@ -595,6 +595,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
     private void processFindWay(String startLocationId, String roomName) {
         new Handler().postDelayed(() -> {
             List<Vertex> listTmp = checkLocationInListFindWay(startLocationId);
+
             if (listTmp == null) {
                 destination = roomName;
                 wayfinder.findWay(startLocationId, destination);

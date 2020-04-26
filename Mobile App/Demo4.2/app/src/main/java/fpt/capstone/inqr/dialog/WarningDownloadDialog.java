@@ -73,7 +73,7 @@ public class WarningDownloadDialog extends DialogFragment {
         } else if (type == TYPE_UPDATE) {
             tvName.setText("Update version available");
             btDownload.setText("Update");
-            btClose.setText("Remind later");
+            btClose.setText("KEEP CURRENT DATA");
             imgDataGettingType.setImageResource(R.drawable.ic_update_dialog);
             tvDes.setText("A new version of " + building.getName() + "'s data is available. You should update the data to ensure the efficiency of the system");
 
