@@ -4,18 +4,13 @@ package fpt.capstone.inqr.fragment;
 import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.CornerPathEffect;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -35,7 +30,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
@@ -55,10 +49,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.UUID;
 
 import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.adapter.MapAdapter;
@@ -66,8 +59,6 @@ import fpt.capstone.inqr.adapter.PointViewAdapter;
 import fpt.capstone.inqr.adapter.StepAdapter;
 import fpt.capstone.inqr.dijkstra.Vertex;
 import fpt.capstone.inqr.helper.CanvasHelper;
-import fpt.capstone.inqr.helper.FileHelper;
-import fpt.capstone.inqr.helper.GeoHelper;
 import fpt.capstone.inqr.helper.ImageHelper;
 import fpt.capstone.inqr.helper.PreferenceHelper;
 import fpt.capstone.inqr.helper.Wayfinder;
@@ -82,10 +73,6 @@ import fpt.capstone.inqr.view.MapView;
 import github.nisrulz.qreader.QREader;
 
 import static android.content.Context.SENSOR_SERVICE;
-import static java.lang.Math.PI;
-import static java.lang.Math.atan2;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -147,6 +134,10 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
     private MapPresenter mMapPresenter;
     private Wayfinder wayfinder;
+
+    private Calendar calendar;
+
+    private TextToSpeech textToSpeech;
 
     public MapFragment() {
 
@@ -212,11 +203,22 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         super.onStop();
         checkQrExistHandler.removeCallbacks(runnable);
         checkQrExistHandler.removeCallbacksAndMessages(null);
+
+        if(textToSpeech !=null){
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        textToSpeech = new TextToSpeech(getContext(), status -> {
+            if (status != TextToSpeech.ERROR) {
+                textToSpeech.setLanguage(Locale.US);
+            }
+        });
     }
 
     @Override
@@ -247,6 +249,11 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         setupInput();
         setupSensor();
         setupScanQR();
+    }
+
+    public void speak(String message) {
+        String utteranceId = UUID.randomUUID().toString();
+        textToSpeech.speak(message, TextToSpeech.QUEUE_ADD, null, utteranceId);
     }
 
     public void chooseFloor(int position) {
@@ -406,7 +413,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         imgWayInfoToggle = view.findViewById(R.id.img_way_info_toggle);
 
         rvStep = view.findViewById(R.id.rvStep);
-        stepAdapter = new StepAdapter(new ArrayList<>());
+        stepAdapter = new StepAdapter(this, new ArrayList<>());
         rvStep.setLayoutManager(new LinearLayoutManager(view.getContext(), RecyclerView.VERTICAL, false));
         rvStep.setAdapter(stepAdapter);
 
@@ -605,8 +612,9 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
                 wayfinder.setShortestPathList(listPointOnWay);
             }
 
-            drawOnMap();
             processDistanceAndTime();
+            drawOnMap();
+
         }, 200);
     }
 
@@ -645,11 +653,6 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
                 }
             }
 
-            if (speed == 0) {
-                speed = getActivity().getResources().getInteger(R.integer.speed_walking);
-                PreferenceHelper.putInt(getContext(), "speed_walking", speed);
-            }
-
             double time = distanceReal / speed * 60;
 
             int mins = (int) (time / 1);
@@ -662,12 +665,22 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            Calendar calendar = Calendar.getInstance();
+             calendar = Calendar.getInstance();
             calendar.setTime(date);
             calendar.add(Calendar.SECOND, sens);
             calendar.add(Calendar.MINUTE, mins);
 
-            tvTime.setText(currentTime + " - " + sdf.format(calendar.getTime()));
+            if (mins == 0) {
+                tvTime.setText(sens + "secs");
+            } else {
+                if (mins == 1) {
+                    tvTime.setText(mins + "min " + sens + "secs");
+                } else {
+                    tvTime.setText(mins + "mins " + sens + "secs");
+                }
+            }
+
+//            tvTime.setText(currentTime + " - " + sdf.format(calendar.getTime()));
             tvDistance.setText("(" + (int) Math.round(distanceReal) + "m)");
 
             oldTimeScan = currentTime;
@@ -736,9 +749,9 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         }
 
         // lấy cách đi chi tiết
-        listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString(), null));
+        listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString() + " at " + currentTime, null));
         listStep.addAll(wayfinder.getListStepGuide());
-        listStep.add(new Step(Step.TYPE_END_POINT, "You reach the destination: " + tvEnd.getText().toString(), null));
+        listStep.add(new Step(Step.TYPE_END_POINT, "You reach the destination: " + tvEnd.getText().toString() + " at about " + sdf.format(calendar.getTime()), null));
 
         // update UI
         showMap();

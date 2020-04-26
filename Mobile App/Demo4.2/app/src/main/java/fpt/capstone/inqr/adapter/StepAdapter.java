@@ -12,14 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import fpt.capstone.inqr.R;
-import fpt.capstone.inqr.fragment.BottomSheetFragment;
+import fpt.capstone.inqr.fragment.MapFragment;
 import fpt.capstone.inqr.model.supportModel.Step;
 
 public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
 
+    private MapFragment fragment;
     private List<Step> listSteps;
 
-    public StepAdapter(List<Step> listSteps) {
+    public StepAdapter(MapFragment fragment, List<Step> listSteps) {
+        this.fragment = fragment;
         this.listSteps = listSteps;
     }
 
@@ -39,7 +41,6 @@ public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
     @Override
     public void onBindViewHolder(@NonNull StepHolder holder, int position) {
         Step step = listSteps.get(position);
-
 
 
         // set UI theo Type
@@ -73,16 +74,15 @@ public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
 
             // TODO: TEMPORARILY DISABLE
             // set speaker
-            //holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo() + " estimated " + step.getDistance()));
+            holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo() + " estimated " + step.getDistance()));
         } else {
             holder.tvDistance.setVisibility(View.GONE);
 
             // set speaker
-//            holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo()));
+            holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo()));
         }
 
         holder.tvInfo.setText(step.getInfo());
-
 
 
     }
