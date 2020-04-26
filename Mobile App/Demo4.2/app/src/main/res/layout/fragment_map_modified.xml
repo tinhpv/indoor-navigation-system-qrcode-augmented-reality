@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="true">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -271,7 +273,7 @@
                             android:layout_marginStart="@dimen/_16sdp"
                             android:layout_marginTop="4dp"
                             android:fontFamily="@font/nunito_extrabold"
-                            android:text="Navigation with QR-Code"
+                            android:text="Navigation with AR"
                             android:textColor="@color/dark_blue"
                             app:layout_constraintStart_toEndOf="@+id/imageView_ar"
                             app:layout_constraintTop_toTopOf="parent" />
