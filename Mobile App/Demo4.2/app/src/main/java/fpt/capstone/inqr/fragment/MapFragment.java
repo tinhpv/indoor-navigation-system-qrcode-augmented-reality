@@ -601,6 +601,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
                 listPointOnWay = wayfinder.getShortestPathList();
             } else {
                 listPointOnWay = listTmp;
+                wayfinder.setShortestPathList(listPointOnWay);
             }
 
             drawOnMap();

@@ -78,7 +78,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepHolder> {
             holder.tvDistance.setVisibility(View.GONE);
 
             // set speaker
-            //holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo()));
+//            holder.imgSpeaker.setOnClickListener(v -> fragment.speak(step.getInfo()));
         }
 
         holder.tvInfo.setText(step.getInfo());
