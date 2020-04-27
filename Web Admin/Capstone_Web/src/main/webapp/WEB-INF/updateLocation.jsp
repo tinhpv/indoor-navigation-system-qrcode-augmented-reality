@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,8 +18,8 @@
 		<c:redirect url="${pageContext.request.contextPath}/"></c:redirect>
 	</c:if>
 
-	<img id="imgMap" src="${requestScope.floor.linkMap }" />
-	<input id="imgSrc" type="hidden" value="${requestScope.floor.linkMap }" />
+	<img id="imgMap" src="${sessionScope.floor.linkMap }" />
+	<input id="imgSrc" type="hidden" value="${sessionScope.floor.linkMap }" />
 
 	<div>
 		<div id="canvasWraper">
@@ -37,25 +37,25 @@
 					<div id="content-body-header">
 						<h5>Edit location information</h5>
 					</div>
-					<input type="hidden" name="id" value="${requestScope.location.id }">
+					<input type="hidden" name="id" value="${sessionScope.location.id }">
 					<div class="form-group row">
 						<label for="name" class="col-sm-3 col-form-label">Name:</label>
 						<div class="col-sm-7">
 							<input type="text" class="form-control" id="name" name="name" placeholder="Location name"
-								required="required" value="${requestScope.location.name }" />
+								required="required" value="${sessionScope.location.name }" />
 						</div>
 						<p class="col-sm-1">*</p>
 					</div>
 					<div class="form-group row">
 						<label class="col-sm-3 col-form-label">Ratios</label>
 						<div class="col-sm-7">
-							<label class="col-form-label">(</label>
+							<label class="col-form-label">[</label>
 							<input type="number" step="0.001" class="form-control" id="ratioX" name="ratioX"
 								placeholder="X" required="required" onkeydown="return false;" />
 							<label class="col-form-label">,</label>
 							<input type="number" step="0.001" class="form-control" id="ratioY" name="ratioY"
 								placeholder="Y" required="required" onkeydown="return false;" />
-							<label class="col-form-label">)</label>
+							<label class="col-form-label">]</label>
 						</div>
 						<p class="col-sm-1">*</p>
 					</div>
@@ -69,6 +69,7 @@
 					</div>
 				</form>
 			</div>
+			<p class="failed">${requestScope.editFailed }</p>
 		</div>
 	</div>
 
@@ -86,7 +87,7 @@
 
 			img.style.display = "none";
 
-			drawCurrentRatios(${requestScope.location.ratioX}, ${requestScope.location.ratioY});
+			drawCurrentRatios(${sessionScope.location.ratioX}, ${sessionScope.location.ratioY});
 		}
 
 		function drawCurrentRatios(ratioX, ratioY) {
@@ -155,7 +156,7 @@
 
 			ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 			
-			drawCurrentRatios(${requestScope.location.ratioX}, ${requestScope.location.ratioY});
+			drawCurrentRatios(${sessionScope.location.ratioX}, ${sessionScope.location.ratioY});
 		}
 
 		$(function() {

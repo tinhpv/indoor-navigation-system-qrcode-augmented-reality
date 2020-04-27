@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Building floors page</title>
+<title>Building Data Management</title>
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
 <link rel="stylesheet"
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
@@ -18,7 +18,7 @@
 	<c:if test="${empty sessionScope.building }">
 		<c:redirect url="${pageContext.request.contextPath}/"></c:redirect>
 	</c:if>
-	
+
 	<div class="menu-bar">
 		<div id="front-page">INQR</div>
 		<hr>
@@ -39,11 +39,9 @@
 	</div>
 	<div class="content">
 		<div class="content-header shadow p-3 mb-3 bg-white rounded">
-			<c:if test="${not empty sessionScope.building }">
-				<p>
-					<strong>${sessionScope.building.name } - Building's Floor(s)</strong>
-				</p>
-			</c:if>
+			<p>
+				<strong>${sessionScope.building.name } - Building's data</strong>
+			</p>
 		</div>
 
 		<div class="md-stepper-horizontal orange">
@@ -67,7 +65,7 @@
 				<div class="md-step-circle">
 					<span>3</span>
 				</div>
-				<div class="md-step-title">Upload building data</div>
+				<div class="md-step-title">Upload building to server</div>
 				<div class="md-step-bar-left"></div>
 				<div class="md-step-bar-right"></div>
 			</div>
@@ -84,11 +82,15 @@
 					<span class="success">${createSuccess}</span>
 					<span class="success">${removeSuccess}</span>
 					<span class="success">${editSuccess}</span>
+					<span class="failed">${editFailed}</span>
+					<span class="failed">${createFailed}</span>
 				</div>
 			</div>
 
 			<c:if test="${empty sessionScope.building.listFloor }">
-				<h3>This building don't contain any floor!</h3>
+				<div class="empty">
+					<h5>This building don't contain any floor!</h5>
+				</div>
 			</c:if>
 			<c:if test="${not empty sessionScope.building.listFloor }">
 				<div class="list-group">
@@ -133,23 +135,24 @@
 										<div id="floorWraper" class="shadow p-3 mb-3 bg-white rounded">
 											<form action="${pageContext.request.contextPath}/floor/edit" method="post"
 												enctype="multipart/form-data">
-												<input type="hidden" class="form-control" id="id" name="id" value="${floorDto.id }"
+												<input type="hidden" class="form-control" name="id" value="${floorDto.id }"
 													placeholder="Floor's id" readonly="readonly">
 												<div id="floor-header" class="form-group row">
 													<h5>Edit floor information</h5>
 												</div>
 												<div class="form-group row">
-													<label for="name" class="col-sm-3 col-form-label">Floor name</label>
+													<label class="col-sm-3 col-form-label">Floor name</label>
 													<div class="col-sm-6">
-														<input type="text" class="form-control" id="name" name="name"
-															value="${floorDto.name }" placeholder="Floor's name" required="required" />
+														<input type="text" class="form-control" name="name" value="${floorDto.name }"
+															placeholder="Floor's name" required="required" />
 													</div>
 													<p class="col-sm-1">*</p>
 												</div>
 												<div class="form-group row">
-													<label for="fileMap" class="col-sm-3 col-form-label">Floor map</label>
+													<label for="mapFile" class="col-sm-3 col-form-label">Floor map</label>
 													<div class="col-sm-7">
-														<input type="file" class="form-control-file" id="fileMap" name="fileMap" />
+														<input type="file" class="form-control-file" onchange="checkImageSize(this.id)"
+															id="mapFile${floorCounter.count}" name="mapFile" />
 													</div>
 												</div>
 
@@ -167,219 +170,260 @@
 												<i class="fas fa-plus"> New Location</i>
 											</a>
 										</div>
-										<div id="floor-list-wraper" class="list-group">
-											<div class="sticky-header">
-												<div id="location-header" class="list-group-item">
-													<h5>All locations of ${floorDto.name}</h5>
-												</div>
-												<div id="floorList-header" class="list-group list-group-horizontal">
-													<div id="floorList-1" class="list-group-item">Location name</div>
-													<div id="floorList-2" class="list-group-item">QR Code</div>
-													<div id="floorList-3" class="list-group-item">More Detail</div>
-												</div>
+
+										<c:if test="${empty floorDto.listLocation }">
+											<div class="empty">
+												<h5>This floor don't contain any location!</h5>
 											</div>
-											<c:forEach var="locationDto" items="${floorDto.listLocation}" varStatus="locationCounter">
-												<div id="floorList" class="list-group list-group-horizontal">
-													<div id="floorList-1" class="list-group-item">${locationDto.name }</div>
-													<button id="floorList-2" class="list-group-item" data-toggle="modal"
-														onclick="$('#locationQrModal${floorCounter.count}_${locationCounter.count}').appendTo('body');"
-														data-target="#locationQrModal${floorCounter.count}_${locationCounter.count}">
-														<i class="fas fa-qrcode"></i>
-													</button>
-													<button id="floorList-3" class="list-group-item" data-toggle="modal"
-														onclick="$('#neighborAndRoomModal${floorCounter.count}_${locationCounter.count}').appendTo('body');"
-														data-target="#neighborAndRoomModal${floorCounter.count}_${locationCounter.count}">
-														<i class="fas fa-info-circle"></i>
-													</button>
-												</div>
+										</c:if>
 
-												<!-- qrCode modal -->
-												<div class="modal fade"
-													id="locationQrModal${floorCounter.count}_${locationCounter.count}" aria-hidden="true">
-													<div class="modal-dialog modal-dialog-centered" role="document">
-														<div class="modal-content">
-															<div class="modal-header">
-																<h5 class="modal-title">QR Code of "${locationDto.name }"</h5>
-																<button type="button" class="close"
-																	onclick="$('#locationQrModal${floorCounter.count}_${locationCounter.count}').modal('hide')"
-																	aria-label="Close">
-																	<span aria-hidden="true">&times;</span>
-																</button>
-															</div>
-															<div id="qrCodeWraper" class="modal-body">
-																<img src="${locationDto.linkQr}" />
-															</div>
-														</div>
+										<c:if test="${not empty floorDto.listLocation }">
+											<div id="floor-list-wraper" class="list-group">
+												<div class="sticky-header">
+													<div id="location-header" class="list-group-item">
+														<h5>All locations of ${floorDto.name}</h5>
+													</div>
+													<div id="floorList-header" class="list-group list-group-horizontal">
+														<div id="floorList-1" class="list-group-item">Location name</div>
+														<div id="floorList-2" class="list-group-item">QR Code</div>
+														<div id="floorList-3" class="list-group-item">More Detail</div>
 													</div>
 												</div>
-
-												<!-- location neighbor and room modal -->
-												<div class="modal fade bd-example-modal-lg"
-													id="neighborAndRoomModal${floorCounter.count}_${locationCounter.count}" tabindex="-1"
-													role="dialog" aria-hidden="true">
-													<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-														<div class="modal-content" style="min-height: 80vh;">
-															<div class="modal-header">
-																<h5 class="modal-title" id="exampleModalLongTitle">Information of
-																	${locationDto.name }</h5>
-																<button type="button" class="close"
-																	onclick="$('#neighborAndRoomModal${floorCounter.count}_${locationCounter.count}').modal('hide')"
-																	aria-label="Close">
-																	<span aria-hidden="true">&times;</span>
-																</button>
-															</div>
-															<div class="modal-body">
-																<!-- location information -->
-																<div id="locationWraper">
-																	<a class="btn btn-outline-success"
-																		href="${pageContext.request.contextPath}/location/edit?floorId=${floorDto.id}&locationId=${locationDto.id}">
-																		Edit this location </a>
-																	<button type="button" data-toggle="modal"
-																		data-target="#locationDisableModal${floorCounter.count}_${locationCounter.count}"
-																		class="btn btn-danger">Disable this location</button>
-																</div>
-
-																<div id="content-body${floorCounter.count}_${locationCounter.count}"
-																	class="shadow p-3 mb-3 bg-white rounded" style="width: 100%; float: left;">
-																	<div class="card">
-																		<div id="collapseOne${floorCounter.count}_${locationCounter.count}"
-																			class="collapse show" aria-labelledby="headingOne"
-																			data-parent="#content-body${floorCounter.count}_${locationCounter.count}">
-																			<div class="card-body">
-																				<div id="header-wraper">
-																					<h5>All rooms of ${locationDto.name }</h5>
-																				</div>
-																				<table class="table">
-																					<thead>
-																						<tr>
-																							<th scope="col">#</th>
-																							<th scope="col">Room Name</th>
-																							<th scope="col">(X | Y)</th>
-																							<th scope="col">Special Room</th>
-																							<th scope="col"></th>
-																						</tr>
-																					</thead>
-																					<tbody>
-																						<c:forEach var="roomDto" items="${locationDto.listRoom}" varStatus="counter">
-																							<tr>
-																								<td scope="row">${counter.count }</td>
-																								<td>${roomDto.name }</td>
-																								<td>(${roomDto.ratioX } | ${roomDto.ratioY })</td>
-																								<td>${roomDto.specialRoom }</td>
-																								<td>
-																									<form action="${pageContext.request.contextPath}/room/remove" method="post">
-																										<input type="hidden" name="roomId" value="${roomDto.id }" />
-																										<button type="submit" class="btn btn-danger">
-																											<i class="fas fa-times"></i>
-																										</button>
-																									</form>
-																								</td>
-																							</tr>
-																						</c:forEach>
-																					</tbody>
-																				</table>
-																				<button id="locationDetailBtn" type="button" class="btn btn-outline-success"
-																					data-toggle="collapse"
-																					data-target="#collapseTwo${floorCounter.count}_${locationCounter.count}"
-																					aria-expanded="true"
-																					aria-controls="collapseTwo${floorCounter.count}_${locationCounter.count}">Next</button>
-																				<a id="locationDetailBtn"
-																					href="${pageContext.request.contextPath}/room/create?floorId=${floorDto.id}&locationId=${locationDto.id}"
-																					class="btn btn-primary">Create room</a>
-																			</div>
-																		</div>
-																	</div>
-																	<div class="card">
-																		<div id="collapseTwo${floorCounter.count}_${locationCounter.count}"
-																			class="collapse" aria-labelledby="headingTwo"
-																			data-parent="#content-body${floorCounter.count}_${locationCounter.count}">
-																			<div class="card-body">
-																				<div id="header-wraper">
-																					<h5>All neighbors of ${locationDto.name }</h5>
-																				</div>
-																				<table class="table">
-																					<thead>
-																						<tr>
-																							<th scope="col">#</th>
-																							<th scope="col">Neighbor Name</th>
-																							<th scope="col">Orientation</th>
-																							<th scope="col">Distance</th>
-																							<th scope="col"></th>
-																						</tr>
-																					</thead>
-																					<tbody>
-																						<c:forEach var="neighbourDto" items="${locationDto.listLocationBeside}"
-																							varStatus="counter">
-																							<tr>
-																								<td scope="row">${counter.count }</td>
-																								<td>${neighbourDto.name }</td>
-																								<td>${neighbourDto.orientation }</td>
-																								<td>${neighbourDto.distance }(m)</td>
-																								<th>
-																									<form action="${pageContext.request.contextPath}/neighbour/remove"
-																										method="post">
-																										<input type="hidden" name="neighbourId" value="${neighbourDto.id }" />
-																										<input type="hidden" name="locationId" value="${locationDto.id }" />
-																										<button class="btn btn-danger" type="submit">
-																											<i class="fas fa-times"></i>
-																										</button>
-																									</form>
-																								</th>
-																							</tr>
-																						</c:forEach>
-																					</tbody>
-																				</table>
-																				<button id="locationDetailBtn" class="btn btn-outline-success"
-																					onclick="$('#neighborAndRoomModal${floorCounter.count}_${locationCounter.count}').modal('hide');">Finish</button>
-																				<a
-																					href="${pageContext.request.contextPath}/neighbour/create?floorId=${floorDto.id}&locationId=${locationDto.id}"
-																					id="locationDetailBtn" class="btn btn-primary">Attach Neighbor</a>
-																				<button id="locationDetailBtn" class="btn btn-outline-success"
-																					data-toggle="collapse"
-																					data-target="#collapseOne${floorCounter.count}_${locationCounter.count}"
-																					aria-expanded="false"
-																					aria-controls="collapseOne${floorCounter.count}_${locationCounter.count}">Back</button>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-															</div>
-														</div>
+												<c:forEach var="locationDto" items="${floorDto.listLocation}"
+													varStatus="locationCounter">
+													<div id="floorList" class="list-group list-group-horizontal">
+														<div id="floorList-1" class="list-group-item">${locationDto.name }</div>
+														<button id="floorList-2" class="list-group-item" data-toggle="modal"
+															onclick="$('#locationQrModal${floorCounter.count}_${locationCounter.count}').appendTo('body');"
+															data-target="#locationQrModal${floorCounter.count}_${locationCounter.count}">
+															<i class="fas fa-qrcode"></i>
+														</button>
+														<button id="floorList-3" class="list-group-item" data-toggle="modal"
+															onclick="$('#neighborAndRoomModal${floorCounter.count}_${locationCounter.count}').appendTo('body');"
+															data-target="#neighborAndRoomModal${floorCounter.count}_${locationCounter.count}">
+															<i class="fas fa-info-circle"></i>
+														</button>
 													</div>
 
-													<!-- location disable modal -->
+													<!-- qrCode modal -->
 													<div class="modal fade"
-														id="locationDisableModal${floorCounter.count}_${locationCounter.count}" tabindex="-1"
-														role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-														<div class="modal-dialog" role="document">
+														id="locationQrModal${floorCounter.count}_${locationCounter.count}" aria-hidden="true">
+														<div class="modal-dialog modal-dialog-centered" role="document">
 															<div class="modal-content">
-																<div class="modal-header warning">
-																	<h5 class="modal-title" id="exampleModalLabel">Warning</h5>
+																<div class="modal-header">
+																	<h5 class="modal-title">QR Code of "${locationDto.name }"</h5>
 																	<button type="button" class="close"
-																		onclick="$('#locationDisableModal${floorCounter.count}_${locationCounter.count}').modal('hide')"
+																		onclick="$('#locationQrModal${floorCounter.count}_${locationCounter.count}').modal('hide')"
+																		aria-label="Close">
+																		<span aria-hidden="true">&times;</span>
+																	</button>
+																</div>
+																<div id="qrCodeWraper" class="modal-body">
+																	<img src="${locationDto.linkQr}" />
+																</div>
+															</div>
+														</div>
+													</div>
+
+													<!-- location neighbor and room modal -->
+													<div class="modal fade bd-example-modal-lg"
+														id="neighborAndRoomModal${floorCounter.count}_${locationCounter.count}" tabindex="-1"
+														role="dialog" aria-hidden="true">
+														<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+															<div class="modal-content" style="min-height: 80vh;">
+																<div class="modal-header">
+																	<h5 class="modal-title" id="exampleModalLongTitle">Information of
+																		${locationDto.name }</h5>
+																	<button type="button" class="close"
+																		onclick="$('#neighborAndRoomModal${floorCounter.count}_${locationCounter.count}').modal('hide')"
 																		aria-label="Close">
 																		<span aria-hidden="true">&times;</span>
 																	</button>
 																</div>
 																<div class="modal-body">
-																	<p>Do you want to disable this location?</p>
-																	<small>(Warning, all relations of other locations with this location will
-																		be removed as well)</small>
+																	<!-- location information -->
+																	<div id="locationWraper">
+																		<a class="btn btn-outline-success"
+																			href="${pageContext.request.contextPath}/location/edit?floorId=${floorDto.id}&locationId=${locationDto.id}">
+																			Edit this location </a>
+																		<button type="button" data-toggle="modal"
+																			data-target="#locationDisableModal${floorCounter.count}_${locationCounter.count}"
+																			class="btn btn-danger">Disable this location</button>
+																	</div>
+
+																	<div id="content-body${floorCounter.count}_${locationCounter.count}"
+																		class="shadow p-3 mb-3 bg-white rounded" style="width: 100%; float: left;">
+																		<div class="card">
+																			<div id="collapseOne${floorCounter.count}_${locationCounter.count}"
+																				class="collapse show" aria-labelledby="headingOne"
+																				data-parent="#content-body${floorCounter.count}_${locationCounter.count}">
+																				<div class="card-body">
+																					<form action="${pageContext.request.contextPath}/room/remove" method="post">
+																						<c:if test="${empty locationDto.listRoom }">
+																							<div class="empty">
+																								<h5>This location don't have any room.</h5>
+																							</div>
+																						</c:if>
+
+																						<c:if test="${not empty locationDto.listRoom }">
+																							<div id="header-wraper">
+																								<h5>All rooms of ${locationDto.name }</h5>
+																							</div>
+																							<table class="table">
+																								<thead>
+																									<tr>
+																										<th scope="col">#</th>
+																										<th scope="col">Room Name</th>
+																										<th scope="col">(X | Y)</th>
+																										<th scope="col">Special Room</th>
+																										<th scope="col">Action</th>
+																									</tr>
+																								</thead>
+																								<tbody>
+																									<c:forEach var="roomDto" items="${locationDto.listRoom}"
+																										varStatus="counter">
+																										<tr>
+																											<td scope="row">${counter.count }</td>
+																											<td>${roomDto.name }</td>
+																											<td>(${roomDto.ratioX } | ${roomDto.ratioY })</td>
+																											<td>${roomDto.specialRoom }</td>
+																											<td>
+																												<!-- key of modal, important! -->
+																												<input type="hidden" name="modalKey"
+																													value="${floorCounter.count}_${locationCounter.count}">
+
+																												<!-- checkboxes -->
+																												<input type="checkbox"
+																													name="roomGroup${floorCounter.count}_${locationCounter.count}"
+																													value="${roomDto.id }"
+																													onchange="roomRemoveBtnState(this.name, '${floorCounter.count}_${locationCounter.count}')">
+																											</td>
+																										</tr>
+																									</c:forEach>
+																								</tbody>
+																							</table>
+																						</c:if>
+																						<button id="locationDetailBtn" type="button" class="btn btn-outline-success"
+																							data-toggle="collapse"
+																							data-target="#collapseTwo${floorCounter.count}_${locationCounter.count}"
+																							aria-expanded="true"
+																							aria-controls="collapseTwo${floorCounter.count}_${locationCounter.count}">Next</button>
+																						<a id="locationDetailBtn"
+																							href="${pageContext.request.contextPath}/room/create?floorId=${floorDto.id}&locationId=${locationDto.id}"
+																							class="btn btn-primary">Create room</a>
+																						<button type="submit"
+																							id="roomRemoveBtn${floorCounter.count}_${locationCounter.count}"
+																							class="btn btn-danger" disabled="disabled">Remove selected rooms</button>
+																					</form>
+																				</div>
+																			</div>
+																		</div>
+																		<div class="card">
+																			<div id="collapseTwo${floorCounter.count}_${locationCounter.count}"
+																				class="collapse" aria-labelledby="headingTwo"
+																				data-parent="#content-body${floorCounter.count}_${locationCounter.count}">
+																				<div class="card-body">
+																					<form action="${pageContext.request.contextPath}/neighbour/remove"
+																						method="post">
+																						<c:if test="${empty locationDto.listLocationBeside}">
+																							<div class="empty">
+																								<h5>This location don't have any neighbour</h5>
+																							</div>
+																						</c:if>
+
+																						<c:if test="${not empty locationDto.listLocationBeside }">
+																							<div id="header-wraper">
+																								<h5>All neighbors of ${locationDto.name }</h5>
+																							</div>
+																							<table class="table">
+																								<thead>
+																									<tr>
+																										<th scope="col">#</th>
+																										<th scope="col">Neighbor Name</th>
+																										<th scope="col">Orientation</th>
+																										<th scope="col">Distance</th>
+																										<th scope="col">Action</th>
+																									</tr>
+																								</thead>
+																								<tbody>
+																									<c:forEach var="neighbourDto" items="${locationDto.listLocationBeside}"
+																										varStatus="counter">
+																										<tr>
+																											<td scope="row">${counter.count }</td>
+																											<td>${neighbourDto.name }</td>
+																											<td>${neighbourDto.orientation }</td>
+																											<td>${neighbourDto.distance }(m)</td>
+																											<th>
+																												<!-- key of modal, important -->
+																												<input type="hidden" name="modalKey"
+																													value="${floorCounter.count}_${locationCounter.count}" /> <input
+																													type="hidden" name="locationId" value="${locationDto.id }" /> <input
+																													type="checkbox"
+																													name="neighbourGroup${floorCounter.count}_${locationCounter.count}"
+																													onchange="neighbourRemoveBtnState(this.name, '${floorCounter.count}_${locationCounter.count}')"
+																													value="${neighbourDto.id}" />
+																											</th>
+																										</tr>
+																									</c:forEach>
+																								</tbody>
+																							</table>
+																						</c:if>
+																						<button id="locationDetailBtn" class="btn btn-outline-success" type="button"
+																							onclick="$('#neighborAndRoomModal${floorCounter.count}_${locationCounter.count}').modal('hide');">Finish</button>
+																						<a
+																							href="${pageContext.request.contextPath}/neighbour/create?floorId=${floorDto.id}&locationId=${locationDto.id}"
+																							id="locationDetailBtn" class="btn btn-primary">Attach Neighbor</a>
+																						<button id="locationDetailBtn" class="btn btn-outline-success" type="button"
+																							data-toggle="collapse"
+																							data-target="#collapseOne${floorCounter.count}_${locationCounter.count}"
+																							aria-expanded="false"
+																							aria-controls="collapseOne${floorCounter.count}_${locationCounter.count}">Back</button>
+																						<button type="submit" class="btn btn-danger" disabled="disabled"
+																							id="neighbourRemoveBtn${floorCounter.count}_${locationCounter.count}">Remove
+																							selected neighbours</button>
+																					</form>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
 																</div>
-																<div class="modal-footer">
-																	<button type="button" class="btn btn-secondary"
-																		onclick="$('#locationDisableModal${floorCounter.count}_${locationCounter.count}').modal('hide')">Close</button>
-																	<form action="${pageContext.request.contextPath}/location/remove" method="post">
-																		<input type="hidden" name="id" value="${locationDto.id }" />
-																		<button type="submit" class="btn btn-primary">Yes</button>
-																	</form>
+															</div>
+														</div>
+
+														<!-- location disable modal -->
+														<div class="modal fade"
+															id="locationDisableModal${floorCounter.count}_${locationCounter.count}" tabindex="-1"
+															role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+															<div class="modal-dialog" role="document">
+																<div class="modal-content">
+																	<div class="modal-header warning">
+																		<h5 class="modal-title" id="exampleModalLabel">Warning</h5>
+																		<button type="button" class="close"
+																			onclick="$('#locationDisableModal${floorCounter.count}_${locationCounter.count}').modal('hide')"
+																			aria-label="Close">
+																			<span aria-hidden="true">&times;</span>
+																		</button>
+																	</div>
+																	<div class="modal-body">
+																		<p>Do you want to disable this location?</p>
+																		<small>(Warning, all relations of other locations with this location will
+																			be removed as well)</small>
+																	</div>
+																	<div class="modal-footer">
+																		<button type="button" class="btn btn-secondary"
+																			onclick="$('#locationDisableModal${floorCounter.count}_${locationCounter.count}').modal('hide')">Close</button>
+																		<form action="${pageContext.request.contextPath}/location/remove" method="post">
+																			<input type="hidden" name="id" value="${locationDto.id }" />
+																			<button type="submit" class="btn btn-primary">Yes</button>
+																		</form>
+																	</div>
 																</div>
 															</div>
 														</div>
 													</div>
-												</div>
-											</c:forEach>
-										</div>
+												</c:forEach>
+											</div>
+										</c:if>
 
 										<!-- floor disable modal -->
 										<div class="modal fade" id="floorDisableModal${floorCounter.count }" tabindex="-1"
@@ -421,17 +465,17 @@
 							</div>
 						</div>
 					</c:forEach>
+				</div>
 
-					<div id="navigate-footer">
-						<a class="btn btn-outline-success" href="${pageContext.request.contextPath}/building">
-							<i class="fas fa-arrow-circle-left"> Back to ${sessionScope.building.name }</i>
-						</a>
-						<a class="btn btn-outline-success" style="float: right;"
-							href="${pageContext.request.contextPath}/building/upload">
-							Next
-							<i class="fas fa-arrow-circle-right"></i>
-						</a>
-					</div>
+				<div id="navigate-footer">
+					<a class="btn btn-outline-success" href="${pageContext.request.contextPath}/building">
+						<i class="fas fa-arrow-circle-left"> Back to ${sessionScope.building.name }</i>
+					</a>
+					<a class="btn btn-outline-success" style="float: right;"
+						href="${pageContext.request.contextPath}/building/upload">
+						Next
+						<i class="fas fa-arrow-circle-right"></i>
+					</a>
 				</div>
 			</c:if>
 
@@ -460,8 +504,8 @@
 								<div class="form-group row">
 									<label for="mapFile" class="col-sm-3 col-form-label">Floor map </label>
 									<div class="col-sm-6">
-										<input type="file" class="form-control-file" id="mapFile" required="required"
-											name="mapFile" />
+										<input type="file" class="form-control-file" id="mapFile"
+											onchange="checkImageSize(this.id)" required="required" name="mapFile" />
 									</div>
 									<p class="col-sm-1">*</p>
 								</div>
@@ -480,6 +524,44 @@
 		$(function() {
 			$('[data-toggle="tooltip"]').tooltip()
 		});
+
+		function checkImageSize(id) {
+			var uploadFile = document.getElementById(id);
+			if (uploadFile.files[0].size > 10485760) {
+				alert("Size of current file is too big! Please choose file that are below 10MB.");
+				uploadFile.value = "";
+			}
+		}
+
+		function roomRemoveBtnState(name, btnIdNumber) {
+			var i;
+			var x = document.getElementsByName(name);
+			var buttonName = "roomRemoveBtn"
+			var button = document.getElementById(buttonName + btnIdNumber);
+			for (i = 0; i < x.length; i++) {
+				if (x[i].checked == true) {
+					button.disabled = false;
+					break;
+				} else {
+					button.disabled = true;
+				}
+			}
+		}
+
+		function neighbourRemoveBtnState(name, btnIdNumber) {
+			var i;
+			var x = document.getElementsByName(name);
+			var buttonName = "neighbourRemoveBtn"
+			var button = document.getElementById(buttonName + btnIdNumber);
+			for (i = 0; i < x.length; i++) {
+				if (x[i].checked == true) {
+					button.disabled = false;
+					break;
+				} else {
+					button.disabled = true;
+				}
+			}
+		}
 	</script>
 </body>
 </html>

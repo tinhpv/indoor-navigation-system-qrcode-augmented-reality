@@ -1,3 +1,7 @@
+table {
+	text-align: center;
+}
+
 .menu-bar {
 	width: 15%;
 	float: left;
@@ -197,6 +201,7 @@
 
 .failed {
 	color: red;
+	text-decoration: underline;
 }
 
 .modal-header {
@@ -346,6 +351,7 @@
 	padding: 10px 10px 10px 10px;
 	color: white;
 	font-weight: bold;
+	text-align: center;
 }
 
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
@@ -366,4 +372,15 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 
 .warning {
 	background-color: #f7685e !important;
+}
+
+.empty {
+	float: left;
+	width: 100%;
+	text-align: center;
+	padding: 1rem;
+}
+
+.empty h5 {
+	color: black;
 }

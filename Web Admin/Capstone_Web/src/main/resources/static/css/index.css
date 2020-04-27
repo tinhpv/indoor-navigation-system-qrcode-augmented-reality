@@ -76,22 +76,38 @@ body, html {
 	background-color: teal;
 }
 
-#list-group {
+.list-group {
 	float: left;
 	width: 100%;
 }
 
-#list-header {
+.list-header {
 	width: 100%;
 	float: left;
 	background-color: #4e73df;
-	font-weight: bold;
 	padding: 10px 10px 10px 10px;
 }
 
-#list-header a, h5 {
+#company-list-title {
+	width: 90%;
+	float: left;
+}
+
+#company-list-action {
+	width: 10%;
+	float: left;
+	text-align: center;
+}
+
+.list-header a, h5 {
 	color: white;
 	margin-bottom: 0px;
+}
+
+.list-body {
+	max-height: 60vh;
+	overflow-y: scroll;
+	overflow: auto;
 }
 
 #company-list {
@@ -115,6 +131,12 @@ body, html {
 	color: blue;
 }
 
+#company-list-header {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+}
+
 #company-list-header-1 {
 	float: left;
 	width: 70%;
@@ -135,6 +157,8 @@ body, html {
 
 .modal-header {
 	background-color: #4e73df;
+	padding-top: 10px !important;
+	padding-bottom: 10px !important;
 }
 
 #buildingWraper {
@@ -159,12 +183,20 @@ body, html {
 }
 
 #form-header h5 {
-	font-weight: bold;
 	color: white;
 }
 
 #building-list {
 	width: 100%;
+	margin-top: 10px;
+	max-height: 45vh;
+	overflow: auto;
+}
+
+#building-list .list-header {
+	position: sticky;
+	top: 0;
+	z-index: 10;
 }
 
 #building-list-item-1 {
@@ -213,10 +245,42 @@ body, html {
 }
 
 .modal-body {
-	margin-left: 10%;
-	margin-right: 10%;
+	padding-bottom: 0px !important;
 }
 
-.col-sm-7 {
+.margin-middle {
+	margin-left: 10%;
+	margin-right: 10%;
+	padding-top: 10px;
+}
+
+.col-sm-7, .col-sm-8, .col-sm-6, .col-sm-5 {
 	padding-left: 0px !important;
+}
+
+.modal {
+	background-color: rgba(0, 0, 0, 0.7);
+}
+
+#building-modal {
+	margin-top: 10px !important;
+}
+
+#building-modal .modal-content {
+	max-height: 99vh;
+}
+
+.modal-open .modal {
+	overflow: hidden;
+}
+
+.empty {
+	float: left;
+	width: 100%;
+	text-align: center;
+	padding: 1rem;
+}
+
+.empty h5 {
+	color: black;
 }

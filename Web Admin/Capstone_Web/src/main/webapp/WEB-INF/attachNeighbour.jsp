@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>Attach neighbour</title>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/point.css" />
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
 <link rel="stylesheet"
@@ -173,7 +173,8 @@
 			ctx.fill();
 
 			ctx.beginPath();
-			ctx.lineWidth = 3;
+			ctx.setLineDash([5,3]);
+			ctx.lineWidth = 2;
 			ctx.moveTo(startRatioX * canvas.width, startRatioY * canvas.height);
 			ctx.lineTo(endRatioX * canvas.width, endRatioY * canvas.height);
 			ctx.stroke();

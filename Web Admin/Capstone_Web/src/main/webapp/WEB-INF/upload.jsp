@@ -39,16 +39,9 @@
 	</div>
 	<div class="content">
 		<div class="content-header shadow p-3 mb-3 bg-white rounded">
-			<c:if test="${not empty sessionScope.building }">
-				<p>
-					<strong>${sessionScope.building.name } - Upload</strong>
-				</p>
-			</c:if>
-			<c:if test="${empty sessionScope.building }">
-				<p>
-					<strong> No exist building</strong>
-				</p>
-			</c:if>
+			<p>
+				<strong>${sessionScope.building.name } - Upload building</strong>
+			</p>
 		</div>
 
 		<div class="md-stepper-horizontal orange">
@@ -72,32 +65,26 @@
 				<div class="md-step-circle">
 					<span>3</span>
 				</div>
-				<div class="md-step-title">Upload building data</div>
+				<div class="md-step-title">Upload building to server</div>
 				<div class="md-step-bar-left"></div>
 				<div class="md-step-bar-right"></div>
 			</div>
 		</div>
 
-		<c:if test="${empty sessionScope.building }">
-
-		</c:if>
-
-		<c:if test="${not empty sessionScope.building }">
-			<div id="content-body-upload" class="shadow p-3 mb-3 bg-white rounded">
-				<h5>Upload this building data?</h5>
-				<div id="navigate-footer">
-					<a class="btn btn-outline-success" href="${pageContext.request.contextPath }/floor/">
-						<i class="fas fa-arrow-circle-left"> Back to editing</i>
-					</a>
-					<form style="float: right;" action="${pageContext.request.contextPath}/building/upload"
-						method="post">
-						<button type="submit" class="btn btn-outline-success">
-							<i class="far fa-check-circle"> Yes</i>
-						</button>
-					</form>
-				</div>
+		<div id="content-body-upload" class="shadow p-3 mb-3 bg-white rounded">
+			<h5>Upload this building?</h5>
+			<div id="navigate-footer">
+				<a class="btn btn-outline-success" href="${pageContext.request.contextPath }/floor/">
+					<i class="fas fa-arrow-circle-left"> Back to editing</i>
+				</a>
+				<form style="float: right;" action="${pageContext.request.contextPath}/building/upload"
+					method="post">
+					<button type="submit" class="btn btn-outline-success">
+						<i class="far fa-check-circle"> Yes</i>
+					</button>
+				</form>
 			</div>
-		</c:if>
+		</div>
 	</div>
 </body>
 </html>

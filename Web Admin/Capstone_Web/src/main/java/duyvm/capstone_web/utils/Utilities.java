@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import duyvm.capstone_web.dtos.BuildingDTO;
@@ -25,44 +26,53 @@ import duyvm.capstone_web.dtos.RoomDTO;
 public class Utilities {
 
 	public boolean checkForChangedImage(BuildingDTO buildingDTO) {
-		boolean changedImage = false;
+		boolean isChanged = false;
 		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
-			if (buildingDTO.getListFloor().get(i).getMapFilePath() != null
-					&& !buildingDTO.getListFloor().get(i).getMapFilePath().isEmpty()) {
-				changedImage = true;
+			if (buildingDTO.getListFloor().get(i).getMapFilePath() != null && !buildingDTO.getListFloor().get(i).getMapFilePath().isEmpty()) {
+				isChanged = true;
+				break;
 			}
 		}
-		return changedImage;
+		return isChanged;
+	}
+
+	public boolean checkForValidImageFile(MultipartFile mapFile) {
+		boolean result = false;
+
+		// Get extension of chosen file (.jpg, .png, .docx, ...)
+		String fileExtension = FilenameUtils.getExtension(mapFile.getOriginalFilename()).toLowerCase();
+
+		// Only .jpg or .png file are accepted
+		if (fileExtension.equals("jpg") || fileExtension.equals("png")) {
+			result = true;
+		}
+		return result;
 	}
 
 	public File convertMapFile(MultipartFile file, String floorId, String buildingId) throws IOException {
-
-		// Kiểm tra thư mục hình ảnh
 		File mapDir = new File(System.getProperty("java.io.tmpdir"), "map/" + buildingId + "/");
+		// Tạo thư mục lưu trữ hình nếu như không tồn tại hoặc không phải là directory
 		if (!mapDir.exists() || !mapDir.isDirectory()) {
 			mapDir.mkdirs();
-			System.out.println("Map directory created at: " + mapDir.getAbsolutePath());
 		}
 
+		// File hình ảnh có tên theo format "buildingId_floorId.png"
 		File convFile = new File(mapDir.getAbsolutePath() + "/" + buildingId + "_" + floorId + ".png");
 		convFile.createNewFile();
 		FileOutputStream fos = new FileOutputStream(convFile);
 		fos.write(file.getBytes());
 		fos.close();
-		System.out.println("File written: " + convFile.getAbsolutePath());
-
+		
 		return convFile;
 	}
 
 	public File converQrCodeFile(BuildingDTO buildingDTO) throws IOException {
 
-		String randomDirName = UUID.randomUUID().toString();
 		// Tạo mới thư mục qr code với tên được random
-		File qrcodeDir = new File(System.getProperty("java.io.tmpdir"),
-				"qrcode/" + randomDirName + "-" + buildingDTO.getName());
+		String randomDirName = UUID.randomUUID().toString();
+		File qrcodeDir = new File(System.getProperty("java.io.tmpdir"), "qrcode/" + randomDirName + "-" + buildingDTO.getName());
 		if (!qrcodeDir.exists() || !qrcodeDir.isDirectory()) {
 			qrcodeDir.mkdirs();
-			System.out.println("qrcode directory created at: " + qrcodeDir.getAbsolutePath());
 		}
 
 		List<LocationDTO> buildingLocation = getAllLocationOfBuilding(buildingDTO);
@@ -70,8 +80,7 @@ public class Utilities {
 		for (int i = 0; i < buildingLocation.size(); i++) {
 			if (buildingLocation.get(i).getLinkQr() != null && buildingLocation.get(i).getName() != null) {
 				InputStream in = new URL(buildingLocation.get(i).getLinkQr()).openStream();
-				Files.copy(in, Paths.get(qrcodeDir + "/" + buildingLocation.get(i).getName() + ".png"),
-						StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(in, Paths.get(qrcodeDir + "/" + buildingLocation.get(i).getName() + ".png"), StandardCopyOption.REPLACE_EXISTING);
 			}
 		}
 
@@ -92,7 +101,7 @@ public class Utilities {
 		List<LocationDTO> result = new ArrayList<LocationDTO>();
 		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
 			for (int j = 0; j < buildingDTO.getListFloor().get(i).getListLocation().size(); j++) {
-				if (buildingDTO.getListFloor().get(i).getListLocation().get(j).getName().contains("Stairs")) {
+				if (buildingDTO.getListFloor().get(i).getListLocation().get(j).getName().toLowerCase().contains("stairs")) {
 					result.add(buildingDTO.getListFloor().get(i).getListLocation().get(j));
 				}
 			}
@@ -104,8 +113,7 @@ public class Utilities {
 		List<RoomDTO> result = new ArrayList<RoomDTO>();
 		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
 			for (int j = 0; j < buildingDTO.getListFloor().get(i).getListLocation().size(); j++) {
-				for (int k = 0; k < buildingDTO.getListFloor().get(i).getListLocation().get(j).getListRoom()
-						.size(); k++) {
+				for (int k = 0; k < buildingDTO.getListFloor().get(i).getListLocation().get(j).getListRoom().size(); k++) {
 					result.add(buildingDTO.getListFloor().get(i).getListLocation().get(j).getListRoom().get(k));
 				}
 			}
@@ -113,8 +121,7 @@ public class Utilities {
 		return result;
 	}
 
-	public List<LocationDTO> filterAvailableLocations(BuildingDTO buildingDTO, FloorDTO floorDTO,
-			LocationDTO locationDTO) {
+	public List<LocationDTO> filterAvailableLocations(BuildingDTO buildingDTO, FloorDTO floorDTO, LocationDTO locationDTO) {
 		List<LocationDTO> result = new ArrayList<LocationDTO>();
 
 		result = floorDTO.getListLocation();
@@ -202,5 +209,45 @@ public class Utilities {
 			}
 		}
 		return null;
+	}
+
+	public boolean checkExistedLocationForCreate(LocationDTO locationInfo, BuildingDTO buildingDTO) {
+		boolean result = false;
+		List<LocationDTO> listOfAllLocations = getAllLocationOfBuilding(buildingDTO);
+		for (int i = 0; i < listOfAllLocations.size(); i++) {
+			if (listOfAllLocations.get(i).getName().toLowerCase().equals(locationInfo.getName().toLowerCase())) {
+				result = true;
+				break;
+			}
+		}
+		return result;
+	}
+
+	public boolean checkExistedLocationForEdit(LocationDTO locationInfo, BuildingDTO buildingDTO) {
+		boolean result = false;
+		List<LocationDTO> listOfAllLocations = getAllLocationOfBuilding(buildingDTO);
+		for (int i = 0; i < listOfAllLocations.size(); i++) {
+			if (listOfAllLocations.get(i).getName().toLowerCase().equals(locationInfo.getName().toLowerCase())) {
+				if (!listOfAllLocations.get(i).getId().equals(locationInfo.getId())) {
+					result = true;
+					break;
+				}
+			}
+		}
+		return result;
+	}
+
+	public boolean checkExistedRoom(RoomDTO roomInfo, BuildingDTO buildingDTO) {
+		boolean result = false;
+		List<RoomDTO> listOfAllRooms = getAllRoomOfBuilding(buildingDTO);
+		for (int i = 0; i < listOfAllRooms.size(); i++) {
+			if (listOfAllRooms.get(i).getName().toLowerCase().equals(roomInfo.getName().toLowerCase())) {
+				if (!listOfAllRooms.get(i).isSpecialRoom() || !roomInfo.isSpecialRoom()) {
+					result = true;
+					break;
+				}
+			}
+		}
+		return result;
 	}
 }
