@@ -749,9 +749,16 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         }
 
         // lấy cách đi chi tiết
-        listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString() + " at " + currentTime, null));
-        listStep.addAll(wayfinder.getListStepGuide());
-        listStep.add(new Step(Step.TYPE_END_POINT, "You reach the destination: " + tvEnd.getText().toString() + " at about " + sdf.format(calendar.getTime()), null));
+        if (calendar == null) {
+            listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString(), null));
+            listStep.addAll(wayfinder.getListStepGuide());
+            listStep.add(new Step(Step.TYPE_END_POINT, "You reach the destination: " + tvEnd.getText().toString(), null));
+        } else {
+            listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString() + " at " + currentTime, null));
+            listStep.addAll(wayfinder.getListStepGuide());
+            listStep.add(new Step(Step.TYPE_END_POINT, "You reach the destination: " + tvEnd.getText().toString() + " at about " + sdf.format(calendar.getTime()), null));
+        }
+
 
         // update UI
         showMap();
