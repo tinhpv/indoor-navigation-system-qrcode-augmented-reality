@@ -46,9 +46,19 @@ public class Location implements Serializable {
 
     private String floorId;
 
+    private String floorName;
+
     public Location() {
     }
 
+
+    public String getFloorName() {
+        return floorName;
+    }
+
+    public void setFloorName(String floorName) {
+        this.floorName = floorName;
+    }
 
     public String getId() {
         return id;

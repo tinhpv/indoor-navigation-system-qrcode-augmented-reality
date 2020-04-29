@@ -7,14 +7,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import fpt.capstone.inqr.model.Building;
 import fpt.capstone.inqr.model.Floor;
 import fpt.capstone.inqr.model.Location;
 import fpt.capstone.inqr.model.Neighbor;
 import fpt.capstone.inqr.model.Room;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -359,6 +359,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 location.setFloorId(c.getString(c.getColumnIndex(FLOOR_ID)));
                 location.setQrAnchorId(c.getString(c.getColumnIndex(QR_ANCHOR_ID)));
                 location.setSpaceAnchorId(c.getString(c.getColumnIndex(SPACE_ANCHOR_ID)));
+
+                location.setFloorName(getFloorName(location.getFloorId()));
                 //add to location list
                 locations.add(location);
 
@@ -623,9 +625,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void deleteAllBuilding(String buildingId) {
-       deleteBuildingData(buildingId);
+        deleteBuildingData(buildingId);
 
-       deleteBuilding(buildingId);
+        deleteBuilding(buildingId);
     }
 
     // closing database

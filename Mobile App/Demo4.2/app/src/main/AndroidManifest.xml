@@ -17,9 +17,14 @@
         android:roundIcon="@drawable/ic_app_new"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.AppActivity"
-            android:windowSoftInputMode="adjustPan|adjustResize"
-            >
+        <activity android:name=".activity.TestActivity">
+
+        </activity>
+        <activity
+            android:name=".activity.AppActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,7 +32,9 @@
             </intent-filter>
         </activity>
 
-        <meta-data android:name="com.google.ar.core" android:value="optional" />
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="optional" />
     </application>
 
 </manifest>

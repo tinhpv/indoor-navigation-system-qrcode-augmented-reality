@@ -60,8 +60,11 @@
                         android:hint="Starting location"
                         android:inputType="text"
                         android:padding="@dimen/_7sdp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        android:layout_marginEnd="@dimen/_10sdp"
+
+                        android:focusable="false"
+
                         app:layout_constraintBottom_toBottomOf="@+id/imageView"
                         app:layout_constraintEnd_toStartOf="@+id/imgScan"
                         app:layout_constraintStart_toEndOf="@+id/imageView"

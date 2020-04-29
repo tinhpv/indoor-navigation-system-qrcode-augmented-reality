@@ -246,9 +246,20 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         wayfinder = new Wayfinder(locationList, roomList);
 
         initView(view);
-        setupInput();
+//        setupInput();
+        setupInputNew();
+
         setupSensor();
         setupScanQR();
+    }
+
+    private void setupInputNew() {
+        tvStart.setOnClickListener(v -> {
+            if (frame.getVisibility() == View.VISIBLE) {
+                frame.setVisibility(View.GONE);
+            }
+            this.changeFragment(new ChooseLocationFragment(this, locationList), true, false);
+        });
     }
 
     public void speak(String message) {
@@ -308,6 +319,10 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
     private void setupSensor() {
         mSensorManager = (SensorManager) this.getActivity().getSystemService(SENSOR_SERVICE);
         mRotation = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+    }
+
+    public void setStartLocation(String locationName) {
+        tvStart.setText(locationName);
     }
 
     private void setupInput() {
@@ -453,15 +468,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
 
         imgScan.setOnClickListener(v -> {
-            if (frame.getVisibility() == View.VISIBLE) {
-                frame.setVisibility(View.GONE);
-            } else if (frame.getVisibility() == View.GONE) {
-                frame.setVisibility(View.VISIBLE);
-
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(tvEnd.getWindowToken(), 0);
-                imm.hideSoftInputFromWindow(tvStart.getWindowToken(), 0);
-            }
+            setupCameraPreview();
         });
 
         // prepare rv
@@ -481,6 +488,18 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
         rvDot.setLayoutManager(new LinearLayoutManager(view.getContext(), RecyclerView.HORIZONTAL, false));
         rvDot.setAdapter(adapterPoint);
+    }
+
+    public void setupCameraPreview(){
+        if (frame.getVisibility() == View.VISIBLE) {
+            frame.setVisibility(View.GONE);
+        } else if (frame.getVisibility() == View.GONE) {
+            frame.setVisibility(View.VISIBLE);
+
+//            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+//            imm.hideSoftInputFromWindow(tvEnd.getWindowToken(), 0);
+//            imm.hideSoftInputFromWindow(tvStart.getWindowToken(), 0);
+        }
     }
 
     private void showMap() {
