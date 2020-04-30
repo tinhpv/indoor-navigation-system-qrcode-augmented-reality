@@ -377,7 +377,7 @@
         <RelativeLayout
             android:id="@+id/map_footer_section"
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
+            android:layout_height="wrap_content"
             android:background="@color/light_gray_input"
             android:padding="@dimen/_7sdp"
             android:visibility="gone">

@@ -40,7 +40,6 @@ import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.ShapeFactory;
-import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.microsoft.azure.spatialanchors.AnchorLocateCriteria;
 import com.microsoft.azure.spatialanchors.AnchorLocatedEvent;
@@ -59,6 +58,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.adapter.LocationStepAdapter;
@@ -95,8 +95,7 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
     private final Object progressLock = new Object();
 
     private int step;
-    private boolean didScan, didQrAnchorPlaced, didReachDestination;
-    private double distanceLeft;
+    private boolean didScan, didQrAnchorPlaced;
 
     private List<AnchorModel> mAnchorModelList;
     private List<Vertex> pathList;
@@ -255,10 +254,8 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
         previousLocationID = "b";
         didScan = false;
         didQrAnchorPlaced = false;
-        didReachDestination = false;
         desAnchorNode = null;
         sourceAnchorNode = null;
-        distanceLeft = 0.0;
     }
 
     private void initializeSession() {
@@ -374,21 +371,13 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
         return qrCodeIdList.contains(id);
     }
 
-    private List<Vertex> didPathListContainLocation(String locationID) {
-        List<Vertex> listTmp = null;
+    private int didPathListContainLocation(String locationID) {
         if (null != pathList) {
-            for (int i = 1; i < pathList.size() - 1; i++) {
-                if (locationID.equals(pathList.get(i).getId())) {
-                    listTmp = new ArrayList<>();
-                    for (int j = i; j < pathList.size(); j++) {
-                        listTmp.add(pathList.get(j));
-                    }
-                    break;
-                } // end if
+            for (int i = 0; i < pathList.size(); i++) {
+                if (locationID.equals(pathList.get(i).getId())) return i;
             }  // end for
         } // end if
-
-        return listTmp;
+        return -1;
     }
 
     private Location getLocation(String id) {
@@ -414,19 +403,17 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
             if (!scanQRScanSuccess.isAnimating()) scanQRScanSuccess.playAnimation();
 
             pathList = wayfinder.getShortestPathList();
-            pathList = didPathListContainLocation(scannedLocationId);
-            step = 0;
+            int index = didPathListContainLocation(scannedLocationId);
 
             // FIXED: CHECK OR CALCULATE NEW PATH
-            if (pathList != null) {
-                wayfinder.setShortestPathList(pathList);
+            if (index != -1) {
+                step = index;
             } else {
+                step = 0;
                 wayfinder.findWay(scannedLocationId, destinationRoomName);
                 pathList = wayfinder.getShortestPathList();
                 setupLocationStep();
             }
-
-            distanceLeft = wayfinder.getCurrentShortestDistance() - pathList.get(1).getDistance();
 
             // this point is the destination
             if (anchorId.equals(getLocation(pathList.get(pathList.size() - 1).getId()).getQrAnchorId())) {
@@ -456,14 +443,12 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
             desAnchorNode = new AnchorNode(cloudAnchor.getLocalAnchor());
             AnchorModel model = new AnchorModel(cloudAnchor.getLocalAnchor());
             mAnchorModelList.add(model);
-
             // destination
             if (desAnchorId.equals(getLocation(pathList.get(pathList.size() - 1).getId()).getSpaceAnchorId())) {
                 model.render(getContext(), mArFragment, new Color(android.graphics.Color.RED));
                 model.renderDes(getContext(), mArFragment);
             } else {
                 model.render(getContext(), mArFragment, new Color(android.graphics.Color.YELLOW));
-                model.renderDistance(getContext(), mArFragment, distanceLeft);
             }
         } // end if src and des anchorid
 
@@ -535,7 +520,6 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
         point1 = node1.getWorldPosition();
         point2 = node2.getWorldPosition();
         node1.setParent(mArFragment.getArSceneView().getScene());
-//        node2.setParent(mArFragment.getArSceneView().getScene());
 
         //find the vector extending between the two points and define a look rotation
         //in terms of this Vector.
@@ -625,7 +609,6 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
         didQrAnchorPlaced = false;
         desAnchorNode = null;
         sourceAnchorNode = null;
-        didReachDestination = false;
 
         imgCurrent.setImageResource(R.drawable.ic_scan_qr_fornav);
         tvCurrentDestination.setText("Scan a nearby QR Code to start navigating");
