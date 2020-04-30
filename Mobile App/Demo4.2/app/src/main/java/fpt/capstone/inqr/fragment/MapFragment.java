@@ -86,7 +86,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
     private PointViewAdapter adapterPoint;
     private LinearLayout btNavigate;
     private RelativeLayout btStepList;
-    private ImageView imgScan;
+    private ImageView imgScan, imgLike;
     private FrameLayout frame;
     private TextView tvTime, tvDistance;
     private LinearLayout howItWorkBlock;
@@ -138,6 +138,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
     private Calendar calendar;
 
     private TextToSpeech textToSpeech;
+    private boolean favoriteDestination = false;
 
     public MapFragment() {
 
@@ -263,6 +264,10 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
             if (frame.getVisibility() == View.VISIBLE) {
                 frame.setVisibility(View.GONE);
             }
+
+            //remove destination
+            tvEnd.setText("");
+
             this.changeFragment(new ChooseLocationFragment(this, locationList), true, false);
         });
 
@@ -339,15 +344,41 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
     public void setDestination(Room room) {
         tvEnd.setText(room.getName());
+        tvEnd.setError(null);
+
+        if (imgLike.getVisibility() == View.GONE) {
+            imgLike.setVisibility(View.VISIBLE);
+        }
 
         if (room.isSpecialRoom()) {
             int count = PreferenceHelper.getInt(getContext(), buildingId + "_" + room.getName().toLowerCase());
             // save in preference
             PreferenceHelper.putInt(getContext(), buildingId + "_" + room.getName().toLowerCase(), count + 1);
+
+            favoriteDestination = PreferenceHelper.getBoolean(getContext(), buildingId + "_" + room.getName().toLowerCase() + "_favorite");
         } else {
+            favoriteDestination = room.isFavorite();
+
             // update counter
             mMapPresenter.updateRoomCounter(buildingId, room.getId(), room.getCounter() + 1);
         }
+
+        if (favoriteDestination) {
+            imgLike.setImageResource(R.drawable.ic_like);
+        } else {
+            imgLike.setImageResource(R.drawable.ic_no_like);
+        }
+
+        // process find way
+        if (tvStart.getText().toString().isEmpty()) {
+            tvStart.setError("Invalid");
+        } else {
+            nameOfDestinationRoom = room.getName();
+
+            startLocationId = getLocationId(tvStart.getText().toString());
+            processFindWay(startLocationId, room.getName());
+        }
+
 
     }
 
@@ -437,6 +468,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         btNavigate = view.findViewById(R.id.bt_navigate);
         btStepList = view.findViewById(R.id.map_footer_section);
         imgScan = view.findViewById(R.id.imgScan);
+        imgLike = view.findViewById(R.id.imgLike);
         tvStart = view.findViewById(R.id.tvStart);
         tvEnd = view.findViewById(R.id.tvEnd);
 
@@ -495,6 +527,38 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
         imgScan.setOnClickListener(v -> {
             setupCameraPreview();
+        });
+
+        imgLike.setOnClickListener(v -> {
+            if (wayfinder.getRoom(tvEnd.getText().toString()).isSpecialRoom()) {
+                if (favoriteDestination) {
+                    imgLike.setImageResource(R.drawable.ic_no_like);
+
+                    PreferenceHelper.putBoolean(getContext(), buildingId + "_" + tvEnd.getText().toString().toLowerCase() + "_favorite", false);
+
+                    favoriteDestination = false;
+                } else {
+                    imgLike.setImageResource(R.drawable.ic_like);
+
+                    PreferenceHelper.putBoolean(getContext(), buildingId + "_" + tvEnd.getText().toString().toLowerCase() + "_favorite", true);
+
+                    favoriteDestination = true;
+                }
+            } else {
+                if (favoriteDestination) {
+                    imgLike.setImageResource(R.drawable.ic_no_like);
+
+                    mMapPresenter.updateFavoriteRoom(buildingId, wayfinder.getRoom(tvEnd.getText().toString()).getId(), 0);
+
+                    favoriteDestination = false;
+                } else {
+                    imgLike.setImageResource(R.drawable.ic_like);
+
+                    mMapPresenter.updateFavoriteRoom(buildingId, wayfinder.getRoom(tvEnd.getText().toString()).getId(), 1);
+
+                    favoriteDestination = true;
+                }
+            }
         });
 
         // prepare rv
@@ -828,7 +892,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         Room destinationRoom = wayfinder.getEndRoom();
 
         for (String floorId : listFloorIdOnWay) {
-            mapImg = ImageHelper.getBitmap(getContext(), floorId);
+            mapImg = ImageHelper.getBitmap(getContext(), buildingId, floorId);
             List<Line> lines = CanvasHelper.drawImage(getContext(), mapImg, floorId, locationPathList, destinationRoom);
             listSourceMap.add(mapImg);
             listLines.add(lines);

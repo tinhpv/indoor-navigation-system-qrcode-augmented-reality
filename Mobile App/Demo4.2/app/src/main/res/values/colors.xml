@@ -23,4 +23,5 @@
 
 
     <color name="white">#FFFFFF</color>
+    <color name="check">#DB0025</color>
 </resources>

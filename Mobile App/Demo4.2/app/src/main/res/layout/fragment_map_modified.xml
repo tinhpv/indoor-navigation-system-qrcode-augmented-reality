@@ -118,13 +118,27 @@
                         android:textSize="16sp"
                         android:paddingHorizontal="@dimen/_8sdp"
                         android:paddingVertical="@dimen/_8sdp"
+                        android:layout_marginEnd="@dimen/_10sdp"
                         android:textColor="@color/dark_blue"
                         android:focusable="false"
 
                         app:layout_constraintBottom_toBottomOf="@+id/imageView_end"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/imgLike"
                         app:layout_constraintStart_toEndOf="@+id/imageView_end"
                         app:layout_constraintTop_toTopOf="@+id/imageView_end" />
+
+                    <ImageView
+                        android:id="@+id/imgLike"
+                        android:layout_width="@dimen/_25sdp"
+                        android:layout_height="@dimen/_25sdp"
+                        android:src="@drawable/ic_no_like"
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

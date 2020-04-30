@@ -59,6 +59,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //Room Table
     private static final String SPECIAL_ROOM = "specialRoom";
     private static final String COUNTER = "counter";
+    private static final String FAVORITE = "favorite";
 
     // Building Table
     private static final String VERSION = "version";
@@ -122,7 +123,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + FLOOR_ID + " TEXT, "
             + SPECIAL_ROOM + " INTEGER, "
             + SPACE_ANCHOR_ID + " TEXT, "
-            + COUNTER + " INTEGER"
+            + COUNTER + " INTEGER, "
+            + FAVORITE + " INTEGER"
             + ")";
 
     public DatabaseHelper(Context context) {
@@ -262,6 +264,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         values.put(SPACE_ANCHOR_ID, room.getSpaceAnchorId());
         values.put(COUNTER, 0);
+        values.put(FAVORITE, 0);
 
 
         //Insert row
@@ -317,6 +320,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(COUNTER, count);
+
+        //update row
+        db.update(TABLE_ROOM, values, ID + " = ?", new String[]{roomId});
+        db.close();
+    }
+
+    // update favorite room
+    public void updateFavoriteRoom(String roomId, int status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(FAVORITE, status);
 
         //update row
         db.update(TABLE_ROOM, values, ID + " = ?", new String[]{roomId});
@@ -438,6 +453,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     room.setSpecialRoom(true);
                 } else {
                     room.setSpecialRoom(false);
+                }
+
+                tmp = c.getInt(c.getColumnIndex(FAVORITE));
+                if (tmp == 1) {
+                    room.setFavorite(true);
+                } else {
+                    room.setFavorite(false);
                 }
 
                 //
@@ -601,6 +623,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             for (Room room : listRoom) {
                 if (room.isSpecialRoom()) {
                     PreferenceHelper.remove(context, buildingId + "_" + room.getName().toLowerCase());
+
+                    PreferenceHelper.remove(context, buildingId + "_" + room.getName().toLowerCase() + "_favorite");
                 }
             }
 

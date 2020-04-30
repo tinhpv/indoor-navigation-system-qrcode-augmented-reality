@@ -49,8 +49,8 @@ public class ImageHelper {
         return bitmap;
     }
 
-    public static Bitmap getBitmap(Context context, String currentFloorId) {
-        return BitmapFactory.decodeStream(FileHelper.getImage(context, FileHelper.TYPE_MAP, currentFloorId)).copy(Bitmap.Config.ARGB_8888, true);
+    public static Bitmap getBitmap(Context context, String buildingId, String currentFloorId) {
+        return BitmapFactory.decodeStream(FileHelper.getImage(context, FileHelper.TYPE_MAP, buildingId, currentFloorId)).copy(Bitmap.Config.ARGB_8888, true);
     }
 
 }

@@ -23,6 +23,7 @@ import java.util.TreeSet;
 
 import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.adapter.DestinationAdapter;
+import fpt.capstone.inqr.adapter.FavoriteDestinationAdapter;
 import fpt.capstone.inqr.helper.PreferenceHelper;
 import fpt.capstone.inqr.model.Room;
 
@@ -40,7 +41,7 @@ public class ChooseDestinationFragment extends BaseFragment {
     private DestinationAdapter bigAdapter;
 
     private MapFragment mapFragment;
-    private List<Room> listRooms;
+    private List<Room> listRooms, listFavoRooms;
 
 
     public ChooseDestinationFragment() {
@@ -49,17 +50,26 @@ public class ChooseDestinationFragment extends BaseFragment {
 
     public ChooseDestinationFragment(MapFragment mapFragment, List<Room> listRooms, String buildingId) {
         this.mapFragment = mapFragment;
+        this.listRooms = new ArrayList<>();
+        this.listFavoRooms = new ArrayList<>();
 
         // filter duplicate
         listRooms = listRooms.stream()
                 .collect(collectingAndThen(toCollection(() -> new TreeSet<>(Comparator.comparing(Room::getName))),
                         ArrayList::new));
 
-        // add count for special room
+        // add count for special room + get favorite room
         for (Room room : listRooms) {
             if (room.isSpecialRoom()) {
                 int count = PreferenceHelper.getInt(mapFragment.getContext(), buildingId + "_" + room.getName().toLowerCase());
                 room.setCounter(count);
+
+                boolean favorite = PreferenceHelper.getBoolean(mapFragment.getContext(), buildingId + "_" + room.getName().toLowerCase() + "_favorite");
+                room.setFavorite(favorite);
+            }
+
+            if (room.isFavorite()) {
+                listFavoRooms.add(room);
             }
         }
 
@@ -98,15 +108,18 @@ public class ChooseDestinationFragment extends BaseFragment {
             }
         });
 
-        if (this.listRooms == null) {
-            this.listRooms = new ArrayList<>();
-        } else {
-            this.listRooms.clear();
-        }
 
         this.listRooms.addAll(listTop3);
         this.listRooms.addAll(listOutTop3);
 
+        Collections.sort(listFavoRooms, (o1, o2) -> {
+            int c = o1.getFloorId().toLowerCase().compareTo(o2.getFloorId().toLowerCase());
+            if (c == 0) {
+                return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+            } else {
+                return c;
+            }
+        });
     }
 
     @Override
@@ -117,12 +130,20 @@ public class ChooseDestinationFragment extends BaseFragment {
 
         innitView(view);
 
-        // rv
+        // rv Big
         bigAdapter = new DestinationAdapter(this);
 
         rvDestination.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         rvDestination.setAdapter(bigAdapter);
         bigAdapter.setListRooms(listRooms);
+
+        // rv Small
+        FavoriteDestinationAdapter smallAdapter = new FavoriteDestinationAdapter(this);
+        rvLoveDestination.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+        rvLoveDestination.setAdapter(smallAdapter);
+        smallAdapter.setListRooms(listFavoRooms);
+
+
 
         edtInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -168,6 +189,7 @@ public class ChooseDestinationFragment extends BaseFragment {
         edtInput = view.findViewById(R.id.edtInput);
         imgBack = view.findViewById(R.id.imgBack);
         rvDestination = view.findViewById(R.id.rvDestination);
+        rvLoveDestination = view.findViewById(R.id.rvLoveDestination);
     }
 
     @Override

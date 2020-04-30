@@ -89,6 +89,10 @@ public class ListBuildingFragment extends BaseFragment implements ListBuildingVi
 
     public void deleteBuildingData(String buildingId) {
         mBuildingPresenter.deleteBuildingData(buildingId);
+
+        // delete map of building
+        FileHelper.deleteOldData(getContext(), buildingId);
+
         updateListBuilding();
     }
 
@@ -129,7 +133,7 @@ public class ListBuildingFragment extends BaseFragment implements ListBuildingVi
                     // add floor
                     mBuildingPresenter.addFloor(floor, building.getId());
                     //save map image
-                    FileHelper.saveFileFromUrl(getContext(), FileHelper.TYPE_MAP, floor.getLinkMap());
+                    FileHelper.saveFileFromUrl(getContext(), building.getId(), FileHelper.TYPE_MAP, floor.getLinkMap());
 
                     //add location
                     for (Location location : floor.getLocationList()) {
