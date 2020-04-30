@@ -90,7 +90,7 @@ public class ListBuildingPresenter {
     }
 
     public void deleteBuildingData(String buildingId) {
-        mDatabaseHelper.deleteBuildingData(buildingId);
+        mDatabaseHelper.deleteBuildingData(mContext, buildingId);
     }
 
     public void updateBuildingStatus(String buildingId, int status) {

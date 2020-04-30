@@ -86,7 +86,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
     private PointViewAdapter adapterPoint;
     private LinearLayout btNavigate;
     private RelativeLayout btStepList;
-    private ImageView imgScan;
+    private ImageView imgScan, imgLike;
     private FrameLayout frame;
     private TextView tvTime, tvDistance;
     private LinearLayout howItWorkBlock;
@@ -138,6 +138,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
     private Calendar calendar;
 
     private TextToSpeech textToSpeech;
+    private boolean favoriteDestination = false;
 
     public MapFragment() {
 
@@ -204,7 +205,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         checkQrExistHandler.removeCallbacks(runnable);
         checkQrExistHandler.removeCallbacksAndMessages(null);
 
-        if(textToSpeech !=null){
+        if (textToSpeech != null) {
             textToSpeech.stop();
             textToSpeech.shutdown();
         }
@@ -246,9 +247,36 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         wayfinder = new Wayfinder(locationList, roomList);
 
         initView(view);
-        setupInput();
+//        setupInput();
+        setupInputNew();
+
         setupSensor();
         setupScanQR();
+    }
+
+    @Override
+    public void onLoadRoomData(List<Room> listRooms) {
+        this.roomList = listRooms;
+    }
+
+    private void setupInputNew() {
+        tvStart.setOnClickListener(v -> {
+            if (frame.getVisibility() == View.VISIBLE) {
+                frame.setVisibility(View.GONE);
+            }
+
+            //remove destination
+            tvEnd.setText("");
+
+            this.changeFragment(new ChooseLocationFragment(this, locationList), true, false);
+        });
+
+        tvEnd.setOnClickListener(v -> {
+            if (frame.getVisibility() == View.VISIBLE) {
+                frame.setVisibility(View.GONE);
+            }
+            this.changeFragment(new ChooseDestinationFragment(this, roomList, buildingId), true, false);
+        });
     }
 
     public void speak(String message) {
@@ -308,6 +336,50 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
     private void setupSensor() {
         mSensorManager = (SensorManager) this.getActivity().getSystemService(SENSOR_SERVICE);
         mRotation = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+    }
+
+    public void setStartLocation(Location location) {
+        tvStart.setText(location.getName());
+    }
+
+    public void setDestination(Room room) {
+        tvEnd.setText(room.getName());
+        tvEnd.setError(null);
+
+        if (imgLike.getVisibility() == View.GONE) {
+            imgLike.setVisibility(View.VISIBLE);
+        }
+
+        if (room.isSpecialRoom()) {
+            int count = PreferenceHelper.getInt(getContext(), buildingId + "_" + room.getName().toLowerCase());
+            // save in preference
+            PreferenceHelper.putInt(getContext(), buildingId + "_" + room.getName().toLowerCase(), count + 1);
+
+            favoriteDestination = PreferenceHelper.getBoolean(getContext(), buildingId + "_" + room.getName().toLowerCase() + "_favorite");
+        } else {
+            favoriteDestination = room.isFavorite();
+
+            // update counter
+            mMapPresenter.updateRoomCounter(buildingId, room.getId(), room.getCounter() + 1);
+        }
+
+        if (favoriteDestination) {
+            imgLike.setImageResource(R.drawable.ic_like);
+        } else {
+            imgLike.setImageResource(R.drawable.ic_no_like);
+        }
+
+        // process find way
+        if (tvStart.getText().toString().isEmpty()) {
+            tvStart.setError("Invalid");
+        } else {
+            nameOfDestinationRoom = room.getName();
+
+            startLocationId = getLocationId(tvStart.getText().toString());
+            processFindWay(startLocationId, room.getName());
+        }
+
+
     }
 
     private void setupInput() {
@@ -396,6 +468,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         btNavigate = view.findViewById(R.id.bt_navigate);
         btStepList = view.findViewById(R.id.map_footer_section);
         imgScan = view.findViewById(R.id.imgScan);
+        imgLike = view.findViewById(R.id.imgLike);
         tvStart = view.findViewById(R.id.tvStart);
         tvEnd = view.findViewById(R.id.tvEnd);
 
@@ -453,14 +526,38 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
 
         imgScan.setOnClickListener(v -> {
-            if (frame.getVisibility() == View.VISIBLE) {
-                frame.setVisibility(View.GONE);
-            } else if (frame.getVisibility() == View.GONE) {
-                frame.setVisibility(View.VISIBLE);
+            setupCameraPreview();
+        });
 
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(tvEnd.getWindowToken(), 0);
-                imm.hideSoftInputFromWindow(tvStart.getWindowToken(), 0);
+        imgLike.setOnClickListener(v -> {
+            if (wayfinder.getRoom(tvEnd.getText().toString()).isSpecialRoom()) {
+                if (favoriteDestination) {
+                    imgLike.setImageResource(R.drawable.ic_no_like);
+
+                    PreferenceHelper.putBoolean(getContext(), buildingId + "_" + tvEnd.getText().toString().toLowerCase() + "_favorite", false);
+
+                    favoriteDestination = false;
+                } else {
+                    imgLike.setImageResource(R.drawable.ic_like);
+
+                    PreferenceHelper.putBoolean(getContext(), buildingId + "_" + tvEnd.getText().toString().toLowerCase() + "_favorite", true);
+
+                    favoriteDestination = true;
+                }
+            } else {
+                if (favoriteDestination) {
+                    imgLike.setImageResource(R.drawable.ic_no_like);
+
+                    mMapPresenter.updateFavoriteRoom(buildingId, wayfinder.getRoom(tvEnd.getText().toString()).getId(), 0);
+
+                    favoriteDestination = false;
+                } else {
+                    imgLike.setImageResource(R.drawable.ic_like);
+
+                    mMapPresenter.updateFavoriteRoom(buildingId, wayfinder.getRoom(tvEnd.getText().toString()).getId(), 1);
+
+                    favoriteDestination = true;
+                }
             }
         });
 
@@ -481,6 +578,18 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
         rvDot.setLayoutManager(new LinearLayoutManager(view.getContext(), RecyclerView.HORIZONTAL, false));
         rvDot.setAdapter(adapterPoint);
+    }
+
+    public void setupCameraPreview() {
+        if (frame.getVisibility() == View.VISIBLE) {
+            frame.setVisibility(View.GONE);
+        } else if (frame.getVisibility() == View.GONE) {
+            frame.setVisibility(View.VISIBLE);
+
+//            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+//            imm.hideSoftInputFromWindow(tvEnd.getWindowToken(), 0);
+//            imm.hideSoftInputFromWindow(tvStart.getWindowToken(), 0);
+        }
     }
 
     private void showMap() {
@@ -665,7 +774,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-             calendar = Calendar.getInstance();
+            calendar = Calendar.getInstance();
             calendar.setTime(date);
             calendar.add(Calendar.SECOND, sens);
             calendar.add(Calendar.MINUTE, mins);
@@ -783,7 +892,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         Room destinationRoom = wayfinder.getEndRoom();
 
         for (String floorId : listFloorIdOnWay) {
-            mapImg = ImageHelper.getBitmap(getContext(), floorId);
+            mapImg = ImageHelper.getBitmap(getContext(), buildingId, floorId);
             List<Line> lines = CanvasHelper.drawImage(getContext(), mapImg, floorId, locationPathList, destinationRoom);
             listSourceMap.add(mapImg);
             listLines.add(lines);

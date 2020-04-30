@@ -2,7 +2,6 @@ package fpt.capstone.inqr.presenter;
 
 import android.content.Context;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +29,50 @@ public class MapPresenter {
         mMapView = mapView;
         mContext = context;
         mDatabaseHelper = new DatabaseHelper(context);
+    }
+
+    public void updateRoomCounter(String buildingId, String roomId, int count) {
+        mDatabaseHelper.updateRoomCounter(roomId, count);
+
+        // GET FLOORS
+        List<Floor> floorList = mDatabaseHelper.getAllFloors(buildingId);
+
+        // GET LOCATIONS OF FLOORS
+        List<Location> locationList = new ArrayList<>();
+        List<String> floorNames = new ArrayList<>();
+        for (Floor floor : floorList) {
+            floorNames.add(floor.getName());
+            locationList.addAll(mDatabaseHelper.getAllLocations(floor.getId()));
+        } // end for
+        // GET ROOMS
+        List<Room> roomList = new ArrayList<>();
+        for (Location location : locationList) {
+            roomList.addAll(mDatabaseHelper.getAllRooms(location.getId()));
+        }
+
+        mMapView.onLoadRoomData(roomList);
+    }
+
+    public void updateFavoriteRoom(String buildingId, String roomId, int status) {
+        mDatabaseHelper.updateFavoriteRoom(roomId, status);
+
+        // GET FLOORS
+        List<Floor> floorList = mDatabaseHelper.getAllFloors(buildingId);
+
+        // GET LOCATIONS OF FLOORS
+        List<Location> locationList = new ArrayList<>();
+        List<String> floorNames = new ArrayList<>();
+        for (Floor floor : floorList) {
+            floorNames.add(floor.getName());
+            locationList.addAll(mDatabaseHelper.getAllLocations(floor.getId()));
+        } // end for
+        // GET ROOMS
+        List<Room> roomList = new ArrayList<>();
+        for (Location location : locationList) {
+            roomList.addAll(mDatabaseHelper.getAllRooms(location.getId()));
+        }
+
+        mMapView.onLoadRoomData(roomList);
     }
 
     public void loadBuildingData(String buildingId) {
@@ -67,7 +110,6 @@ public class MapPresenter {
 
         mMapView.onSuccessLoadBuildingData(floorList, locationList, roomList, floorNames, locationNameList, roomNameList);
     }
-
 
 
 }

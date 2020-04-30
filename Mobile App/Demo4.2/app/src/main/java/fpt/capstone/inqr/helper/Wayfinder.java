@@ -133,7 +133,7 @@ public class Wayfinder {
         return -1;
     }
 
-    private Room getRoom(String name) {
+    public Room getRoom(String name) {
         for (Room room : roomList) {
             if (name.equals(room.getName())) {
                 return room;

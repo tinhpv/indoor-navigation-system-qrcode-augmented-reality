@@ -1,7 +1,6 @@
 package fpt.capstone.inqr.fragment;
 
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -22,21 +22,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.adapter.BuildingAdapter;
-import fpt.capstone.inqr.callbacks.CallbackData;
 import fpt.capstone.inqr.dialog.ChangeWalkingSpeedDialog;
 import fpt.capstone.inqr.dialog.DeleteDialog;
 import fpt.capstone.inqr.dialog.InfoDialog;
 import fpt.capstone.inqr.dialog.NotificationDialog;
 import fpt.capstone.inqr.dialog.WarningDialog;
 import fpt.capstone.inqr.dialog.WarningDownloadDialog;
-import fpt.capstone.inqr.helper.AppHelper;
 import fpt.capstone.inqr.helper.DatabaseHelper;
 import fpt.capstone.inqr.helper.FileHelper;
 import fpt.capstone.inqr.model.Building;
@@ -92,6 +89,10 @@ public class ListBuildingFragment extends BaseFragment implements ListBuildingVi
 
     public void deleteBuildingData(String buildingId) {
         mBuildingPresenter.deleteBuildingData(buildingId);
+
+        // delete map of building
+        FileHelper.deleteOldData(getContext(), buildingId);
+
         updateListBuilding();
     }
 
@@ -132,7 +133,7 @@ public class ListBuildingFragment extends BaseFragment implements ListBuildingVi
                     // add floor
                     mBuildingPresenter.addFloor(floor, building.getId());
                     //save map image
-                    FileHelper.saveFileFromUrl(getContext(), FileHelper.TYPE_MAP, floor.getLinkMap());
+                    FileHelper.saveFileFromUrl(getContext(), building.getId(), FileHelper.TYPE_MAP, floor.getLinkMap());
 
                     //add location
                     for (Location location : floor.getLocationList()) {
@@ -205,6 +206,9 @@ public class ListBuildingFragment extends BaseFragment implements ListBuildingVi
     }
 
     public void showMapFragment(String buildingId) {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(edtSearch.getWindowToken(), 0);
+
         MapFragment fragment = new MapFragment();
         Bundle bundle = new Bundle();
         bundle.putString("buildingID", buildingId);
@@ -354,7 +358,7 @@ public class ListBuildingFragment extends BaseFragment implements ListBuildingVi
         for (Building buildingLocal : listBuilding) {
             // nếu không có thì xóa data của building đó
             if (!checkBuildingActive(listBuildingServer, buildingLocal.getId())) {
-                db.deleteAllBuilding(buildingLocal.getId());
+                db.deleteAllBuilding(getContext(), buildingLocal.getId());
                 // thêm thông tin cập nhập
                 listNotification.add(new Notification(Notification.TYPE_REMOVE, buildingLocal.getName()));
             }

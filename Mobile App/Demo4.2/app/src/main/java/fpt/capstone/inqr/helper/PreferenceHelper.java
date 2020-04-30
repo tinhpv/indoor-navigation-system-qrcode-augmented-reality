@@ -9,7 +9,7 @@ public class PreferenceHelper {
     public static void putInt(Context context, String key, int value) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        
+
         editor.putInt(key, value).apply();
     }
 

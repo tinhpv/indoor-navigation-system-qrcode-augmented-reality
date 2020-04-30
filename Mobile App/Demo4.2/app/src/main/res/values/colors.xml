@@ -19,7 +19,9 @@
     <color name="bgBuilding">#F4A709</color>
     <color name="line_color">#F78B03</color>
     <color name="color_text_delete">#D95F50</color>
+    <color name="color_space">#D5D5D5</color>
 
 
     <color name="white">#FFFFFF</color>
+    <color name="check">#DB0025</color>
 </resources>
