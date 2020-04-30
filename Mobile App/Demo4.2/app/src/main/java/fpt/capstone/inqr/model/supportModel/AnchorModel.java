@@ -2,6 +2,8 @@ package fpt.capstone.inqr.model.supportModel;
 
 import android.content.Context;
 import android.net.Uri;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -13,10 +15,12 @@ import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.ShapeFactory;
+import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.microsoft.azure.spatialanchors.CloudSpatialAnchor;
 
+import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.helper.MainThreadContext;
 
 /**
@@ -87,6 +91,26 @@ public class AnchorModel {
                     });
         }); // end MainThread
     }
+
+
+    public void renderDistance(Context context, ArFragment arFragment, double distance) {
+        MainThreadContext.runOnUiThread(() -> {
+            TextView tv = (TextView) View.inflate(context, R.layout.model_edt, null);
+            tv.setText("" + distance + "m left..");
+
+            ViewRenderable.builder()
+                    .setView(context, tv)
+                    .build()
+                    .thenAccept(renderable -> {
+                        renderable.setShadowCaster(false);
+                        renderable.setShadowReceiver(false);
+                        this.anchorNode.setRenderable(renderable);
+                        this.anchorNode.setParent(arFragment.getArSceneView().getScene());
+                    });
+        }); // end MainThread
+    }
+
+
 
     public void destroy() {
         MainThreadContext.runOnUiThread(() -> {
