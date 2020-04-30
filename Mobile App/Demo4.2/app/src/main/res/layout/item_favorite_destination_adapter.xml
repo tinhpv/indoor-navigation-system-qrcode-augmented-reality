@@ -4,15 +4,14 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:paddingEnd="@dimen/_10sdp"
-    android:layout_gravity="center_vertical"
-    >
+    android:layout_gravity="center_vertical">
 
     <View
         android:id="@+id/line"
         android:layout_width="0.5dp"
         android:layout_height="0dp"
         android:background="@color/dark_gray"
-        android:layout_marginTop="@dimen/_15sdp"
+        android:layout_marginTop="@dimen/_18sdp"
         android:layout_marginBottom="@dimen/_15sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,7 +41,7 @@
             android:fontFamily="@font/nunito_regular"
             android:text="Lên lầu"
             android:textColor="@color/dark_blue"
-            android:textSize="17sp" />
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/tvFloor"
@@ -51,11 +50,9 @@
             android:fontFamily="@font/nunito_light"
 
             android:text="120m"
-            android:textSize="15sp"
-            android:visibility="gone" />
+            android:textSize="13sp"
+            android:visibility="visible" />
 
     </LinearLayout>
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

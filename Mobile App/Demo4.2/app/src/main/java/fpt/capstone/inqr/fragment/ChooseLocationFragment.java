@@ -1,6 +1,7 @@
 package fpt.capstone.inqr.fragment;
 
 import android.content.Context;
+import android.media.Image;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -31,7 +32,7 @@ public class ChooseLocationFragment extends BaseFragment {
 
     private ImageView imgBack;
     private EditText edtInput;
-    private LinearLayout bgScan;
+    private ImageView bgScan;
     private RecyclerView rvLocation;
     private LocationAdapter adapter;
     private MapFragment mapFragment;

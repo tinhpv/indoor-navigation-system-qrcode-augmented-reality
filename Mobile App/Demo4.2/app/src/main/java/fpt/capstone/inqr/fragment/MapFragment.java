@@ -226,7 +226,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        view = inflater.inflate(R.layout.fragment_map_modified, container, false);
+        view = inflater.inflate(R.layout.fragment_map_modified_updated, container, false);
         sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         buildingId = getArguments().getString("buildingID", "");
 

@@ -17,10 +17,9 @@
 
     <ImageView
         android:id="@+id/imgType"
-        android:layout_width="@dimen/_30sdp"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/_25sdp"
+        android:layout_height="@dimen/_25sdp"
         android:layout_margin="@dimen/_10sdp"
-        android:layout_marginStart="13dp"
 
         android:src="@drawable/stairs_up"
         app:layout_constraintBottom_toBottomOf="@+id/guide_section"
@@ -36,7 +35,8 @@
         android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginBottom="@dimen/_10sdp"
         android:layout_marginStart="@dimen/_15sdp"
-        app:layout_goneMarginBottom="@dimen/_15sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imgSpeaker"
         app:layout_constraintStart_toEndOf="@+id/imgType"
@@ -65,8 +65,8 @@
 
     <ImageView
         android:id="@+id/imgSpeaker"
-        android:layout_width="@dimen/_26sdp"
-        android:layout_height="@dimen/_26sdp"
+        android:layout_width="@dimen/_22sdp"
+        android:layout_height="@dimen/_22sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         android:clickable="true"
         android:focusable="true"

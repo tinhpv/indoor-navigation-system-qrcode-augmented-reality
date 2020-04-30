@@ -26,14 +26,14 @@
             android:layout_height="wrap_content"
             android:background="@drawable/border"
             android:orientation="horizontal"
-            android:padding="@dimen/_10sdp"
-            android:layout_marginBottom="@dimen/_10sdp"
+            android:padding="@dimen/_6sdp"
+            android:layout_marginBottom="@dimen/_6sdp"
             >
 
             <ImageView
                 android:id="@+id/imgBack"
-                android:layout_width="@dimen/_30sdp"
-                android:layout_height="@dimen/_30sdp"
+                android:layout_width="@dimen/_25sdp"
+                android:layout_height="@dimen/_25sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
 
                 android:padding="@dimen/_3sdp"
@@ -65,8 +65,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvLoveDestination"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
     </LinearLayout>

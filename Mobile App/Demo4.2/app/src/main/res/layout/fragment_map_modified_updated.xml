@@ -1,49 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:clickable="true"
-    android:focusable="true">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toTopOf="@id/map_footer_section"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <!-- BODY -->
         <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/white">
+            android:background="@android:color/white"
+            android:orientation="vertical">
 
             <!-- INPUT BLOCK -->
             <LinearLayout
                 android:id="@+id/bgInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@color/light_gray_input">
+                android:background="@color/light_gray_input"
+                android:orientation="vertical">
 
                 <!-- START POINT BLOCK -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@drawable/border_radius_auto_textview"
                     android:layout_marginStart="@dimen/_25sdp"
+                    android:layout_marginTop="@dimen/_15sdp"
                     android:layout_marginEnd="@dimen/_25sdp"
-                    android:layout_marginTop="@dimen/_15sdp">
+                    android:background="@drawable/border_radius_auto_textview"
+                    android:orientation="horizontal">
 
                     <ImageView
                         android:id="@+id/imageView"
                         android:layout_width="@dimen/_10sdp"
                         android:layout_height="@dimen/_10sdp"
-                        android:src="@drawable/ic_start_point"
                         android:layout_marginStart="@dimen/_15sdp"
+                        android:src="@drawable/ic_start_point"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -52,18 +54,18 @@
                         android:id="@+id/tvStart"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        android:layout_marginEnd="@dimen/_10sdp"
                         android:background="@null"
                         android:completionThreshold="1"
+                        android:focusable="false"
                         android:fontFamily="@font/nunito_light"
-                        android:textColor="@color/dark_blue"
-                        android:textSize="16sp"
                         android:hint="Starting location"
                         android:inputType="text"
                         android:padding="@dimen/_7sdp"
-                        android:layout_marginStart="@dimen/_10sdp"
-                        android:layout_marginEnd="@dimen/_10sdp"
+                        android:textColor="@color/dark_blue"
 
-                        android:focusable="false"
+                        android:textSize="16sp"
 
                         app:layout_constraintBottom_toBottomOf="@+id/imageView"
                         app:layout_constraintEnd_toStartOf="@+id/imgScan"
@@ -74,10 +76,10 @@
                         android:id="@+id/imgScan"
                         android:layout_width="@dimen/_25sdp"
                         android:layout_height="@dimen/_25sdp"
-                        android:src="@drawable/ic_scan_qr"
-                        android:layout_marginEnd="@dimen/_10sdp"
                         android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_10sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
+                        android:src="@drawable/ic_scan_qr"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -88,19 +90,19 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@drawable/border_radius_auto_textview"
                     android:layout_marginStart="@dimen/_25sdp"
-                    android:layout_marginEnd="@dimen/_25sdp"
                     android:layout_marginTop="@dimen/_7sdp"
-                    android:layout_marginBottom="@dimen/_15sdp">
+                    android:layout_marginEnd="@dimen/_25sdp"
+                    android:layout_marginBottom="@dimen/_15sdp"
+                    android:background="@drawable/border_radius_auto_textview"
+                    android:orientation="horizontal">
 
                     <ImageView
                         android:id="@+id/imageView_end"
                         android:layout_width="@dimen/_13sdp"
                         android:layout_height="@dimen/_13sdp"
-                        android:src="@drawable/ic_end_point"
                         android:layout_marginStart="@dimen/_13sdp"
+                        android:src="@drawable/ic_end_point"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -110,17 +112,17 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
+                        android:layout_marginEnd="@dimen/_10sdp"
                         android:background="@null"
                         android:completionThreshold="1"
+                        android:focusable="false"
                         android:fontFamily="@font/nunito_light"
                         android:hint="Destination room"
                         android:inputType="text"
-                        android:textSize="16sp"
                         android:paddingHorizontal="@dimen/_8sdp"
                         android:paddingVertical="@dimen/_8sdp"
-                        android:layout_marginEnd="@dimen/_10sdp"
                         android:textColor="@color/dark_blue"
-                        android:focusable="false"
+                        android:textSize="16sp"
 
                         app:layout_constraintBottom_toBottomOf="@+id/imageView_end"
                         app:layout_constraintEnd_toStartOf="@id/imgLike"
@@ -131,10 +133,10 @@
                         android:id="@+id/imgLike"
                         android:layout_width="@dimen/_25sdp"
                         android:layout_height="@dimen/_25sdp"
-                        android:src="@drawable/ic_no_like"
-                        android:layout_marginEnd="@dimen/_10sdp"
                         android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_10sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
+                        android:src="@drawable/ic_no_like"
                         android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -337,9 +339,8 @@
                         android:id="@+id/overlay"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@android:color/white"
-                        android:layout_alignParentBottom="true">
-                    </RelativeLayout>
+                        android:layout_alignParentBottom="true"
+                        android:background="@android:color/white"></RelativeLayout>
 
                     <FrameLayout
                         android:id="@+id/bgImg"
@@ -374,8 +375,8 @@
                     android:id="@+id/rvDot"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
                     android:layout_marginBottom="?actionBarSize"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
@@ -391,76 +392,80 @@
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <!-- STEP GUIDE + NAVIGATE SECTION-->
-
     <RelativeLayout
-            android:id="@+id/map_footer_section"
-            android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:background="@color/light_gray_input"
-            android:padding="@dimen/_7sdp"
-            android:visibility="visible">
+        android:id="@+id/map_footer_section"
+        android:layout_width="0dp"
+        android:layout_height="?actionBarSize"
+        android:background="@color/light_gray_input"
+        android:padding="@dimen/_7sdp"
+        android:visibility="visible"
 
-            <!--  STEP AND MORE BUTTON-->
-            <LinearLayout
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/main_content">
+
+        <!--  STEP AND MORE BUTTON-->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/img_way_info_toggle"
+                android:layout_width="@dimen/_11sdp"
+                android:layout_height="@dimen/_11sdp"
+                android:src="@drawable/ic_step_and_more" />
+
+            <TextView
+                android:id="@+id/tv_way_info_toggle_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginStart="@dimen/_15sdp"
-                android:layout_centerVertical="true"
-                android:gravity="center_vertical">
+                android:layout_marginStart="@dimen/_5sdp"
+                android:fontFamily="@font/nunito_bold"
+                android:text="STEP AND MORE"
+                android:textColor="@color/dark_blue"
+                android:textSize="12sp" />
 
-                <ImageView
-                    android:id="@+id/img_way_info_toggle"
-                    android:layout_width="@dimen/_11sdp"
-                    android:layout_height="@dimen/_11sdp"
-                    android:src="@drawable/ic_step_and_more"/>
+        </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tv_way_info_toggle_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_5sdp"
-                    android:fontFamily="@font/nunito_bold"
-                    android:text="STEP AND MORE"
-                    android:textSize="12sp"
-                    android:textColor="@color/dark_blue"/>
+        <!--  NAVIGATION BUTTON-->
+        <LinearLayout
+            android:id="@+id/bt_navigate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:background="@drawable/border_radius_dark_blue"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            </LinearLayout>
+            <ImageView
+                android:layout_width="@dimen/_21sdp"
+                android:layout_height="@dimen/_21sdp"
+                android:layout_marginStart="@dimen/_4sdp"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_4sdp"
+                android:src="@drawable/ic_nav_ar" />
 
-            <!--  NAVIGATION BUTTON-->
-            <LinearLayout
-                android:id="@+id/bt_navigate"
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_12sdp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentEnd="true"
-                android:gravity="center_vertical"
-                android:background="@drawable/border_radius_dark_blue">
+                android:fontFamily="@font/nunito_bold"
+                android:text="START"
+                android:textColor="@color/dark_blue"
+                android:textSize="13sp" />
 
-                <ImageView
-                    android:layout_width="@dimen/_21sdp"
-                    android:layout_height="@dimen/_21sdp"
-                    android:src="@drawable/ic_nav_ar"
-                    android:layout_marginStart="@dimen/_4sdp"
-                    android:layout_marginTop="@dimen/_4sdp"
-                    android:layout_marginBottom="@dimen/_4sdp"
-                    android:layout_marginEnd="@dimen/_10sdp" />
+        </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_5sdp"
-                    android:fontFamily="@font/nunito_bold"
-                    android:text="START"
-                    android:layout_marginEnd="@dimen/_12sdp"
-                    android:textSize="13sp"
-                    android:textColor="@color/dark_blue"/>
+    </RelativeLayout>
 
-            </LinearLayout>
-
-        </RelativeLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 
