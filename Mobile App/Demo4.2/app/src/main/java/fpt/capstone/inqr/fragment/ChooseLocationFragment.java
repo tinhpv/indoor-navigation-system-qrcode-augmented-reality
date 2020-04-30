@@ -47,9 +47,9 @@ public class ChooseLocationFragment extends BaseFragment {
 
         // order
         Collections.sort(listLocations, (o1, o2) -> {
-            int c = o1.getFloorId().compareTo(o2.getFloorId());
+            int c = o1.getFloorId().toLowerCase().compareTo(o2.getFloorId().toLowerCase());
             if (c == 0) {
-                return o1.getName().compareTo(o2.getName());
+                return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
             } else {
                 return c;
             }
@@ -119,8 +119,8 @@ public class ChooseLocationFragment extends BaseFragment {
         return view;
     }
 
-    public void setLocation(String locationName) {
-        mapFragment.setStartLocation(locationName);
+    public void setLocation(Location location) {
+        mapFragment.setStartLocation(location);
 
         this.getActivity().onBackPressed();
     }

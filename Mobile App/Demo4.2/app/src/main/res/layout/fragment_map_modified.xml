@@ -119,6 +119,8 @@
                         android:paddingHorizontal="@dimen/_8sdp"
                         android:paddingVertical="@dimen/_8sdp"
                         android:textColor="@color/dark_blue"
+                        android:focusable="false"
+
                         app:layout_constraintBottom_toBottomOf="@+id/imageView_end"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/imageView_end"

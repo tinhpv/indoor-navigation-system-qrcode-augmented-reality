@@ -16,4 +16,6 @@ import fpt.capstone.inqr.model.Room;
 public interface MapView {
     void onSuccessLoadBuildingData(List<Floor> floors, List<Location> locations, List<Room> rooms,
                                    List<String> floorNames, List<String> locationNames, List<String> roomNames);
+
+    void onLoadRoomData(List<Room> listRooms);
 }

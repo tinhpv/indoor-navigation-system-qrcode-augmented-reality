@@ -53,7 +53,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationHolder> {
 
 
         holder.itemView.setOnClickListener(v -> {
-            fragment.setLocation(location.getName());
+            fragment.setLocation(location);
         });
     }
 

@@ -8,7 +8,7 @@
         android:id="@+id/line"
         android:layout_width="0dp"
         android:layout_height="0.5dp"
-        android:layout_marginStart="@dimen/_70sdp"
+        android:layout_marginStart="@dimen/_75sdp"
         android:layout_marginEnd="@dimen/_20sdp"
         android:background="@color/dark_gray"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,10 +21,25 @@
         android:layout_height="@dimen/_70sdp"
         android:layout_marginStart="@dimen/_30sdp"
 
-        android:src="@drawable/ic_marker"
+        android:src="@drawable/ic_clock"
         app:layout_constraintBottom_toBottomOf="@+id/guide_section"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guide_section" />
+
+    <TextView
+        android:id="@+id/tvCounter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="11"
+        android:fontFamily="@font/nunito_bold"
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
+
+        app:layout_constraintStart_toStartOf="@id/imgType"
+        app:layout_constraintTop_toTopOf="@+id/imgType"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginStart="@dimen/_25sdp"
+        />
 
     <LinearLayout
         android:id="@+id/guide_section"
@@ -35,7 +50,7 @@
 
         android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginBottom="@dimen/_10sdp"
-        android:layout_marginStart="@dimen/_15sdp"
+        android:layout_marginStart="@dimen/_25sdp"
         app:layout_goneMarginBottom="@dimen/_15sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -43,7 +58,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/tvLocation"
+            android:id="@+id/tvDestination"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fontFamily="@font/nunito_regular"

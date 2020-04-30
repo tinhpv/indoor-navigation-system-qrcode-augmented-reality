@@ -204,7 +204,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         checkQrExistHandler.removeCallbacks(runnable);
         checkQrExistHandler.removeCallbacksAndMessages(null);
 
-        if(textToSpeech !=null){
+        if (textToSpeech != null) {
             textToSpeech.stop();
             textToSpeech.shutdown();
         }
@@ -253,12 +253,24 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         setupScanQR();
     }
 
+    @Override
+    public void onLoadRoomData(List<Room> listRooms) {
+        this.roomList = listRooms;
+    }
+
     private void setupInputNew() {
         tvStart.setOnClickListener(v -> {
             if (frame.getVisibility() == View.VISIBLE) {
                 frame.setVisibility(View.GONE);
             }
             this.changeFragment(new ChooseLocationFragment(this, locationList), true, false);
+        });
+
+        tvEnd.setOnClickListener(v -> {
+            if (frame.getVisibility() == View.VISIBLE) {
+                frame.setVisibility(View.GONE);
+            }
+            this.changeFragment(new ChooseDestinationFragment(this, roomList, buildingId), true, false);
         });
     }
 
@@ -321,8 +333,22 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         mRotation = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
     }
 
-    public void setStartLocation(String locationName) {
-        tvStart.setText(locationName);
+    public void setStartLocation(Location location) {
+        tvStart.setText(location.getName());
+    }
+
+    public void setDestination(Room room) {
+        tvEnd.setText(room.getName());
+
+        if (room.isSpecialRoom()) {
+            int count = PreferenceHelper.getInt(getContext(), buildingId + "_" + room.getName().toLowerCase());
+            // save in preference
+            PreferenceHelper.putInt(getContext(), buildingId + "_" + room.getName().toLowerCase(), count + 1);
+        } else {
+            // update counter
+            mMapPresenter.updateRoomCounter(buildingId, room.getId(), room.getCounter() + 1);
+        }
+
     }
 
     private void setupInput() {
@@ -490,7 +516,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         rvDot.setAdapter(adapterPoint);
     }
 
-    public void setupCameraPreview(){
+    public void setupCameraPreview() {
         if (frame.getVisibility() == View.VISIBLE) {
             frame.setVisibility(View.GONE);
         } else if (frame.getVisibility() == View.GONE) {
@@ -684,7 +710,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-             calendar = Calendar.getInstance();
+            calendar = Calendar.getInstance();
             calendar.setTime(date);
             calendar.add(Calendar.SECOND, sens);
             calendar.add(Calendar.MINUTE, mins);
