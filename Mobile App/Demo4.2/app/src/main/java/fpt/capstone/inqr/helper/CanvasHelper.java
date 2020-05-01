@@ -107,12 +107,18 @@ public class CanvasHelper {
             canvas.drawPath(path, paint);
         }
 
-        drawArrow(context, canvas, arrowStartX, arrowStartY, arrowEndX, arrowEndY);
+        Location startLocation = locationPathList.get(0);
+
+        if (startLocation.getRatioX() != destinationRoom.getRatioX() || startLocation.getRatioY() != destinationRoom.getRatioY()) {
+            drawArrow(context, canvas, arrowStartX, arrowStartY, arrowEndX, arrowEndY);
+        }
+
         drawSourceAndDestinationBitmap(context, canvas, mapImg, locationPathList.get(0), destinationRoom, currentFloorId);
         return lines;
     }
 
-    private static void drawSourceAndDestinationBitmap(Context context, Canvas canvas, Bitmap mapImg, Location startLocation, Room destinationRoom, String currentFloorId) {
+    private static void drawSourceAndDestinationBitmap(Context context, Canvas canvas, Bitmap mapImg, Location startLocation,
+                                                       Room destinationRoom, String currentFloorId) {
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         if (startLocation != null) {
@@ -120,7 +126,9 @@ public class CanvasHelper {
                 paint.setStyle(Paint.Style.FILL);
                 paint.setColor(Color.RED);
                 Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.current_point);
-                canvas.drawBitmap(bitmap, Math.round(mapImg.getWidth() * startLocation.getRatioX() - bitmap.getWidth() / 2), Math.round(mapImg.getHeight() * startLocation.getRatioY() - bitmap.getHeight() / 2), new Paint());
+                canvas.drawBitmap(bitmap,
+                        Math.round(mapImg.getWidth() * startLocation.getRatioX() - bitmap.getWidth() / 2),
+                        Math.round(mapImg.getHeight() * startLocation.getRatioY() - bitmap.getHeight() / 2), new Paint());
             }
 
             if (destinationRoom.getFloorId().equals(currentFloorId)) {

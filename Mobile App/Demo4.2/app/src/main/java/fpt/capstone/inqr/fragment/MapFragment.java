@@ -340,6 +340,8 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
     public void setStartLocation(Location location) {
         tvStart.setText(location.getName());
+
+        tvStart.setError(null);
     }
 
     public void setDestination(Room room) {
@@ -858,10 +860,11 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         }
 
         // lấy cách đi chi tiết
-        if (calendar == null) {
-            listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString(), null));
-            listStep.addAll(wayfinder.getListStepGuide());
-            listStep.add(new Step(Step.TYPE_END_POINT, "You reach the destination: " + tvEnd.getText().toString(), null));
+        double shortestDistance = wayfinder.getCurrentShortestDistance();
+        if (shortestDistance == 0) {
+//            listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString(), null));
+//            listStep.addAll(wayfinder.getListStepGuide());
+//            listStep.add(new Step(Step.TYPE_END_POINT, "You reach the destination: " + tvEnd.getText().toString(), null));
         } else {
             listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString() + " at " + currentTime, null));
             listStep.addAll(wayfinder.getListStepGuide());

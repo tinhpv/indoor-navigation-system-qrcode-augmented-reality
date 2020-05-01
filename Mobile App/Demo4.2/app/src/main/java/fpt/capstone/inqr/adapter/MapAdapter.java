@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Handler;
@@ -16,6 +17,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.chrisbanes.photoview.PhotoView;
@@ -66,7 +68,7 @@ public class MapAdapter extends RecyclerView.Adapter<MapHolder> {
 //            createAnimationPoint(bitmap, holder.imgMap);
 //        }
 
-//        createAnimation(listSource.get(position), holder.imgMap, position);
+        createAnimation(listSource.get(position), holder.imgMap, position);
 
         if (position == 0) {
             Line firstLine = listLines.get(0).get(0);
@@ -135,11 +137,25 @@ public class MapAdapter extends RecyclerView.Adapter<MapHolder> {
 //                        status[0] = true;
 //                    }
 
-                    fillArrow(canvas, firstLine.getxStart(), firstLine.getyStart(), firstLine.getxEnd(), firstLine.getyEnd());
+                    if (firstLine.getxStart() != firstLine.getxEnd() || firstLine.getyStart() != firstLine.getyEnd()){
+                        fillArrow(canvas, firstLine.getxStart(), firstLine.getyStart(), firstLine.getxEnd(), firstLine.getyEnd());
+                    }
 
 //                    canvas.drawBitmap(bitmap, Math.round(firstLine.getxStart() - bitmap.getWidth() / 2), Math.round(firstLine.getyStart() - bitmap.getHeight() / 2), new Paint());
-                    Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.current_point_input);
-                    canvas.drawBitmap(bitmap, Math.round(firstLine.getxStart() - bitmap.getWidth() / 2), Math.round(firstLine.getyStart() - bitmap.getHeight() / 2), new Paint());
+                    Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.current_point);
+                    canvas.drawBitmap(bitmap,
+                            Math.round(firstLine.getxStart() - bitmap.getWidth() / 2),
+                            Math.round(firstLine.getyStart() - bitmap.getHeight() / 2), new Paint());
+                }
+
+                if (indexBig == listLines.size() - 1){
+                    List<Line> listTmp = listLines.get(listLines.size() - 1);
+                    Line endLine = listTmp.get(listTmp.size() - 1);
+
+                    Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.destination_on_map);
+                    canvas.drawBitmap(bitmap,
+                            Math.round(endLine.getxEnd() - bitmap.getWidth() / 2),
+                            Math.round(endLine.getyEnd() - bitmap.getHeight()), new Paint());
                 }
             }
         });
@@ -152,18 +168,30 @@ public class MapAdapter extends RecyclerView.Adapter<MapHolder> {
     }
 
     private void drawPath(Canvas canvas, final float xStart, final float yStart, final float xEnd, final float yEnd) {
-        final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.GREEN);
-        paint.setStrokeWidth(25);
+        Paint paint = new Paint();
+        int color = ContextCompat.getColor(context, R.color.dark_yellow);
+        paint.setColor(color);
+        paint.setStrokeWidth(26);
+        paint.setDither(true);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setPathEffect(new CornerPathEffect(10));
+        paint.setAntiAlias(true);
         canvas.drawLine(xStart, yStart, xEnd, yEnd, paint);
     }
 
     private void drawLine(Canvas canvas, final float xStart, final float yStart, final float xEnd, final float yEnd) {
-        final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.parseColor("#F78B03"));
-        paint.setStrokeWidth(25);
+        Paint paint = new Paint();
+        int color = ContextCompat.getColor(context, R.color.green);
+        paint.setColor(color);
+        paint.setStrokeWidth(26);
+        paint.setDither(true);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setPathEffect(new CornerPathEffect(10));
+        paint.setAntiAlias(true);
         canvas.drawLine(xStart, yStart, xEnd, yEnd, paint);
     }
 
@@ -171,13 +199,19 @@ public class MapAdapter extends RecyclerView.Adapter<MapHolder> {
 
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
-        paint.setStrokeWidth(30);
-        paint.setColor(Color.GREEN);
+        paint.setStrokeWidth(26);
+        int color = ContextCompat.getColor(context, R.color.dark_yellow);
+        paint.setColor(color);
+        paint.setAntiAlias(true);
+        paint.setDither(true);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setPathEffect(new CornerPathEffect(10));
 
         float angle, anglerad, radius, lineangle;
 
         //values to change for other appearance *CHANGE THESE FOR OTHER SIZE ARROWHEADS*
-        radius = 100;
+        radius = 96;
         angle = 60;
 
         //some angle calculations

@@ -398,7 +398,7 @@
         android:layout_height="?actionBarSize"
         android:background="@color/light_gray_input"
         android:padding="@dimen/_7sdp"
-        android:visibility="visible"
+        android:visibility="gone"
 
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
