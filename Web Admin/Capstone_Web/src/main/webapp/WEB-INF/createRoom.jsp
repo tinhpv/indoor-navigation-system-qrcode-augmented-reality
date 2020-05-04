@@ -5,10 +5,10 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Create Room</title>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/point.css" />
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
 <link rel="stylesheet"
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/point.css" />
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
@@ -41,7 +41,7 @@
 					<div class="form-group row">
 						<label for="name" class="col-sm-3 col-form-label">Name</label>
 						<div class="col-sm-7">
-							<input type="text" class="form-control" id="name" name="name" placeholder="Exp: Room 001"
+							<input type="text" class="form-control bold-border" id="name" name="name" placeholder="Exp: Room 001"
 								required="required" />
 						</div>
 						<p class="col-sm-1">*</p>
@@ -80,7 +80,7 @@
 							title="Clear the map" onclick="clearCanvas()" type="button">
 							<i class="fas fa-sync-alt"></i>
 						</button>
-						<button type="submit" class="right btn btn-primary">Create</button>
+						<button type="submit" class="right btn btn-custom-1">Create</button>
 					</div>
 				</form>
 			</div>

@@ -20,7 +20,10 @@
 	</c:if>
 
 	<div class="menu-bar">
-		<div id="front-page">INQR</div>
+		<div id="front-page">
+			<img src="${pageContext.request.contextPath}/images/icon.png" />
+			<span>INQR</span>
+		</div>
 		<hr>
 		<div id="menu-bar-content">
 			<a href="${pageContext.request.contextPath}/">
@@ -68,7 +71,7 @@
 				<input type="hidden" class="form-control" id="id" name="id" placeholder="Building ID"
 					readonly="readonly" value="${sessionScope.building.id }" />
 				<div class="form-header list-group-item">
-					<h5>Edit building information</h5>
+					<h5>Edit building's information</h5>
 				</div>
 				<div class="form-group row">
 					<label for="name" class="col-sm-3 col-form-label">Building name </label>
@@ -122,7 +125,7 @@
 							Next
 							<i class="fas fa-arrow-circle-right"></i>
 						</a>
-						<button id="rightBtn" class="right btn btn-primary" type="submit">Save changes</button>
+						<button id="rightBtn" class="right btn btn-custom-1" type="submit">Save changes</button>
 					</div>
 				</div>
 			</form>

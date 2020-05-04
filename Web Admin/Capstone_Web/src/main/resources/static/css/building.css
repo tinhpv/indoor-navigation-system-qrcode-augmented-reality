@@ -1,3 +1,7 @@
+body {
+	background-color: #F0F0F0;
+}
+
 table {
 	text-align: center;
 }
@@ -5,8 +9,7 @@ table {
 .menu-bar {
 	width: 15%;
 	float: left;
-	background-color: #4e73df;
-	border-radius: 10px;
+	background-color: #51C6A7;
 	padding-bottom: 10%;
 	min-height: 100vh;
 }
@@ -34,11 +37,19 @@ table {
 #front-page {
 	font-size: 30px;
 	text-align: center;
+	display: flex;
+	align-items: center;
 }
 
-#front-page a {
-	color: white;
-	text-decoration: none;
+#front-page img {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	margin-left: 10%;
+}
+
+#front-page span {
+	margin-left: 5px;
 }
 
 .content {
@@ -75,6 +86,7 @@ table {
 	width: 70%;
 	margin-left: 15%;
 	float: left;
+	padding-bottom: 0px !important;
 }
 
 #content-body-floor {
@@ -84,46 +96,38 @@ table {
 	margin-left: 20%;
 }
 
-#buildingList {
+#floor-list {
 	width: 100%;
 	float: left;
 }
 
-#floorLink {
+#floor-list-item-1 {
 	width: 70%;
 	float: left;
-	height: 50px;
 }
 
-#floorLink-header {
-	text-align: center;
-	width: 70%;
+#floor-list-item-1 p {
+	margin-top: 0px;
+	margin-bottom: 0px;
 	font-weight: bold;
-	float: left;
-	height: 50px;
-	width: 70%;
-	float: left;
+	color: #334F55;
 }
 
 #floorLink span {
 	float: right;
 }
 
-#detail-header {
-	width: 30%;
-	height: 50px;
-	float: left;
-	text-align: center;
+#building-list p {
+	font-size: 13px;
+	color: grey !important;
 	font-weight: bold;
+	margin-bottom: 0px !important;
 }
 
-#detailButton {
+#floor-list-item-2 {
 	width: 30%;
-	height: 50px;
 	float: left;
 	text-align: center;
-	font-weight: bold;
-	color: blue;
 }
 
 #floorImage {
@@ -139,11 +143,6 @@ table {
 
 #qrCodeWraper {
 	text-align: center;
-}
-
-#list-group {
-	width: 100%;
-	float: left;
 }
 
 #navigate-footer {
@@ -164,10 +163,21 @@ table {
 .wraper {
 	float: left;
 	width: 100%;
-	margin-bottom: 1%;
+	padding-right: 1rem;
+	padding-left: 1rem;
+	padding-bottom: 1rem;
+	/* margin-bottom: 0.5rem; */
+	background-color: #fff;
 }
 
-#buildingMessageWraper {
+.actionWraper {
+	float: left;
+	width: 100%;
+	display: flex;
+	align-items: center;
+}
+
+/* #buildingMessageWraper {
 	width: 60%;
 	float: left;
 }
@@ -175,13 +185,13 @@ table {
 #buildingActionWraper {
 	width: 40%;
 	float: left;
-}
+} */
 
-#floorActionWraper {
+/* #floorActionWraper {
 	width: 30%;
 	float: left;
 }
-
+ */
 #floorMessageWraper {
 	width: 70%;
 	float: left;
@@ -205,7 +215,7 @@ table {
 }
 
 .modal-header {
-	background-color: #4e73df;
+	background-color: #51C6A7;
 	padding-left: 1rem;
 	padding-top: 10px;
 	padding-bottom: 10px;
@@ -213,6 +223,11 @@ table {
 
 .modal-header h5 {
 	color: white;
+	font-weight: bold;
+}
+
+.modal-content {
+	background-color: #F0F0F0;
 }
 
 .col-sm-1 {
@@ -221,7 +236,7 @@ table {
 }
 
 .form-header {
-	background-color: #4e73df;
+	background-color: #51C6A7;
 	margin-bottom: 2%;
 	border-radius: 5px;
 }
@@ -229,14 +244,18 @@ table {
 .form-header h5 {
 	color: white;
 	margin-bottom: 0px;
+	font-weight: bold;
 }
 
-#list-header {
+.form-control {
+	border: 1px solid;
+}
+
+/* #list-header {
 	padding: 10px 10px 10px 20px;
 	width: 100%;
 	background-color: #4e73df !important;
-}
-
+} */
 #list-header h5 {
 	color: white;
 	font-weight: bold;
@@ -247,46 +266,50 @@ table {
 	width: 100%;
 }
 
-#floorList {
+#location-list {
 	float: left;
 	width: 100%;
 }
 
-#floorList button {
-	color: blue;
-}
-
-#floorList-header {
+#location-list-header {
 	float: left;
 	width: 100%;
 	text-align: center;
-	font-weight: bold;
+	position: sticky;
+	top: 0;
+	z-index: 10;
 }
 
-.sticky-header {
+#location-list-header p {
+	font-weight: bold;
+	font-size: 13px;
+	color: grey !important;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+
+/* .sticky-header {
 	float: left;
 	width: 100%;
 	position: sticky;
 	top: 0;
 	z-index: 10;
 }
-
-#floorList-1 {
+ */
+#location-list-item-1 {
 	float: left;
 	width: 55%;
-	height: 50px;
+	font-weight: bold;
 }
 
-#floorList-2 {
+#location-list-item-2 {
 	float: left;
 	width: 20%;
-	height: 50px;
 }
 
-#floorList-3 {
+#location-list-item-3 {
 	float: left;
 	width: 25%;
-	height: 50px;
 }
 
 #locationDetailBtn {
@@ -295,8 +318,8 @@ table {
 	margin-left: 2%;
 }
 
-#floor-header, #location-header {
-	background-color: #4e73df;
+#floor-header {
+	background-color: #51C6A7;
 	color: white;
 	padding-left: 1rem;
 	padding-top: 5px;
@@ -312,11 +335,12 @@ table {
 	margin-right: 10%;
 }
 
-#floor-list-wraper {
+#location-list-wraper {
 	float: left;
 	width: 100%;
 	max-height: 48vh;
 	overflow-y: auto;
+	margin-top: 0.3rem;
 }
 
 #locationWraper {
@@ -330,9 +354,9 @@ table {
 }
 
 #header-wraper {
-	background-color: #4e73df;
+	background-color: #51C6A7;
 	color: white;
-	padding: 10px 10px 10px 20px;
+	padding: 0.5rem;
 }
 
 .modal {
@@ -347,8 +371,8 @@ table {
 }
 
 #content-body-upload h5 {
-	background-color: #17a2b8;
-	padding: 10px 10px 10px 10px;
+	background-color: #51C6A7;
+	padding: 1rem;
 	color: white;
 	font-weight: bold;
 	text-align: center;
@@ -383,4 +407,48 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 
 .empty h5 {
 	color: black;
+}
+
+.btn-custom-1 {
+	color: #fff;
+	background-color: #51C6A7;
+	border-color: #51C6A7;
+}
+
+.btn-custom-1:hover {
+	color: #51C6A7;
+	background-color: #fff;
+	border-color: #51C6A7;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+.percent-70 {
+	width: 70%;
+}
+
+.percent-30 {
+	width: 30%;
+}
+
+.badge-custom {
+	color: #fff;
+	background-color: #51C6A7;
+}
+
+.list-group-item {
+	border-left: 0px;
+	border-right: 0px;
+	border-radius: 0%;
+	border-bottom: 0px;
 }

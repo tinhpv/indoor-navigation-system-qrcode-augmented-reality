@@ -75,12 +75,12 @@ public class Utilities {
 			qrcodeDir.mkdirs();
 		}
 
-		List<LocationDTO> buildingLocation = getAllLocationOfBuilding(buildingDTO);
+		List<LocationDTO> listLocation = getAllLocationOfBuilding(buildingDTO);
 
-		for (int i = 0; i < buildingLocation.size(); i++) {
-			if (buildingLocation.get(i).getLinkQr() != null && buildingLocation.get(i).getName() != null) {
-				InputStream in = new URL(buildingLocation.get(i).getLinkQr()).openStream();
-				Files.copy(in, Paths.get(qrcodeDir + "/" + buildingLocation.get(i).getName() + ".png"), StandardCopyOption.REPLACE_EXISTING);
+		for (int i = 0; i < listLocation.size(); i++) {
+			if (listLocation.get(i).getLinkQr() != null && listLocation.get(i).getName() != null) {
+				InputStream in = new URL(listLocation.get(i).getLinkQr()).openStream();
+				Files.copy(in, Paths.get(qrcodeDir + "/" + listLocation.get(i).getName() + ".png"), StandardCopyOption.REPLACE_EXISTING);
 			}
 		}
 

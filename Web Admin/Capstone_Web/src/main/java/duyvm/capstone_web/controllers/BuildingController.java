@@ -152,8 +152,9 @@ public class BuildingController {
 			// Hiện thông báo
 			request.setAttribute("uploadSuccess", messageString);
 
-			// Invalid session
+			// Remove session
 			session.removeAttribute("building");
+			session.removeAttribute("floor");
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.print("Error at postBuildingUpload: " + e.getMessage());
@@ -215,8 +216,9 @@ public class BuildingController {
 			}
 			zipOut.finish();
 			zipOut.close();
-			response.setStatus(HttpServletResponse.SC_OK);
-			response.setHeader("Content-disposition", "attachment; filename=\"" + "download.zip" + "");
+			System.out.print("OK");
+//			response.setStatus(HttpServletResponse.SC_OK);
+//			response.setHeader("Content-disposition", "attachment; filename=" + "download.zip");
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Error at getBuildingQrCode: " + e.getMessage());

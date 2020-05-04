@@ -119,7 +119,7 @@ public class JsonParser {
 				// Lấy thông tin của tòa nhà
 				JSONObject buildingObj = buildingData.getJSONObject(j);
 
-				BuildingDTO buildingDTO = new BuildingDTO(buildingObj.getString("Id"), buildingObj.getString("Name"));
+				BuildingDTO buildingDTO = new BuildingDTO(buildingObj.getString("Id"), buildingObj.getString("Name"), buildingObj.getString("DayExpired"), buildingObj.getBoolean("Active"));
 
 				// Thêm tòa nhà vào danh sách
 				listOfBuildings.add(buildingDTO);

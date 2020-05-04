@@ -1,10 +1,32 @@
 body {
 	overflow: hidden;
+	background-color: #F0F0F0;
+}
+
+.bold-border {
+	border: 1px solid black !important;
+	font-weight: bold;
+}
+
+.bold-no-border {
+	font-weight: bold;
 }
 
 #imgMap {
 	max-height: 99vh;
 	max-width: 70vw;
+}
+
+.btn-custom-1 {
+	color: #fff;
+	background-color: #51C6A7;
+	border-color: #51C6A7;
+}
+
+.btn-custom-1:hover {
+	color: #51C6A7;
+	background-color: #fff;
+	border-color: #51C6A7;
 }
 
 #canvasWraper {
@@ -34,7 +56,7 @@ body {
 	float: left;
 	width: 100%;
 	padding: 2% 2% 2% 2%;
-	background-color: #4e73df;
+	background-color: #51C6A7;
 	border-radius: 5px;
 	margin-bottom: 5%;
 }
@@ -108,4 +130,20 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 .failed {
 	color: red;
 	text-decoration: underline;
+}
+
+.active {
+	position: sticky;
+	top: 0;
+	border-color: #51C6A7 !important;
+	color: grey !important;
+	background-color: white !important;
+	font-size: 13px;
+	font-weight: bold;
+	padding-bottom: 0.5rem !important;
+	padding-top: 0.5rem !important;
+}
+
+.list-group-item:hover {
+	cursor: pointer;
 }

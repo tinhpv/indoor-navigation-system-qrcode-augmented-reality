@@ -5,10 +5,10 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Attach neighbour</title>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/point.css" />
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
 <link rel="stylesheet"
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/point.css" />
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
@@ -45,7 +45,7 @@
 						</div>
 					</div>
 					<div id="allLocation" class="list-group">
-						<div class="list-group-item active">All locations</div>
+						<div class="list-group-item active">Available locations</div>
 						<c:forEach var="locationDto" items="${sessionScope.filterdList }">
 							<c:if test="${locationDto.id != sessionScope.location.id}">
 								<a class="list-group-item list-group-item-action py-3"
@@ -59,7 +59,7 @@
 					<div class="form-group row">
 						<label for="orientation" class="col-sm-3 col-form-label">Neighbor </label>
 						<div class="col-sm-7">
-							<input type="text" required="required" class="form-control" id="neighbourName"
+							<input type="text" required="required" class="form-control bold-no-border" id="neighbourName"
 								placeholder="Neighbor" name="name" onkeydown="return false;">
 						</div>
 						<p class="col-sm-1">*</p>
@@ -67,7 +67,7 @@
 					<div class="form-group row">
 						<label for="orientation" class="col-sm-3 col-form-label">Orientation </label>
 						<div class="col-sm-4">
-							<select id="orientation" name="orientation" class="form-control">
+							<select id="orientation" name="orientation" class="form-control bold-border">
 								<option value="LEFT">Left</option>
 								<option value="RIGHT">Right</option>
 								<option value="FRONT">Front</option>
@@ -81,8 +81,8 @@
 					<div class="form-group row">
 						<label for="distance" class="col-sm-3 col-form-label">Distance </label>
 						<div class="col-sm-4">
-							<input type="number" required="required" step="0.01" class="form-control" name="distance"
-								placeholder="Distance">
+							<input type="number" required="required" step="0.01" class="form-control bold-border"
+								name="distance" placeholder="Distance">
 						</div>
 						<p class="col-sm-1">*</p>
 					</div>
@@ -96,7 +96,7 @@
 							data-placement="bottom" title="Clear picture" onclick="clearCanvas()">
 							<i class="fas fa-sync-alt"></i>
 						</button>
-						<button type="submit" class="right btn btn-primary">Attach Neighbor</button>
+						<button type="submit" class="right btn btn-custom-1">Attach Neighbor</button>
 					</div>
 				</form>
 			</div>

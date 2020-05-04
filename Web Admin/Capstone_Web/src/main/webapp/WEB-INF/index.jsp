@@ -19,24 +19,21 @@
 			style="background-image: url('${pageContext.request.contextPath}/images/background.png');">
 		</div>
 		<div class="content">
-			<div class="content-header shadow p-3 mb-3 bg-white rounded">
-				<h1>INQR Dashboard</h1>
+			<div class="content-header">
+				<!-- <h1>INQR Dashboard</h1> -->
+				<img src="${pageContext.request.contextPath}/images/headerimage.png" />
 			</div>
 			<div class="wraper">
-				<div id="actionWraper" data-toggle="tooltip" data-placement="bottom"
-					title="Create a new company">
-					<button class="btn btn-outline-success" data-toggle="modal" data-target="#createCompanyModal">
-						<i class="fas fa-plus"> New Company</i>
-					</button>
-				</div>
-				<div id="messageWraper">
-					<span class="success">${requestScope.uploadSuccess}${requestScope.createSuccess}</span>
+				<div id="actionWraper">
+					<span class="bold left percent-70"> COMPANY(s) </span>
+					<button class="btn btn-custom-1 right percent-30" data-toggle="modal"
+						data-target="#createCompanyModal">Create new company</button>
 				</div>
 			</div>
-			<div class="content-body shadow p-3 mb-3 bg-white rounded">
+			<div class="content-body">
 				<c:if test="${not empty sessionScope.companyList }">
 					<div id="company-list" class="list-group">
-						<div class="list-header">
+						<%-- <div class="list-header">
 							<div id="company-list-title">
 								<h5>List of all companies</h5>
 							</div>
@@ -46,61 +43,57 @@
 									<i class="fas fa-sync-alt"></i>
 								</a>
 							</div>
-						</div>
+						</div> --%>
 						<div class="list-body">
-							<div id="company-list-header" class="list-group list-group-horizontal">
+							<!-- <div id="company-list-header" class="list-group list-group-horizontal">
 								<div id="company-list-header-1" class="list-group-item">Company name</div>
 								<div id="company-list-header-2" class="list-group-item">More Detail</div>
-							</div>
+							</div> -->
 							<c:forEach var="companyDto" items="${sessionScope.companyList }" varStatus="counter">
 								<div class="list-group list-group-horizontal">
-									<div id="company-list-item-1" class="list-group-item">${companyDto.name }
-										<span class="badge badge-primary badge-pill" data-toggle="tooltip" data-placement="bottom"
+									<div id="company-list-item-1" class="list-group-item">
+										<p>${companyDto.name }</p>
+										<span class="badge badge-custom badge-pill" data-toggle="tooltip" data-placement="bottom"
 											title="This company have ${companyDto.listBuilding.size()} building(s)">${companyDto.listBuilding.size()}
 											building(s)</span>
 									</div>
 									<button id="company-list-item-2" data-toggle="modal"
 										data-target="#buildingListModal${counter.count}"
 										class="list-group-item list-group-item-action">
-										<i class="fas fa-info-circle"></i>
+										<i class="far fa-edit"></i>
 									</button>
 								</div>
 
 								<!-- Company Building Modal -->
 								<div class="modal fade" id="buildingListModal${counter.count}" tabindex="-1" role="dialog"
 									aria-labelledby="Building List" aria-hidden="true">
-									<div id="building-modal" class="modal-dialog modal-lg" role="document">
+									<div class="modal-dialog modal-lg" role="document">
 										<div class="modal-content">
 											<div class="modal-header">
-												<h5 class="modal-title">Information of ${companyDto.name }</h5>
+												<h5 class="modal-title">${companyDto.name }</h5>
 												<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 													<span aria-hidden="true">&times;</span>
 												</button>
 											</div>
-											<div class="modal-body margin-middle">
-												<div id="buildingWraper" class="shadow p-3 mb-3 bg-white rounded">
+											<div class="modal-body">
+												<div id="buildingWraper">
 													<form action="${pageContext.request.contextPath}/company/update" method="post">
-														<div id="form-header">
-															<h5>Edit company information</h5>
-														</div>
+														<input type="hidden" name="id" value="${companyDto.id }" />
 														<div class="form-group row">
-															<label class="col-sm-4 col-form-label">Company name</label>
-															<input type="hidden" name="id" value="${companyDto.id }" />
-															<div class="col-sm-7">
-																<input type="text" class="form-control" required="required" name="name"
-																	value="${companyDto.name }" />
-															</div>
-															<p class="col-sm-1">*</p>
+															<label id="company-label" class="col-sm-12">Change company's name</label>
+															<input id="companyName" type="text" class="form-control form-control-lg col-sm-8"
+																required="required" name="name" value="${companyDto.name }" />
+															<button type="submit" class="btn btn-custom-1 col-sm-3">Save Changes</button>
 														</div>
-														<button type="submit" class="btn btn-primary">Save Changes</button>
 													</form>
 												</div>
 
+												<hr class="col-sm-12">
+
 												<div id="actionWraper">
-													<button type="button" class="btn btn-outline-success" data-toggle="modal"
-														data-target="#createBuildingModal${counter.count}">
-														<i class="fas fa-plus"> New Building</i>
-													</button>
+													<span class="bold left percent-80"> BUILDING(s) </span>
+													<button type="button" class="btn btn-custom-1 right percent-20" data-toggle="modal"
+														data-target="#createBuildingModal${counter.count}">Create new building</button>
 												</div>
 
 												<c:if test="${empty companyDto.listBuilding }">
@@ -111,23 +104,43 @@
 												<c:if test="${not empty companyDto.listBuilding }">
 													<div id="building-list" class="list-group">
 														<div class="list-header" class="list-group-item">
-															<h5>All buildings of ${companyDto.name}</h5>
+															<div class="list-group list-group-horizontal-lg">
+																<p id="building-list-item-1" class="list-group-item">Building's name</p>
+																<p id="building-list-item-2" class="list-group-item">Expiration Date</p>
+																<p id="building-list-item-3" class="list-group-item">Status</p>
+																<p id="building-list-item-4" class="list-group-item">Action</p>
+															</div>
 														</div>
 														<c:forEach var="buildingDto" items="${companyDto.listBuilding }">
 															<div class="list-group list-group-horizontal-lg">
 																<div id="building-list-item-1" class="list-group-item">${buildingDto.name}</div>
-																<a
-																	href="${pageContext.request.contextPath}/building/getQRCode/${buildingDto.name}?id=${buildingDto.id }"
-																	id="building-list-item-2" data-toggle="tooltip" data-placement="bottom"
-																	title="Download QR Codes of this building" class="list-group-item">
-																	<i class="fas fa-download"></i>
-																</a>
-																<a
-																	href="${pageContext.request.contextPath}/building/getBuilding?buildingId=${buildingDto.id}"
-																	id="building-list-item-3" class="list-group-item" data-toggle="tooltip"
-																	data-placement="bottom" title="Manage this building">
-																	<i class="fas fa-info-circle"></i>
-																</a>
+																<div id="building-list-item-2" class="list-group-item">${buildingDto.dayExpired }</div>
+																<div id="building-list-item-3" class="list-group-item">
+																	<c:if test="${buildingDto.active}">
+																		<span class="active">
+																			<i class="fas fa-circle"></i>
+																			ACTIVE
+																		</span>
+																	</c:if>
+																	<c:if test="${not buildingDto.active}">
+																		<span class="inactive">
+																			<i class="fas fa-circle"></i>
+																			INACTIVE
+																		</span>
+																	</c:if>
+																</div>
+																<div id="building-list-item-4" class="list-group-item">
+																	<a class="btn btn-info btn-sm" data-toggle="tooltip" data-placement="bottom"
+																		title="Download QR-Codes of this building"
+																		href="${pageContext.request.contextPath}/building/getQRCode/${buildingDto.name}?id=${buildingDto.id }">
+																		<i class="fas fa-file-download"></i>
+																	</a>
+																	<a class="btn btn-custom-1 btn-sm" data-toggle="tooltip" data-placement="bottom"
+																		title="Manage this building"
+																		href="${pageContext.request.contextPath}/building/getBuilding?buildingId=${buildingDto.id}">
+																		<i class="far fa-edit"></i>
+																	</a>
+																</div>
 															</div>
 														</c:forEach>
 													</div>
@@ -171,8 +184,6 @@
 																		<div class="col-sm-5">
 																			<input type="date" class="default-date form-control" id="dayExpired"
 																				name="dayExpired" required="required" />
-																			<small id="idHelp" class="form-text text-muted">By default, expired date
-																				is 30 days from now.</small>
 																		</div>
 																		<p class="col-sm-1">*</p>
 																	</div>
@@ -193,6 +204,9 @@
 					</div>
 				</c:if>
 			</div>
+			<div id="messageWraper">
+				<span class="success">${requestScope.uploadSuccess}${requestScope.createSuccess}</span>
+			</div>
 
 			<!-- create company modal -->
 			<div class="modal fade" id="createCompanyModal" tabindex="-1" role="dialog"
@@ -208,15 +222,15 @@
 							</div>
 							<div class="modal-body margin-middle">
 								<div class="form-group row">
-									<label for="name" class="col-sm-5 col-form-label">Company Name</label>
+									<label for="name" class="col-sm-4 col-form-label">Company Name</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control" id="name" name="name">
+										<input type="text" class="form-control" id="name" name="name" placeholder="E.g. Công ty phần mềm ABC">
 									</div>
+									<p class="col-sm-1">*</p>
 								</div>
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-								<button type="submit" class="btn btn-primary">Create</button>
+								<button type="submit" class="btn btn-custom-1">Create</button>
 							</div>
 						</form>
 					</div>
@@ -236,10 +250,6 @@
 				listOfDateInput[i].value = defaultDate;
 			}
 		}
-
-		$(function() {
-			$('[data-toggle="tooltip"]').tooltip()
-		})
 	</script>
 </body>
 </html>

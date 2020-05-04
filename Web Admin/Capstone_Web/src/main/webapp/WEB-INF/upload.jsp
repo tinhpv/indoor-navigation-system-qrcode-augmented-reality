@@ -20,7 +20,10 @@
 	</c:if>
 
 	<div class="menu-bar">
-		<div id="front-page">INQR</div>
+		<div id="front-page">
+			<img src="${pageContext.request.contextPath}/images/icon.png" />
+			<span>INQR</span>
+		</div>
 		<hr>
 		<div id="menu-bar-content">
 			<a href="${pageContext.request.contextPath}/">
@@ -79,7 +82,7 @@
 				</a>
 				<form style="float: right;" action="${pageContext.request.contextPath}/building/upload"
 					method="post">
-					<button type="submit" class="btn btn-outline-success">
+					<button type="submit" class="btn btn-custom-1">
 						<i class="far fa-check-circle"> Yes</i>
 					</button>
 				</form>

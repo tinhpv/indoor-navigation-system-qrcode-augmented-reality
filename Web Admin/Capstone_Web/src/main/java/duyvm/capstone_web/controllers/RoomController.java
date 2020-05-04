@@ -22,6 +22,7 @@ import duyvm.capstone_web.utils.Utilities;
 @Controller
 @RequestMapping("/room")
 public class RoomController {
+	
 	@GetMapping("/create")
 	public String getCreateRoom(@RequestParam("floorId") String floorId, @RequestParam("locationId") String locationId,
 			HttpSession session) {

@@ -20,7 +20,10 @@
 	</c:if>
 
 	<div class="menu-bar">
-		<div id="front-page">INQR</div>
+		<div id="front-page">
+			<img src="${pageContext.request.contextPath}/images/icon.png" />
+			<span>INQR</span>
+		</div>
 		<hr>
 		<div id="menu-bar-content">
 			<a href="${pageContext.request.contextPath}/">
@@ -73,17 +76,22 @@
 
 		<div id="content-body-floor" class="shadow p-3 mb-3 bg-white rounded">
 			<div class="wraper">
-				<div id="floorActionWraper">
+				<div class="actionWraper">
+					<span class="bold left percent-70">FLOOR(s)</span>
+					<button class="btn btn-custom-1 left percent-30" data-toggle="modal"
+						data-target="#createFloorModal">Create new floor</button>
+					<!-- <div id="floorActionWraper">
 					<button data-toggle="modal" data-target="#createFloorModal" class="btn btn-outline-success">
 						<i class="fas fa-plus"> New Floor</i>
 					</button>
-				</div>
-				<div id="floorMessageWraper">
+				</div> -->
+					<%-- <div id="floorMessageWraper">
 					<span class="success">${createSuccess}</span>
 					<span class="success">${removeSuccess}</span>
 					<span class="success">${editSuccess}</span>
 					<span class="failed">${editFailed}</span>
 					<span class="failed">${createFailed}</span>
+				</div> --%>
 				</div>
 			</div>
 
@@ -94,26 +102,23 @@
 			</c:if>
 			<c:if test="${not empty sessionScope.building.listFloor }">
 				<div class="list-group">
-					<div id="list-header" class="list-group-item">
-						<h5>All floor plans of ${sessionScope.building.name}</h5>
-					</div>
-					<div id="buildingList" class="list-group list-group-horizontal">
-						<div id="floorLink-header" class="list-group-item">Floor name</div>
-						<div id="detail-header" class="list-group-item">More Detail</div>
+					<div id="building-list" class="list-group list-group-horizontal">
+						<p id="floor-list-item-1" class="list-group-item">Floor's name</p>
+						<p id="floor-list-item-2" class="list-group-item">Action</p>
 					</div>
 					<c:forEach var="floorDto" items="${sessionScope.building.listFloor }" varStatus="floorCounter">
-						<div id="buildingList" class="list-group list-group-horizontal">
-							<a id="floorLink" class="list-group-item">${floorDto.name }
+						<div id="floor-list" class="list-group list-group-horizontal">
+							<div id="floor-list-item-1" class="list-group-item">
+								<p>${floorDto.name }</p>
 								<span data-toggle="tooltip" data-placement="bottom"
 									title="This floor have ${floorDto.listLocation.size()} location(s)"
-									class="badge badge-primary badge-pill">${floorDto.listLocation.size()} location(s)</span>
-							</a>
+									class="badge badge-custom badge-pill">${floorDto.listLocation.size()} location(s)</span>
+							</div>
 							<!-- Button trigger modal -->
-							<button id="detailButton" data-toggle="modal"
+							<button id="floor-list-item-2" data-toggle="modal"
 								data-target="#floorDetailModal${floorCounter.count}"
 								class="list-group-item list-group-item-action">
-								<!-- data-backdrop="static" data-keyboard="false" -->
-								<i class="fas fa-info-circle"></i>
+								<i class="far fa-edit"></i>
 							</button>
 						</div>
 
@@ -124,7 +129,7 @@
 							<div id="floorModal" class="modal-dialog modal-lg">
 								<div class="modal-content">
 									<div class="modal-header">
-										<h5 class="modal-title" id="exampleModalLongTitle">Information of ${floorDto.name }</h5>
+										<h5 class="modal-title" id="exampleModalLongTitle">${floorDto.name }</h5>
 										<button type="button" class="close"
 											onclick="$('#floorDetailModal${floorCounter.count}').modal('hide')" aria-label="Close">
 											<span aria-hidden="true">&times;</span>
@@ -138,7 +143,7 @@
 												<input type="hidden" class="form-control" name="id" value="${floorDto.id }"
 													placeholder="Floor's id" readonly="readonly">
 												<div id="floor-header" class="form-group row">
-													<h5>Edit floor information</h5>
+													<h5>Edit floor's information</h5>
 												</div>
 												<div class="form-group row">
 													<label class="col-sm-3 col-form-label">Floor name</label>
@@ -156,19 +161,17 @@
 													</div>
 												</div>
 
-												<button type="submit" style="float: right;" class="btn btn-primary">Save
+												<button type="submit" style="float: right;" class="btn btn-custom-1">Save
 													changes</button>
 												<button type="button" style="float: left;" class="btn btn-danger" data-toggle="modal"
 													data-target="#floorDisableModal${floorCounter.count }">Disable this floor</button>
 											</form>
 										</div>
 
-										<div id="actionWraper">
+										<div class="actionWraper">
+											<span class="bold left percent-70"> LOCATION(s) </span>
 											<a href="${pageContext.request.contextPath}/location/create?floorId=${floorDto.id}"
-												class="btn btn-outline-success" data-toggle="tooltip" data-placement="bottom"
-												title="Create a new location for this floor">
-												<i class="fas fa-plus"> New Location</i>
-											</a>
+												class="btn btn-custom-1 right percent-30"> Create new location </a>
 										</div>
 
 										<c:if test="${empty floorDto.listLocation }">
@@ -178,30 +181,25 @@
 										</c:if>
 
 										<c:if test="${not empty floorDto.listLocation }">
-											<div id="floor-list-wraper" class="list-group">
-												<div class="sticky-header">
-													<div id="location-header" class="list-group-item">
-														<h5>All locations of ${floorDto.name}</h5>
-													</div>
-													<div id="floorList-header" class="list-group list-group-horizontal">
-														<div id="floorList-1" class="list-group-item">Location name</div>
-														<div id="floorList-2" class="list-group-item">QR Code</div>
-														<div id="floorList-3" class="list-group-item">More Detail</div>
-													</div>
+											<div id="location-list-wraper" class="list-group">
+												<div id="location-list-header" class="list-group list-group-horizontal">
+													<p id="location-list-item-1" class="list-group-item">Location name</p>
+													<p id="location-list-item-2" class="list-group-item">QR Code</p>
+													<p id="location-list-item-3" class="list-group-item">Action</p>
 												</div>
 												<c:forEach var="locationDto" items="${floorDto.listLocation}"
 													varStatus="locationCounter">
-													<div id="floorList" class="list-group list-group-horizontal">
-														<div id="floorList-1" class="list-group-item">${locationDto.name }</div>
-														<button id="floorList-2" class="list-group-item" data-toggle="modal"
+													<div id="location-list" class="list-group list-group-horizontal">
+														<div id="location-list-item-1" class="list-group-item">${locationDto.name }</div>
+														<button id="location-list-item-2" class="list-group-item" data-toggle="modal"
 															onclick="$('#locationQrModal${floorCounter.count}_${locationCounter.count}').appendTo('body');"
 															data-target="#locationQrModal${floorCounter.count}_${locationCounter.count}">
 															<i class="fas fa-qrcode"></i>
 														</button>
-														<button id="floorList-3" class="list-group-item" data-toggle="modal"
+														<button id="location-list-item-3" class="list-group-item" data-toggle="modal"
 															onclick="$('#neighborAndRoomModal${floorCounter.count}_${locationCounter.count}').appendTo('body');"
 															data-target="#neighborAndRoomModal${floorCounter.count}_${locationCounter.count}">
-															<i class="fas fa-info-circle"></i>
+															<i class="far fa-edit"></i>
 														</button>
 													</div>
 
@@ -219,7 +217,7 @@
 																	</button>
 																</div>
 																<div id="qrCodeWraper" class="modal-body">
-																	<img src="${locationDto.linkQr}" />
+																	<img alt="Please upload this building if you don't see the QR Code." src="${locationDto.linkQr}" />
 																</div>
 															</div>
 														</div>
@@ -232,8 +230,7 @@
 														<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
 															<div class="modal-content" style="min-height: 80vh;">
 																<div class="modal-header">
-																	<h5 class="modal-title" id="exampleModalLongTitle">Information of
-																		${locationDto.name }</h5>
+																	<h5 class="modal-title" id="exampleModalLongTitle">${locationDto.name }</h5>
 																	<button type="button" class="close"
 																		onclick="$('#neighborAndRoomModal${floorCounter.count}_${locationCounter.count}').modal('hide')"
 																		aria-label="Close">
@@ -243,7 +240,7 @@
 																<div class="modal-body">
 																	<!-- location information -->
 																	<div id="locationWraper">
-																		<a class="btn btn-outline-success"
+																		<a class="btn btn-custom-1"
 																			href="${pageContext.request.contextPath}/location/edit?floorId=${floorDto.id}&locationId=${locationDto.id}">
 																			Edit this location </a>
 																		<button type="button" data-toggle="modal"
@@ -252,7 +249,7 @@
 																	</div>
 
 																	<div id="content-body${floorCounter.count}_${locationCounter.count}"
-																		class="shadow p-3 mb-3 bg-white rounded" style="width: 100%; float: left;">
+																		style="width: 100%; float: left;">
 																		<div class="card">
 																			<div id="collapseOne${floorCounter.count}_${locationCounter.count}"
 																				class="collapse show" aria-labelledby="headingOne"
@@ -310,7 +307,7 @@
 																							aria-controls="collapseTwo${floorCounter.count}_${locationCounter.count}">Next</button>
 																						<a id="locationDetailBtn"
 																							href="${pageContext.request.contextPath}/room/create?floorId=${floorDto.id}&locationId=${locationDto.id}"
-																							class="btn btn-primary">Create room</a>
+																							class="btn btn-custom-1">Create room</a>
 																						<button type="submit"
 																							id="roomRemoveBtn${floorCounter.count}_${locationCounter.count}"
 																							class="btn btn-danger" disabled="disabled">Remove selected rooms</button>
@@ -372,7 +369,7 @@
 																							onclick="$('#neighborAndRoomModal${floorCounter.count}_${locationCounter.count}').modal('hide');">Finish</button>
 																						<a
 																							href="${pageContext.request.contextPath}/neighbour/create?floorId=${floorDto.id}&locationId=${locationDto.id}"
-																							id="locationDetailBtn" class="btn btn-primary">Attach Neighbor</a>
+																							id="locationDetailBtn" class="btn btn-custom-1">Attach Neighbor</a>
 																						<button id="locationDetailBtn" class="btn btn-outline-success" type="button"
 																							data-toggle="collapse"
 																							data-target="#collapseOne${floorCounter.count}_${locationCounter.count}"
@@ -397,7 +394,7 @@
 															<div class="modal-dialog" role="document">
 																<div class="modal-content">
 																	<div class="modal-header warning">
-																		<h5 class="modal-title" id="exampleModalLabel">Warning</h5>
+																		<h5 class="modal-title" id="exampleModalLabel">Warning message</h5>
 																		<button type="button" class="close"
 																			onclick="$('#locationDisableModal${floorCounter.count}_${locationCounter.count}').modal('hide')"
 																			aria-label="Close">
@@ -414,7 +411,7 @@
 																			onclick="$('#locationDisableModal${floorCounter.count}_${locationCounter.count}').modal('hide')">Close</button>
 																		<form action="${pageContext.request.contextPath}/location/remove" method="post">
 																			<input type="hidden" name="id" value="${locationDto.id }" />
-																			<button type="submit" class="btn btn-primary">Yes</button>
+																			<button type="submit" class="btn btn-custom-1">Yes</button>
 																		</form>
 																	</div>
 																</div>
@@ -431,7 +428,7 @@
 											<div class="modal-dialog" role="document">
 												<div class="modal-content">
 													<div class="modal-header warning">
-														<h5 class="modal-title" id="exampleModalLabel">Disable ${floorDto.name}</h5>
+														<h5 class="modal-title" id="exampleModalLabel">Warning message!</h5>
 														<button type="button" class="close"
 															onclick="$('#floorDisableModal${floorCounter.count}').modal('hide')"
 															aria-label="Close">
@@ -444,7 +441,7 @@
 															<p>Please disable all location(s) belong to ${floorDto.name}!</p>
 														</c:if>
 														<c:if test="${floorDto.listLocation.size() == 0}">
-															<p>Disable ${floorDto.name}?</p>
+															<p>Do you want to disable ${floorDto.name}?</p>
 														</c:if>
 													</div>
 													<div class="modal-footer">
@@ -453,7 +450,7 @@
 														<c:if test="${floorDto.listLocation.size() == 0}">
 															<form action="${pageContext.request.contextPath}/floor/remove" method="post">
 																<input type="hidden" value="${floorDto.id}" name="id" />
-																<button type="submit" class="btn btn-primary">Confirm</button>
+																<button type="submit" class="btn btn-custom-1">Confirm</button>
 															</form>
 														</c:if>
 													</div>
@@ -511,8 +508,7 @@
 								</div>
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-								<button type="submit" class="btn btn-primary">Create</button>
+								<button type="submit" class="btn btn-custom-1">Create</button>
 							</div>
 						</form>
 					</div>
