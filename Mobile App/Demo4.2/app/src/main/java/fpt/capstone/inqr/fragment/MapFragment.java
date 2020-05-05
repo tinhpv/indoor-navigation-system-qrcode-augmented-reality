@@ -4,6 +4,7 @@ package fpt.capstone.inqr.fragment;
 import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,7 +15,6 @@ import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -57,6 +57,8 @@ import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.adapter.MapAdapter;
 import fpt.capstone.inqr.adapter.PointViewAdapter;
 import fpt.capstone.inqr.adapter.StepAdapter;
+import fpt.capstone.inqr.camera.CameraPreview;
+import fpt.capstone.inqr.camera.SupportScanQr;
 import fpt.capstone.inqr.dijkstra.Vertex;
 import fpt.capstone.inqr.helper.CanvasHelper;
 import fpt.capstone.inqr.helper.ImageHelper;
@@ -77,7 +79,7 @@ import static android.content.Context.SENSOR_SERVICE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MapFragment extends BaseFragment implements SensorEventListener, MapView {
+public class MapFragment extends BaseFragment implements SensorEventListener, MapView, SupportScanQr {
 
     //    private ImageView imgView;
     private View view;
@@ -113,7 +115,9 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
     private float currentDegrees = 0f;
 
     private FrameLayout bgImg;
-    private SurfaceView cameraView;
+    private FrameLayout cameraView;
+    private CameraPreview mCameraPreview;
+    private Camera camera;
     boolean hadQr = false;
     private Handler checkQrExistHandler;
     private Runnable runnable;
@@ -154,9 +158,23 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
                 .withListener(new PermissionListener() {
                     @Override
                     public void onPermissionGranted(PermissionGrantedResponse response) {
+
+                        // Create an instance of Camera
+                        camera = getCameraInstance();
+
+                        // Create our Preview view and set it as the content of our activity.
+                        mCameraPreview = new CameraPreview(MapFragment.this.getContext(), camera);
+                        cameraView.removeAllViews();
+                        cameraView.addView(mCameraPreview);
+                        mCameraPreview.resize();
+
+                        setupCamera();
+
                         if (qrEader != null) {
-                            qrEader.initAndStart(cameraView);
+                            qrEader.initAndStart(mCameraPreview);
                         }
+//                        cameraView.resumeCameraPreview(MapFragment.this::handleResult);
+//                        cameraView.startCamera();
                     }
 
                     @Override
@@ -177,6 +195,19 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
     public void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        checkQrExistHandler.removeCallbacks(runnable);
+        checkQrExistHandler.removeCallbacksAndMessages(null);
+
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+
         Dexter.withActivity(this.getActivity())
                 .withPermission(Manifest.permission.CAMERA)
                 .withListener(new PermissionListener() {
@@ -199,21 +230,23 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
                 }).check();
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        checkQrExistHandler.removeCallbacks(runnable);
-        checkQrExistHandler.removeCallbacksAndMessages(null);
-
-        if (textToSpeech != null) {
-            textToSpeech.stop();
-            textToSpeech.shutdown();
+    /**
+     * A safe way to get an instance of the Camera object.
+     */
+    public static Camera getCameraInstance() {
+        Camera c = null;
+        try {
+            c = Camera.open(); // attempt to get a Camera instance
+        } catch (Exception e) {
+            // Camera is not available (in use or does not exist)
         }
+        return c; // returns null if camera is unavailable
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         textToSpeech = new TextToSpeech(getContext(), status -> {
             if (status != TextToSpeech.ERROR) {
@@ -297,34 +330,21 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
 
     private void setupScanQR() {
-        Dexter.withActivity(this.getActivity())
-                .withPermission(Manifest.permission.CAMERA)
-                .withListener(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted(PermissionGrantedResponse response) {
-                        setupCamera();
-                    }
-
-                    @Override
-                    public void onPermissionDenied(PermissionDeniedResponse response) {
-
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-
-                    }
-                }).check();
 
 //        img.setVisibility(View.INVISIBLE);
         checkQrExistHandler = new Handler();
         runnable = () -> {
+
             if (hadQr) {
                 mSensorManager.registerListener(this, mRotation, SensorManager.SENSOR_DELAY_GAME);
                 this.getActivity().runOnUiThread(() -> bgImg.setVisibility(View.VISIBLE));
+
+//                cameraView.resumeCameraPreview(MapFragment.this::handleResult);
             } else {
                 mSensorManager.unregisterListener(this);
                 this.getActivity().runOnUiThread(() -> bgImg.setVisibility(View.INVISIBLE));
+
+
             }
 
             hadQr = false;
@@ -580,6 +600,15 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
         rvDot.setLayoutManager(new LinearLayoutManager(view.getContext(), RecyclerView.HORIZONTAL, false));
         rvDot.setAdapter(adapterPoint);
+
+
+        // camera
+        // Create an instance of Camera
+//        camera = getCameraInstance();
+//
+//        // Create our Preview view and set it as the content of our activity.
+//        mCameraPreview = new CameraPreview(this.getContext(), camera);
+//        cameraView.addView(mCameraPreview);
     }
 
     public void setupCameraPreview() {
@@ -606,7 +635,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
     }
 
     private void setupCamera() {
-        qrEader = new QREader.Builder(this.getContext(), cameraView, data -> {
+        qrEader = new QREader.Builder(this.getContext(), mCameraPreview, data -> {
             tvStart.post(() -> {
 //                    btnFindWay.setText(data);
 
@@ -657,8 +686,8 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
         }).facing(QREader.BACK_CAM)
                 .enableAutofocus(true)
-                .height(cameraView.getHeight())
-                .width(cameraView.getWidth())
+//                .height(mCameraPreview.getHeight())
+//                .width(mCameraPreview.getWidth())
                 .build();
         qrEader.start();
     }
@@ -981,5 +1010,10 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    @Override
+    public void refreshCamera() {
+        this.onResume();
     }
 }

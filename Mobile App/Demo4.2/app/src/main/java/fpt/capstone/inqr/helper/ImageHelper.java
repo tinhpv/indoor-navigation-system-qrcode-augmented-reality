@@ -49,6 +49,13 @@ public class ImageHelper {
         return bitmap;
     }
 
+    public static Bitmap convertImageToBitmap(Image image) {
+        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+        byte[] bytes = new byte[buffer.capacity()];
+        buffer.get(bytes);
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
+    }
+
     public static Bitmap getBitmap(Context context, String buildingId, String currentFloorId) {
         return BitmapFactory.decodeStream(FileHelper.getImage(context, FileHelper.TYPE_MAP, buildingId, currentFloorId)).copy(Bitmap.Config.ARGB_8888, true);
     }

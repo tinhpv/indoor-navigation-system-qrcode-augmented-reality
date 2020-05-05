@@ -2,12 +2,20 @@ package fpt.capstone.inqr.helper;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.RGBLuminanceSource;
+import com.google.zxing.Reader;
+import com.google.zxing.Result;
+import com.google.zxing.common.HybridBinarizer;
 
 /**
  * Demo4
@@ -31,7 +39,30 @@ public class QRCodeHelper {
         Frame frame = new Frame.Builder().setBitmap(bitmap).build();
         SparseArray<Barcode> barcodes = detector.detect(frame);
 
-        Barcode thisCode = barcodes.valueAt(0);
-        return thisCode.rawValue;
+        if (barcodes.size() > 0) {
+            Barcode thisCode = barcodes.valueAt(0);
+            return thisCode.rawValue;
+        }
+        return null;
+    }
+
+    public static String scanQRImage(Bitmap bMap) {
+        String contents = null;
+
+        int[] intArray = new int[bMap.getWidth() * bMap.getHeight()];
+        //copy pixel data from the Bitmap into the 'intArray' array
+        bMap.getPixels(intArray, 0, bMap.getWidth(), 0, 0, bMap.getWidth(), bMap.getHeight());
+
+        LuminanceSource source = new RGBLuminanceSource(bMap.getWidth(), bMap.getHeight(), intArray);
+        BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+
+        Reader reader = new MultiFormatReader();
+        try {
+            Result result = reader.decode(bitmap);
+            contents = result.getText();
+        } catch (Exception e) {
+            Log.e("QrTest", "Error decoding barcode", e);
+        }
+        return contents;
     }
 }
