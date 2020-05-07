@@ -160,15 +160,17 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
                     public void onPermissionGranted(PermissionGrantedResponse response) {
 
                         // Create an instance of Camera
-                        camera = getCameraInstance();
+//                        camera = getCameraInstance();
+//
+//                        // Create our Preview view and set it as the content of our activity.
+//                        mCameraPreview = new CameraPreview(MapFragment.this.getContext(), camera);
 
-                        // Create our Preview view and set it as the content of our activity.
-                        mCameraPreview = new CameraPreview(MapFragment.this.getContext(), camera);
+
                         cameraView.removeAllViews();
                         cameraView.addView(mCameraPreview);
-                        mCameraPreview.resize();
+//                        mCameraPreview.resize();
 
-                        setupCamera();
+//                        setupCamera();
 
                         if (qrEader != null) {
                             qrEader.initAndStart(mCameraPreview);
@@ -188,6 +190,8 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
                     }
                 }).check();
 
+        checkQrExistHandler.removeCallbacks(runnable);
+        checkQrExistHandler.removeCallbacksAndMessages(null);
         checkQrExistHandler.postDelayed(runnable, 100);
     }
 
@@ -233,7 +237,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
     /**
      * A safe way to get an instance of the Camera object.
      */
-    public static Camera getCameraInstance() {
+    private static Camera getCameraInstance() {
         Camera c = null;
         try {
             c = Camera.open(); // attempt to get a Camera instance
@@ -253,6 +257,8 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
                 textToSpeech.setLanguage(Locale.US);
             }
         });
+
+
     }
 
     @Override
@@ -266,6 +272,8 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         // TODO: MODIFY HERE
         mMapPresenter = new MapPresenter(this, getContext());
         mMapPresenter.loadBuildingData(buildingId);
+
+
         return view;
     }
 
@@ -285,6 +293,16 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
         setupSensor();
         setupScanQR();
+
+        // Create an instance of Camera
+        camera = getCameraInstance();
+
+        // Create our Preview view and set it as the content of our activity.
+        mCameraPreview = new CameraPreview(MapFragment.this.getContext(), camera);
+//        cameraView.addView(mCameraPreview);
+
+
+        setupCamera();
     }
 
     @Override
@@ -350,7 +368,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
             hadQr = false;
             checkQrExistHandler.postDelayed(runnable, 100);
         };
-//        checkQrExistHandler.postDelayed(runnable, 100);
+        checkQrExistHandler.postDelayed(runnable, 100);
     }
 
     private void setupSensor() {
