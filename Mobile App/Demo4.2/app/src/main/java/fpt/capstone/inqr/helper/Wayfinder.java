@@ -117,8 +117,15 @@ public class Wayfinder {
 
         for (int i = 0; i < locationList.size(); i++) {
             for (int j = 0; j < locationList.get(i).getNeighborList().size(); j++) {
-                int index = getIndexOfLocation(locationList.get(i).getNeighborList().get(j).getId());
-                vertexList.get(i).addNeighbour(new Edge(locationList.get(i).getNeighborList().get(j).getDistance(), vertexList.get(i), vertexList.get(index)));
+
+                // check neighbor active or not
+                // add only neighbor active
+                if (locationList.get(i).getNeighborList().get(j).isActive()) {
+                    int index = getIndexOfLocation(locationList.get(i).getNeighborList().get(j).getId());
+                    vertexList.get(i).addNeighbour(new Edge(locationList.get(i).getNeighborList().get(j).getDistance(), vertexList.get(i), vertexList.get(index)));
+                }
+
+
             } // end for
         } // end for
     }

@@ -34,6 +34,10 @@ public class Neighbor extends Location implements Serializable {
     @Expose
     private float distance;
 
+    @SerializedName("Active")
+    @Expose
+    private boolean active;
+
 //    @SerializedName("Orientation")
 //    @Expose
 //    private String orientation;
@@ -61,6 +65,14 @@ public class Neighbor extends Location implements Serializable {
 //        this.neighboorId = neighboorId;
 //    }
 
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     public String getDirection() {
         return direction;

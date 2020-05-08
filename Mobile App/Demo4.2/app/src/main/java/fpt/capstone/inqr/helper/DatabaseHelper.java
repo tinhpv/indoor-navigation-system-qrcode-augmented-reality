@@ -51,6 +51,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String NEIGHBOR_ID = "neighborId";
     private static final String ORIENTATION = "orientation";
     private static final String DISTANCE = "distance";
+    private static final String ACTIVE = "active";
 
     //Floor Table
     private static final String FLOOR_ID = "floorId";
@@ -109,7 +110,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + LOCATION_ID + " TEXT, "
             + NEIGHBOR_ID + " TEXT, "
             + ORIENTATION + " TEXT,"
-            + DISTANCE + " FLOAT"
+            + DISTANCE + " FLOAT, "
+            + ACTIVE + " INTEGER"
             + ")";
 
     //Room Table create statement
@@ -306,6 +308,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(NEIGHBOR_ID, neighbor.getId());
         values.put(ORIENTATION, neighbor.getDirection());
         values.put(DISTANCE, neighbor.getDistance());
+        if (neighbor.isActive()) {
+            values.put(ACTIVE, 1);
+        } else {
+            values.put(ACTIVE, 0);
+        }
+
 
         //Insert row
         long neighbor_id = db.insert(TABLE_NEIGHBOR, null, values);
@@ -391,6 +399,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //                neighbor.setLocationId(c.getInt(c.getColumnIndex(LOCATION_ID)));
                 neighbor.setDistance(c.getFloat(c.getColumnIndex(DISTANCE)));
                 neighbor.setDirection(c.getString(c.getColumnIndex(ORIENTATION)));
+
+                int tmp = c.getInt(c.getColumnIndex(ACTIVE));
+                if (tmp == 1) {
+                    neighbor.setActive(true);
+                } else {
+                    neighbor.setActive(false);
+                }
 
                 //add to location list
                 neighbors.add(neighbor);
