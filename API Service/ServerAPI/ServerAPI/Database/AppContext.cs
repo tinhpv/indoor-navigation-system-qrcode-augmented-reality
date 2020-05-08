@@ -20,15 +20,16 @@ namespace ServerAPI.Database
         public virtual DbSet<Company> Company { get; set; }
         public virtual DbSet<Floor> Floor { get; set; }
         public virtual DbSet<Location> Location { get; set; }
-        public virtual DbSet<LocationBeside> LocationBeside { get; set; }
+        public virtual DbSet<Neighbor> Neighbor { get; set; }
         public virtual DbSet<Room> Room { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //if (!optionsBuilder.IsConfigured)
-            //{
-            //    optionsBuilder.UseSqlServer(Configuration.GetConnectionString("BloggingDatabase")));
-            //}
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=13.229.117.90,1433;Initial Catalog=hieu;Persist Security Info=False;User ID=hieu;Password=lenhhoXung21@@@;");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -136,7 +137,7 @@ namespace ServerAPI.Database
                     .HasConstraintName("FK__Location__FloorI__1367E606");
             });
 
-            modelBuilder.Entity<LocationBeside>(entity =>
+            modelBuilder.Entity<Neighbor>(entity =>
             {
                 entity.Property(e => e.LocationBesideId)
                     .IsRequired()
@@ -152,14 +153,14 @@ namespace ServerAPI.Database
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.HasOne(d => d.LocationBesideNavigation)
-                    .WithMany(p => p.LocationBesideLocationBesideNavigation)
+                entity.HasOne(d => d.LocationBeside)
+                    .WithMany(p => p.NeighborLocationBeside)
                     .HasForeignKey(d => d.LocationBesideId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__LocationB__Locat__1920BF5C");
 
                 entity.HasOne(d => d.Location)
-                    .WithMany(p => p.LocationBesideLocation)
+                    .WithMany(p => p.NeighborLocation)
                     .HasForeignKey(d => d.LocationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__LocationB__Locat__182C9B23");

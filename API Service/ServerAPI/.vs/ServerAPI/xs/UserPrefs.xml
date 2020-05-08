@@ -3,14 +3,18 @@
     <Files>
       <File FileName="ServerAPI/Startup.cs" Line="36" Column="17" />
       <File FileName="ServerAPI/appsettings.json" />
-      <File FileName="ServerAPI/Database/AppContext.cs" />
-      <File FileName="ServerAPI/Controllers/BuildingController.cs" Line="201" Column="10" />
+      <File FileName="ServerAPI/Controllers/BuildingController.cs" Line="150" Column="1" />
+      <File FileName="ServerAPI/Models/Neighbor.cs" Line="1" Column="1" />
+      <File FileName="ServerAPI/Models/Location.cs" Line="1" Column="1" />
+      <File FileName="ServerAPI/Repository/BuildingRepository.cs" Line="285" Column="46" />
+      <File FileName="ServerAPI/Models/DefaultModel/JsonInputModel.cs" Line="43" Column="21" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="ServerAPI" expanded="True">
             <Node name="ServerAPI" expanded="True">
+              <Node name="Dependencies" expanded="True" />
               <Node name="Controllers" expanded="True">
                 <Node name="BuildingController.cs" selected="True" />
               </Node>

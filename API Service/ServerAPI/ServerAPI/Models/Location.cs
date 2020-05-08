@@ -7,8 +7,8 @@ namespace ServerAPI.Models
     {
         public Location()
         {
-            LocationBesideLocation = new HashSet<LocationBeside>();
-            LocationBesideLocationBesideNavigation = new HashSet<LocationBeside>();
+            NeighborLocation = new HashSet<Neighbor>();
+            NeighborLocationBeside = new HashSet<Neighbor>();
             Room = new HashSet<Room>();
         }
 
@@ -22,8 +22,8 @@ namespace ServerAPI.Models
         public string SpaceAnchorId { get; set; }
 
         public virtual Floor Floor { get; set; }
-        public virtual ICollection<LocationBeside> LocationBesideLocation { get; set; }
-        public virtual ICollection<LocationBeside> LocationBesideLocationBesideNavigation { get; set; }
+        public virtual ICollection<Neighbor> NeighborLocation { get; set; }
+        public virtual ICollection<Neighbor> NeighborLocationBeside { get; set; }
         public virtual ICollection<Room> Room { get; set; }
     }
 }

@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using ServerAPI.IRepository;
 using ServerAPI.Models.DefaultModel;
 using LocationBeside = ServerAPI.Models.DefaultModel.LocationBeside;
-using LocationBesideDb = ServerAPI.Models.LocationBeside;
+using LocationBesideDb = ServerAPI.Models.Neighbor;
 using RoomDb = ServerAPI.Models.Room;
 using RoomModel = ServerAPI.Models.DefaultModel.Room;
 using Floor = ServerAPI.Models.DefaultModel.Floor;
@@ -237,14 +237,15 @@ namespace ServerAPI.Repository
                         location.SpaceAnchorId = item.SpaceAnchorId;
 
                         var listLocationBeside = new List<LocationBeside>();
-                        foreach (var itemLocation in context.LocationBeside.Where(x => x.LocationId == item.Id).OrderBy(x => x.Id).ToList())
+                        foreach (var itemLocation in context.Neighbor.Where(x => x.LocationId == item.Id).OrderBy(x => x.Id).ToList())
                         {
                             listLocationBeside.Add(new LocationBeside(
                                 context.Location.Where(x => x.Id == itemLocation.LocationBesideId).FirstOrDefault().Id,
                                 context.Location.Where(x => x.Id == itemLocation.LocationBesideId).FirstOrDefault().Name.ToString(),
                                 //context.Orientation.Where(x => x.Id == itemLocation.OrientitationId).FirstOrDefault().Name.ToString(),
                                 itemLocation.Orientation,
-                                itemLocation.Distance
+                                itemLocation.Distance,
+                                itemLocation.Active
                                 ));
                         }
                         location.ListLocationBeside = listLocationBeside;
@@ -316,7 +317,7 @@ namespace ServerAPI.Repository
 
             foreach (var location in listLocation)
             {
-                listLocationBeside.AddRange(context.LocationBeside.Where(x => x.LocationId == location.Id).ToList());
+                listLocationBeside.AddRange(context.Neighbor.Where(x => x.LocationId == location.Id).ToList());
             }
 
             var listRoom = new List<RoomDb>();
@@ -331,7 +332,7 @@ namespace ServerAPI.Repository
                 // delete list Room
                 context.Room.RemoveRange(listRoom);
                 // delete list Location beside
-                context.LocationBeside.RemoveRange(listLocationBeside);
+                context.Neighbor.RemoveRange(listLocationBeside);
                 // delete list Location
                 context.Location.RemoveRange(listLocation);
                 // delete list Floor
@@ -425,7 +426,8 @@ namespace ServerAPI.Repository
                             LocationId = buildingId + "_l_" + location.Id,
                             LocationBesideId = buildingId + "_l_" + neighbor.Id,
                             Orientation = neighbor.Orientation,
-                            Distance = neighbor.Distance
+                            Distance = neighbor.Distance,
+                            Active = true
                         });
                     }
                 }
@@ -436,7 +438,7 @@ namespace ServerAPI.Repository
 
             foreach (var item in listLocationBeside)
             {
-                context.LocationBeside.Add(item);
+                context.Neighbor.Add(item);
                 context.SaveChanges();
             }
 
@@ -563,7 +565,8 @@ namespace ServerAPI.Repository
                                                         LocationId = buildingId + "_l_" + location.Id,
                                                         LocationBesideId = buildingId + "_l_" + neighbor.Id,
                                                         Orientation = neighbor.Orientation,
-                                                        Distance = neighbor.Distance
+                                                        Distance = neighbor.Distance,
+                                                        Active = neighbor.Active
                                                     });
                                                 }
                                             }
@@ -582,7 +585,7 @@ namespace ServerAPI.Repository
 
                         foreach (var item in listLocationBeside)
                         {
-                            context.LocationBeside.Add(item);
+                            context.Neighbor.Add(item);
                             context.SaveChanges();
                         }
 
@@ -807,7 +810,7 @@ namespace ServerAPI.Repository
 
             foreach (var location in listLocation)
             {
-                listLocationBeside.AddRange(context.LocationBeside.Where(x => x.LocationId == location.Id).ToList());
+                listLocationBeside.AddRange(context.Neighbor.Where(x => x.LocationId == location.Id).ToList());
             }
 
             var listRoom = new List<RoomDb>();
@@ -822,7 +825,7 @@ namespace ServerAPI.Repository
                 // delete list Room
                 context.Room.RemoveRange(listRoom);
                 // delete list Location beside
-                context.LocationBeside.RemoveRange(listLocationBeside);
+                context.Neighbor.RemoveRange(listLocationBeside);
                 // delete list Location
                 context.Location.RemoveRange(listLocation);
                 // delete list Floor
@@ -933,7 +936,8 @@ namespace ServerAPI.Repository
                                             LocationId = buildingId + "_l_" + location.Id,
                                             LocationBesideId = buildingId + "_l_" + neighbor.Id,
                                             Orientation = neighbor.Orientation,
-                                            Distance = neighbor.Distance
+                                            Distance = neighbor.Distance,
+                                            Active = neighbor.Active
                                         });
                                     }
                                 }
@@ -952,7 +956,7 @@ namespace ServerAPI.Repository
 
             foreach (var item in listLocationBeside)
             {
-                context.LocationBeside.Add(item);
+                context.Neighbor.Add(item);
                 context.SaveChanges();
             }
 

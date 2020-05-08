@@ -22,7 +22,7 @@
     <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="QRCodeEncoderLibrary" Version="2.0.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.3.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Database\" />
