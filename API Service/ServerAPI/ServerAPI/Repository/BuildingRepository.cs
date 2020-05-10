@@ -896,7 +896,9 @@ namespace ServerAPI.Repository
                                 RatioX = location.RatioX,
                                 RatioY = location.RatioY,
                                 FloorId = buildingId + "_f_" + floor.Id,
-                                LinkQrcode = generateQRCode("ID: " + buildingId + "_l_" + location.Id + " | Name: " + location.Name, buildingId + "_l_" + location.Id)
+                                LinkQrcode = generateQRCode("ID: " + buildingId + "_l_" + location.Id + " | Name: " + location.Name, buildingId + "_l_" + location.Id),
+                                QranchorId = location.QrAnchorId,
+                                SpaceAnchorId = location.SpaceAnchorId
                             });
                             context.SaveChanges();
 
@@ -916,7 +918,8 @@ namespace ServerAPI.Repository
                                             RatioX = room.RatioX,
                                             RatioY = room.RatioY,
                                             LocationId = buildingId + "_l_" + location.Id,
-                                            SpecialRoom = room.SpecialRoom
+                                            SpecialRoom = room.SpecialRoom,
+                                            SpaceAnchorId = room.SpaceAnchorId
                                         });
                                         context.SaveChanges();
                                     }
