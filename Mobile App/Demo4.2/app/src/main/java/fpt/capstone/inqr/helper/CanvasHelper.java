@@ -33,7 +33,7 @@ import static java.lang.Math.sin;
 
 public class CanvasHelper {
 
-    public static List<Line> drawImage(Context context, Bitmap mapImg, String currentFloorId, List<Location> locationPathList, Room destinationRoom) {
+    public static List<Line> drawImage(Context context, Bitmap mapImg, String currentFloorId, List<Location> locationPathList, Room destinationRoom, double distance) {
         List<Line> lines = new ArrayList<>();
 
         Canvas canvas = new Canvas(mapImg);
@@ -49,71 +49,94 @@ public class CanvasHelper {
         paint.setPathEffect(new CornerPathEffect(10));
         paint.setAntiAlias(true);
 
-        float arrowStartX = 0.0f, arrowStartY = 0.0f, arrowEndX = 0.0f, arrowEndY = 0.0f;
+        // case ko tìm được đường
+        if (locationPathList.size() == 2 && distance == -1) {
+            drawSourceAndDestinationBitmap(context, canvas, mapImg, locationPathList.get(0), destinationRoom, currentFloorId);
 
-        if (locationPathList.size() == 1) {
+            float startX, startY, endX, endY;
+
             Location startPoint = locationPathList.get(0);
-            float startX = Math.round(mapImg.getWidth() * startPoint.getRatioX());
-            float startY = Math.round(mapImg.getHeight() * startPoint.getRatioY());
-            float endX = Math.round(mapImg.getWidth() * destinationRoom.getRatioX());
-            float endY = Math.round(mapImg.getHeight() * destinationRoom.getRatioY());
+            startX = Math.round(mapImg.getWidth() * startPoint.getRatioX());
+            startY = Math.round(mapImg.getHeight() * startPoint.getRatioY());
 
-            lines.add(new Line(startX, startY, endX, endY));
+            lines.add(new Line(startX, startY, startX, startY));
 
-            Path path = new Path();
-            path.moveTo(startX, startY);
-            path.lineTo(endX, endY);
-            canvas.drawPath(path, paint);
 
-            arrowStartX = startX;
-            arrowStartY = startY;
-            arrowEndX = endX;
-            arrowEndY = endY;
+            endX = Math.round(mapImg.getWidth() * destinationRoom.getRatioX());
+            endY = Math.round(mapImg.getHeight() * destinationRoom.getRatioY());
+
+            lines.add(new Line(endX, endY, endX, endY));
+
         } else {
-            Path path = new Path();
-            for (int i = 0; i < locationPathList.size(); i++) {
-                if (i != locationPathList.size() - 1) {
-                    if (locationPathList.get(i).getFloorId().equals(currentFloorId)) {
-                        Location startPoint = locationPathList.get(i);
 
-                        float startX, startY, endX, endY;
+            float arrowStartX = 0.0f, arrowStartY = 0.0f, arrowEndX = 0.0f, arrowEndY = 0.0f;
 
-                        startX = Math.round(mapImg.getWidth() * startPoint.getRatioX());
-                        startY = Math.round(mapImg.getHeight() * startPoint.getRatioY());
+            if (locationPathList.size() == 1) {
+                Location startPoint = locationPathList.get(0);
+                float startX = Math.round(mapImg.getWidth() * startPoint.getRatioX());
+                float startY = Math.round(mapImg.getHeight() * startPoint.getRatioY());
+                float endX = Math.round(mapImg.getWidth() * destinationRoom.getRatioX());
+                float endY = Math.round(mapImg.getHeight() * destinationRoom.getRatioY());
 
-                        if (i == locationPathList.size() - 2) { // node cuối lấy tọa độ của room
-                            endX = Math.round(mapImg.getWidth() * destinationRoom.getRatioX());
-                            endY = Math.round(mapImg.getHeight() * destinationRoom.getRatioY());
-                        } else {
-                            Location endPoint = locationPathList.get(i + 1);
-                            endX = Math.round(mapImg.getWidth() * endPoint.getRatioX());
-                            endY = Math.round(mapImg.getHeight() * endPoint.getRatioY());
-                        }
+                lines.add(new Line(startX, startY, endX, endY));
 
-                        path.moveTo(startX, startY);
-                        path.lineTo(endX, endY);
+                Path path = new Path();
+                path.moveTo(startX, startY);
+                path.lineTo(endX, endY);
+                canvas.drawPath(path, paint);
 
-                        lines.add(new Line(startX, startY, endX, endY));
+                arrowStartX = startX;
+                arrowStartY = startY;
+                arrowEndX = endX;
+                arrowEndY = endY;
+            } else {
+                Path path = new Path();
+                for (int i = 0; i < locationPathList.size(); i++) {
+                    if (i != locationPathList.size() - 1) {
+                        if (locationPathList.get(i).getFloorId().equals(currentFloorId)) {
+                            Location startPoint = locationPathList.get(i);
 
-                        if (i == 0) {
-                            arrowStartX = startX;
-                            arrowStartY = startY;
-                            arrowEndX = endX;
-                            arrowEndY = endY;
-                        }
-                    } // end if current floor equal
-                } // end if max size
-            } // end for each point
-            canvas.drawPath(path, paint);
+                            float startX, startY, endX, endY;
+
+                            startX = Math.round(mapImg.getWidth() * startPoint.getRatioX());
+                            startY = Math.round(mapImg.getHeight() * startPoint.getRatioY());
+
+                            if (i == locationPathList.size() - 2) { // node cuối lấy tọa độ của room
+                                endX = Math.round(mapImg.getWidth() * destinationRoom.getRatioX());
+                                endY = Math.round(mapImg.getHeight() * destinationRoom.getRatioY());
+                            } else {
+                                Location endPoint = locationPathList.get(i + 1);
+                                endX = Math.round(mapImg.getWidth() * endPoint.getRatioX());
+                                endY = Math.round(mapImg.getHeight() * endPoint.getRatioY());
+                            }
+
+                            path.moveTo(startX, startY);
+                            path.lineTo(endX, endY);
+
+                            lines.add(new Line(startX, startY, endX, endY));
+
+                            if (i == 0) {
+                                arrowStartX = startX;
+                                arrowStartY = startY;
+                                arrowEndX = endX;
+                                arrowEndY = endY;
+                            }
+                        } // end if current floor equal
+                    } // end if max size
+                } // end for each point
+                canvas.drawPath(path, paint);
+            }
+
+            Location startLocation = locationPathList.get(0);
+
+            if (startLocation.getRatioX() != destinationRoom.getRatioX() || startLocation.getRatioY() != destinationRoom.getRatioY()) {
+                drawArrow(context, canvas, arrowStartX, arrowStartY, arrowEndX, arrowEndY);
+            }
+
+            drawSourceAndDestinationBitmap(context, canvas, mapImg, locationPathList.get(0), destinationRoom, currentFloorId);
         }
 
-        Location startLocation = locationPathList.get(0);
 
-        if (startLocation.getRatioX() != destinationRoom.getRatioX() || startLocation.getRatioY() != destinationRoom.getRatioY()) {
-            drawArrow(context, canvas, arrowStartX, arrowStartY, arrowEndX, arrowEndY);
-        }
-
-        drawSourceAndDestinationBitmap(context, canvas, mapImg, locationPathList.get(0), destinationRoom, currentFloorId);
         return lines;
     }
 

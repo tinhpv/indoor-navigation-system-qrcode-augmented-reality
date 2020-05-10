@@ -27,8 +27,8 @@ public class Wayfinder {
     private List<Location> locationPathList;
     private List<Room> roomList;
     private List<Room> specialRoomList;
-    private List<String> listLocationName;
-    private List<String> listRoomName;
+    //    private List<String> listLocationName;
+//    private List<String> listRoomName;
     private DijkstraShortestPath shortestPath;
     private Room endRoom;
     private double currentShortestDistance;
@@ -43,6 +43,15 @@ public class Wayfinder {
         shortestPathList = null;
     }
 
+    private boolean checkLocationHasNeighbor(String locationId) {
+        for (Location location : locationList) {
+            if (locationId.equals(location.getId())) {
+                return location.getNeighborList().size() > 0;
+            }
+        }
+        return false;
+    }
+
     public void findWay(String startLocationId, String roomName) {
         shortestPathList = new ArrayList<>();
 
@@ -55,49 +64,66 @@ public class Wayfinder {
         String endLocationId = getLocationIdOfRoom(roomName);
         Vertex endPoint = getVertexInList(endLocationId);
 
-        double shortestDistance = 0.0;
+        if (!checkLocationHasNeighbor(startLocationId) || !checkLocationHasNeighbor(endLocationId)) {
+            currentShortestDistance = -1;
+        } else {
+            double shortestDistance = 0.0;
 
-        if (getRoom(roomName).isSpecialRoom()) {
-            specialRoomList = getListSpecialRoom(roomName);
-            for (int i = 0; i < specialRoomList.size(); i++) {
-                Room specialRoom = specialRoomList.get(i);
-                if (startLocationId.equals(specialRoom.getLocationId())) {
+            if (getRoom(roomName).isSpecialRoom()) {
+                specialRoomList = getListSpecialRoom(roomName);
+                for (int i = 0; i < specialRoomList.size(); i++) {
+                    Room specialRoom = specialRoomList.get(i);
+                    if (startLocationId.equals(specialRoom.getLocationId())) {
+                        shortestPathList = new ArrayList<>();
+                        shortestPathList.add(getVertexInList(specialRoom.getLocationId()));
+                        endRoom = specialRoom;
+                    } else {
+                        shortestPath.computeShortestPaths(getVertexInList(startLocationId));
+                        double tempShortestDistance = getVertexInList(specialRoom.getLocationId()).getDistance();
+                        List<Vertex> pathPointList = shortestPath.getShortestsPathTo(getVertexInList(specialRoom.getLocationId()));
+
+                        if (0.0 == shortestDistance) {
+                            shortestPathList = pathPointList;
+                            endRoom = specialRoom;
+                            shortestDistance = tempShortestDistance;
+                        } else {
+                            shortestPathList = pathPointList;
+                            endRoom = specialRoom;
+                            shortestDistance = tempShortestDistance;
+                        }
+
+                        prepareData();
+                    } // end if
+                } // end for special room list
+                currentShortestDistance = shortestDistance;
+
+            } else {
+                endRoom = getRoom(roomName);
+
+                if (startLocationId.equals(endRoom.getLocationId())) {
                     shortestPathList = new ArrayList<>();
-                    shortestPathList.add(getVertexInList(specialRoom.getLocationId()));
-                    endRoom = specialRoom;
+                    shortestPathList.add(getVertexInList(endRoom.getLocationId()));
+                    currentShortestDistance = 0.0;
                 } else {
                     shortestPath.computeShortestPaths(getVertexInList(startLocationId));
-                    double tempShortestDistance = getVertexInList(specialRoom.getLocationId()).getDistance();
-                    List<Vertex> pathPointList = shortestPath.getShortestsPathTo(getVertexInList(specialRoom.getLocationId()));
+                    shortestPathList = shortestPath.getShortestsPathTo(endPoint);
+                    currentShortestDistance = endPoint.getDistance();
 
-                    if (0.0 == shortestDistance) {
-                        shortestPathList = pathPointList;
-                        endRoom = specialRoom;
-                        shortestDistance = tempShortestDistance;
-                    } else {
-                        shortestPathList = pathPointList;
-                        endRoom = specialRoom;
-                        shortestDistance = tempShortestDistance;
+                    if (shortestPathList.size() == 1) {
+                        currentShortestDistance = -1;
+
+                        shortestPathList.clear();
+
+                        shortestPathList.add(getVertexInList(startLocationId));
+                        shortestPathList.add(getVertexInList(endRoom.getLocationId()));
                     }
+                }
+            } // end if special room
 
-                    prepareData();
-                } // end if
-            } // end for special room list
-            currentShortestDistance = shortestDistance;
 
-        } else {
-            endRoom = getRoom(roomName);
+        }
 
-            if (startLocationId.equals(endRoom.getLocationId())) {
-                shortestPathList = new ArrayList<>();
-                shortestPathList.add(getVertexInList(endRoom.getLocationId()));
-                currentShortestDistance = 0.0;
-            } else {
-                shortestPath.computeShortestPaths(getVertexInList(startLocationId));
-                shortestPathList = shortestPath.getShortestsPathTo(endPoint);
-                currentShortestDistance = endPoint.getDistance();
-            }
-        } // end if special room
+
     } // end method
 
 

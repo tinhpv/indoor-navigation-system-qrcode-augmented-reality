@@ -25,6 +25,7 @@ public class Neighbor extends Location implements Serializable {
 //    public static final int ORIENT_RIGHT_TURN_LEFT = 21;
 //    public static final int ORIENT_RIGHT_TURN_RIGHT = 22;
     public static final String ORIENT_NULL = "DONE";
+    public static final String ORIENT_NO_WAY = "NO_WAY";
 
     @SerializedName("Orientation")
     @Expose

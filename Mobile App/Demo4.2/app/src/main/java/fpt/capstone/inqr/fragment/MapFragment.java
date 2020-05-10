@@ -712,6 +712,9 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
     private void updateOrientation(String orientId) {
         switch (orientId) {
+            case Neighbor.ORIENT_NO_WAY:
+                img.setImageResource(R.drawable.fence);
+                break;
             case Neighbor.ORIENT_NULL:
                 img.setImageResource(R.drawable.like);
                 break;
@@ -781,12 +784,12 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         // khoảng cách chính xác sẽ bằng: khoảng cách từ điểm bắt đầu đến điểm kết thúc - khoảng cách từ điểm bắt đầu
         // đến điểm đầu tiên trong listPointOnWay
         double shortestDistance = wayfinder.getCurrentShortestDistance();
-        if (shortestDistance != 0) {
+        if (shortestDistance > 0) {
             double distanceRemove = listPointOnWay.get(0).getDistance();
             double distanceReal = shortestDistance - distanceRemove;
             int speed;
 
-            if (distanceRemove != 0) {
+            if (distanceRemove > 0) {
                 double tmpDistance = distanceRemove - oldDistanceRemove;
 
                 currentTime = sdf.format(new Date());
@@ -844,8 +847,11 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
             oldTimeScan = currentTime;
             oldDistanceRemove = distanceRemove;
 
-        } else {
+        } else if (shortestDistance == 0) {
             tvTime.setText("You are at the destination");
+            tvDistance.setText("");
+        } else {
+            tvTime.setText("There is no way to the destination");
             tvDistance.setText("");
         }
     }
@@ -877,7 +883,10 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
     private void drawOnMap() {
         // tìm hướng
-        if (listPointOnWay.size() > 1) {
+        if (listPointOnWay.size() == 2 && wayfinder.getCurrentShortestDistance() == -1) {
+            // ko tìm đc đường
+            updateOrientation(Neighbor.ORIENT_NO_WAY);
+        } else if (listPointOnWay.size() > 1) {
             String neighborId = listPointOnWay.get(1).getId();
             Location location = getLocation(listPointOnWay.get(0).getId());
             updateOrientation(getNeighbor(location, neighborId).getDirection());
@@ -908,7 +917,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
         // lấy cách đi chi tiết
         double shortestDistance = wayfinder.getCurrentShortestDistance();
-        if (shortestDistance == 0) {
+        if (shortestDistance <= 0) {
 //            listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString(), null));
 //            listStep.addAll(wayfinder.getListStepGuide());
 //            listStep.add(new Step(Step.TYPE_END_POINT, "You reach the destination: " + tvEnd.getText().toString(), null));
@@ -943,7 +952,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
         for (String floorId : listFloorIdOnWay) {
             mapImg = ImageHelper.getBitmap(getContext(), buildingId, floorId);
-            List<Line> lines = CanvasHelper.drawImage(getContext(), mapImg, floorId, locationPathList, destinationRoom);
+            List<Line> lines = CanvasHelper.drawImage(getContext(), mapImg, floorId, locationPathList, destinationRoom, wayfinder.getCurrentShortestDistance());
             listSourceMap.add(mapImg);
             listLines.add(lines);
         } // end for floor to draw path
