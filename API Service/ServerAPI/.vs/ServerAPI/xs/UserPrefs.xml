@@ -1,14 +1,14 @@
 ﻿<Properties StartupConfiguration="{DF4C2C2E-2C11-4591-BFF2-1B05BE635690}|Default" NuGet.AddPackagesDialog.IncludePrerelease="True">
-  <MonoDevelop.Ide.Workbench ActiveDocument="ServerAPI/Models/DefaultModel/LocationModel.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ServerAPI/Repository/BuildingRepository.cs">
     <Files>
       <File FileName="ServerAPI/Startup.cs" Line="36" Column="17" />
       <File FileName="ServerAPI/appsettings.json" />
       <File FileName="ServerAPI/Controllers/BuildingController.cs" Line="150" Column="1" />
       <File FileName="ServerAPI/Models/Neighbor.cs" />
       <File FileName="ServerAPI/Models/Location.cs" />
-      <File FileName="ServerAPI/Repository/BuildingRepository.cs" Line="909" Column="69" />
-      <File FileName="ServerAPI/Models/DefaultModel/JsonInputModel.cs" />
-      <File FileName="ServerAPI/Models/DefaultModel/LocationModel.cs" Line="16" Column="27" />
+      <File FileName="ServerAPI/Repository/BuildingRepository.cs" Line="901" Column="71" />
+      <File FileName="ServerAPI/Models/DefaultModel/JsonInputModel.cs" Line="59" Column="18" />
+      <File FileName="ServerAPI/Models/DefaultModel/LocationModel.cs" Line="16" Column="23" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -21,11 +21,11 @@
               <Node name="IRepository" expanded="True" />
               <Node name="IService" expanded="True" />
               <Node name="Models" expanded="True">
-                <Node name="DefaultModel" expanded="True">
-                  <Node name="LocationModel.cs" selected="True" />
-                </Node>
+                <Node name="DefaultModel" expanded="True" />
               </Node>
-              <Node name="Repository" expanded="True" />
+              <Node name="Repository" expanded="True">
+                <Node name="BuildingRepository.cs" selected="True" />
+              </Node>
               <Node name="Service" expanded="True" />
               <Node name="appsettings.json" expanded="True" />
             </Node>
