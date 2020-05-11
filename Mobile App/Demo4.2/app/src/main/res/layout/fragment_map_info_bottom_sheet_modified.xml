@@ -7,13 +7,13 @@
     android:background="@android:color/white"
     android:orientation="vertical"
     android:visibility="visible"
-    app:behavior_peekHeight="@dimen/_18sdp"
+    app:behavior_peekHeight="@dimen/_45sdp"
     app:layout_behavior="@string/bottom_sheet_behavior">
 
     <!-- TOP -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
+        android:layout_height="@dimen/_45sdp"
         android:background="@color/white">
 
         <TextView

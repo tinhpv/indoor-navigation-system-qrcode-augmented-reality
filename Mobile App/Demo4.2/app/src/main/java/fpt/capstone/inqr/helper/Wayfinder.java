@@ -1,5 +1,7 @@
 package fpt.capstone.inqr.helper;
 
+import android.graphics.Bitmap;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
