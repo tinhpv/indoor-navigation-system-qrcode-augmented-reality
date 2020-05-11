@@ -16,8 +16,10 @@ import java.util.List;
 
 import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.model.Location;
+import fpt.capstone.inqr.model.Neighbor;
 import fpt.capstone.inqr.model.Room;
 import fpt.capstone.inqr.model.supportModel.Line;
+import fpt.capstone.inqr.model.supportModel.Stair;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.atan2;
@@ -202,5 +204,40 @@ public class CanvasHelper {
         path.close();
 
         canvas.drawPath(path, paint);
+    }
+
+    public static List<Stair> getStair(String floorId, Bitmap mapImg,List<Location> locationPathList) {
+
+        List<Stair> listStairs = new ArrayList<>();
+
+        for (int i = 0; i < locationPathList.size() - 1; i++) {
+            Location location = locationPathList.get(i);
+            Location nextLocation = locationPathList.get(i+1);
+
+            if (location.getFloorId().equals(floorId)) {
+
+               float ratioX = Math.round(mapImg.getWidth() * location.getRatioX());
+               float ratioY = Math.round(mapImg.getHeight() * location.getRatioY());
+
+                if (getNeighborOrientation(location, nextLocation.getId()).equals(Neighbor.ORIENT_UP)){
+                    listStairs.add(new Stair(Neighbor.ORIENT_UP, ratioX, ratioY));
+                } else if (getNeighborOrientation(location, nextLocation.getId()).equals(Neighbor.ORIENT_DOWN)){
+                    listStairs.add(new Stair(Neighbor.ORIENT_DOWN, ratioX, ratioY));
+                }
+            }
+
+
+        }
+
+        return listStairs;
+    }
+
+    private static String getNeighborOrientation(Location location, String neighborId) {
+        for (Neighbor neighbor : location.getNeighborList()) {
+            if (neighborId.equals(neighbor.getId())) {
+                return neighbor.getDirection();
+            }
+        }
+        return null;
     }
 }

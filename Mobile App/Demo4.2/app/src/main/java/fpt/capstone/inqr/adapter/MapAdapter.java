@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -25,7 +24,10 @@ import com.github.chrisbanes.photoview.PhotoView;
 import java.util.List;
 
 import fpt.capstone.inqr.R;
+import fpt.capstone.inqr.model.Location;
+import fpt.capstone.inqr.model.Neighbor;
 import fpt.capstone.inqr.model.supportModel.Line;
+import fpt.capstone.inqr.model.supportModel.Stair;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.atan2;
@@ -36,6 +38,7 @@ public class MapAdapter extends RecyclerView.Adapter<MapHolder> {
 
     private List<Bitmap> listSource;
     private List<List<Line>> listLines;
+    private List<List<Stair>> listStairs;
     private Context context;
     private Animation animation;
     private float zoomLevel;
@@ -44,8 +47,9 @@ public class MapAdapter extends RecyclerView.Adapter<MapHolder> {
         this.context = context;
     }
 
-    public void setListSource(List<Bitmap> listSource, List<List<Line>> listLines, float zoomLevel) {
+    public void setListSource(List<Bitmap> listSource, List<List<Stair>> listStairs, List<List<Line>> listLines, float zoomLevel) {
         this.listSource = listSource;
+        this.listStairs = listStairs;
         this.listLines = listLines;
         this.zoomLevel = zoomLevel;
         notifyDataSetChanged();
@@ -137,7 +141,7 @@ public class MapAdapter extends RecyclerView.Adapter<MapHolder> {
 //                        status[0] = true;
 //                    }
 
-                    if (firstLine.getxStart() != firstLine.getxEnd() || firstLine.getyStart() != firstLine.getyEnd()){
+                    if (firstLine.getxStart() != firstLine.getxEnd() || firstLine.getyStart() != firstLine.getyEnd()) {
                         fillArrow(canvas, firstLine.getxStart(), firstLine.getyStart(), firstLine.getxEnd(), firstLine.getyEnd());
                     }
 
@@ -148,7 +152,7 @@ public class MapAdapter extends RecyclerView.Adapter<MapHolder> {
                             Math.round(firstLine.getyStart() - bitmap.getHeight() / 2), new Paint());
                 }
 
-                if (indexBig == listLines.size() - 1){
+                if (indexBig == listLines.size() - 1) {
                     List<Line> listTmp = listLines.get(listLines.size() - 1);
                     Line endLine = listTmp.get(listTmp.size() - 1);
 
@@ -156,6 +160,23 @@ public class MapAdapter extends RecyclerView.Adapter<MapHolder> {
                     canvas.drawBitmap(bitmap,
                             Math.round(endLine.getxEnd() - bitmap.getWidth() / 2),
                             Math.round(endLine.getyEnd() - bitmap.getHeight()), new Paint());
+                }
+
+
+                List<Stair> stairs = listStairs.get(indexBig);
+                // vẽ hướng đi cầu thang
+                for (Stair stair : stairs) {
+
+                    Bitmap bitmap = null;
+                    if (stair.getOrientation().equals(Neighbor.ORIENT_UP)){
+                         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.icon_stairs_up);
+                    } else if (stair.getOrientation().equals(Neighbor.ORIENT_DOWN)) {
+                         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.icon_stairs_down);
+                    }
+
+                    canvas.drawBitmap(bitmap,
+                            Math.round(stair.getRatioX() - bitmap.getWidth() / 2),
+                            Math.round(stair.getRatioY() - bitmap.getHeight() / 2), new Paint());
                 }
             }
         });

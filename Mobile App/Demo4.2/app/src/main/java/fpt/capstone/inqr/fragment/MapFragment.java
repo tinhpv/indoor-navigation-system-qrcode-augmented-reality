@@ -69,6 +69,7 @@ import fpt.capstone.inqr.model.Location;
 import fpt.capstone.inqr.model.Neighbor;
 import fpt.capstone.inqr.model.Room;
 import fpt.capstone.inqr.model.supportModel.Line;
+import fpt.capstone.inqr.model.supportModel.Stair;
 import fpt.capstone.inqr.model.supportModel.Step;
 import fpt.capstone.inqr.presenter.MapPresenter;
 import fpt.capstone.inqr.view.MapView;
@@ -102,6 +103,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
     private List<String> locationNameList, roomNameList, listFloorName, allFloorNames, listFloorIdOnWay;
     private List<Vertex> listPointOnWay;
     private List<Bitmap> listSourceMap;
+    private List<List<Stair>> listStairs;
     private List<List<Line>> listLines;
     private List<Step> listStep;
 
@@ -337,9 +339,9 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
     public void chooseFloor(int position) {
         if (frame.getVisibility() == View.VISIBLE) {
-            adapterMap.setListSource(listSourceMap, listLines, 3f);
+            adapterMap.setListSource(listSourceMap, listStairs, listLines, 3f);
         } else {
-            adapterMap.setListSource(listSourceMap, listLines, 2f);
+            adapterMap.setListSource(listSourceMap, listStairs, listLines, 2f);
         }
 
         rvMap.scrollToPosition(position);
@@ -900,9 +902,9 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 
         // send data to adapter, cập nhập View
         if (frame.getVisibility() == View.VISIBLE) {
-            adapterMap.setListSource(listSourceMap, listLines, 3f);
+            adapterMap.setListSource(listSourceMap, listStairs, listLines, 3f);
         } else {
-            adapterMap.setListSource(listSourceMap, listLines, 2f);
+            adapterMap.setListSource(listSourceMap, listStairs, listLines, 2f);
         }
 
         adapterPoint.setListName(listFloorName);
@@ -940,6 +942,12 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
             listSourceMap.clear();
         }
 
+        if (listStairs == null) {
+            listStairs = new ArrayList<>();
+        } else {
+            listStairs.clear();
+        }
+
         if (listLines == null) {
             listLines = new ArrayList<>();
         } else {
@@ -955,6 +963,9 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
             List<Line> lines = CanvasHelper.drawImage(getContext(), mapImg, floorId, locationPathList, destinationRoom, wayfinder.getCurrentShortestDistance());
             listSourceMap.add(mapImg);
             listLines.add(lines);
+
+            List<Stair> stairs = CanvasHelper.getStair(floorId, mapImg, locationPathList);
+            listStairs.add(stairs);
         } // end for floor to draw path
     }
 
