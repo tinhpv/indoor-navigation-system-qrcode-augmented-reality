@@ -964,7 +964,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
             listSourceMap.add(mapImg);
             listLines.add(lines);
 
-            List<Stair> stairs = CanvasHelper.getStair(floorId, mapImg, locationPathList);
+            List<Stair> stairs = CanvasHelper.getStair(floorId, mapImg, locationPathList, wayfinder.getCurrentShortestDistance());
             listStairs.add(stairs);
         } // end for floor to draw path
     }

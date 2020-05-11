@@ -206,28 +206,32 @@ public class CanvasHelper {
         canvas.drawPath(path, paint);
     }
 
-    public static List<Stair> getStair(String floorId, Bitmap mapImg,List<Location> locationPathList) {
+    public static List<Stair> getStair(String floorId, Bitmap mapImg, List<Location> locationPathList, double distance) {
 
         List<Stair> listStairs = new ArrayList<>();
+        if (distance > 0) {
 
-        for (int i = 0; i < locationPathList.size() - 1; i++) {
-            Location location = locationPathList.get(i);
-            Location nextLocation = locationPathList.get(i+1);
 
-            if (location.getFloorId().equals(floorId)) {
+            for (int i = 0; i < locationPathList.size() - 1; i++) {
+                Location location = locationPathList.get(i);
+                Location nextLocation = locationPathList.get(i + 1);
 
-               float ratioX = Math.round(mapImg.getWidth() * location.getRatioX());
-               float ratioY = Math.round(mapImg.getHeight() * location.getRatioY());
+                if (location.getFloorId().equals(floorId)) {
 
-                if (getNeighborOrientation(location, nextLocation.getId()).equals(Neighbor.ORIENT_UP)){
-                    listStairs.add(new Stair(Neighbor.ORIENT_UP, ratioX, ratioY));
-                } else if (getNeighborOrientation(location, nextLocation.getId()).equals(Neighbor.ORIENT_DOWN)){
-                    listStairs.add(new Stair(Neighbor.ORIENT_DOWN, ratioX, ratioY));
+                    float ratioX = Math.round(mapImg.getWidth() * location.getRatioX());
+                    float ratioY = Math.round(mapImg.getHeight() * location.getRatioY());
+
+                    if (getNeighborOrientation(location, nextLocation.getId()).equals(Neighbor.ORIENT_UP)) {
+                        listStairs.add(new Stair(Neighbor.ORIENT_UP, ratioX, ratioY));
+                    } else if (getNeighborOrientation(location, nextLocation.getId()).equals(Neighbor.ORIENT_DOWN)) {
+                        listStairs.add(new Stair(Neighbor.ORIENT_DOWN, ratioX, ratioY));
+                    }
                 }
+
+
             }
-
-
         }
+
 
         return listStairs;
     }
