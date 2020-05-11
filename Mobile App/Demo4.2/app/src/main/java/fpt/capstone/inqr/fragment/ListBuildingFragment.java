@@ -213,6 +213,8 @@ public class ListBuildingFragment extends BaseFragment implements ListBuildingVi
         Bundle bundle = new Bundle();
         bundle.putString("buildingID", buildingId);
         fragment.setArguments(bundle);
+
+        this.setSupporter(fragment);
         this.changeFragment(fragment, true, false);
     }
 
