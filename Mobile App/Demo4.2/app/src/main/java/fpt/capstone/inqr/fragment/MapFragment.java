@@ -37,6 +37,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.ar.core.ArCoreApk;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -260,7 +261,6 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
             }
         });
 
-
     }
 
     @Override
@@ -310,6 +310,27 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
     @Override
     public void onLoadRoomData(List<Room> listRooms) {
         this.roomList = listRooms;
+    }
+
+    private void maybeEnableArButton() {
+        ArCoreApk.Availability availability = ArCoreApk.getInstance().checkAvailability(getContext());
+        if (availability.isTransient()) {
+            // Re-query at 5Hz while compatibility is checked in the background.
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    maybeEnableArButton();
+                }
+            }, 200);
+        }
+        if (availability.isSupported()) {
+            btNavigate.setVisibility(View.VISIBLE);
+            btNavigate.setEnabled(true);
+            // indicator on the button.
+        } else { // Unsupported or unknown.
+            btNavigate.setVisibility(View.INVISIBLE);
+            btNavigate.setEnabled(false);
+        }
     }
 
     private void setupInputNew() {
@@ -621,7 +642,8 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         rvDot.setLayoutManager(new LinearLayoutManager(view.getContext(), RecyclerView.HORIZONTAL, false));
         rvDot.setAdapter(adapterPoint);
 
-
+        maybeEnableArButton();
+        
         // camera
         // Create an instance of Camera
 //        camera = getCameraInstance();

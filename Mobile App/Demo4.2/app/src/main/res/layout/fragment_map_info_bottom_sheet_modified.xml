@@ -6,13 +6,8 @@
     android:layout_height="wrap_content"
     android:background="@android:color/white"
     android:orientation="vertical"
-<<<<<<< HEAD
-    android:visibility="visible"
-    app:behavior_peekHeight="@dimen/_45sdp"
-=======
     android:visibility="gone"
     app:behavior_peekHeight="?actionBarSize"
->>>>>>> 442481849dbe3825ac7a0192163e0890eead364d
     app:layout_behavior="@string/bottom_sheet_behavior">
 
     <!-- TOP -->
