@@ -113,3 +113,5 @@
 /Users/hieu/Google Drive/Session 9/INQR/API Service/ServerAPI/ServerAPI/obj/Debug/netcoreapp3.1/staticwebassets/ServerAPI.StaticWebAssets.Manifest.cache
 /Users/hieu/Google Drive/Session 9/INQR/API Service/ServerAPI/ServerAPI/obj/Debug/netcoreapp3.1/staticwebassets/ServerAPI.StaticWebAssets.xml
 /Users/hieu/Google Drive/Session 9/INQR/API Service/ServerAPI/ServerAPI/obj/Debug/netcoreapp3.1/ServerAPI.genruntimeconfig.cache
+/Users/hieu/Google Drive/Session 9/INQR/API Service/ServerAPI/ServerAPI/bin/Debug/netcoreapp3.1/System.Collections.Immutable.dll
+/Users/hieu/Google Drive/Session 9/INQR/API Service/ServerAPI/ServerAPI/bin/Debug/netcoreapp3.1/System.Diagnostics.DiagnosticSource.dll

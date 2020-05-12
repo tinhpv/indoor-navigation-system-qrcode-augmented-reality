@@ -758,6 +758,24 @@ namespace ServerAPI.Repository
         }
 
 
+        public string UpdateBuildingVersion(string buildingId)
+        {
+            var building = context.Building.Where(x => x.Id == buildingId).FirstOrDefault();
+
+            if (building != null)
+            {
+                int version = building.Version;
+
+                building.Version = version + 1;
+
+                context.SaveChanges();
+
+                return "OK";
+            }
+
+            return "Not found this building";
+        }
+
 
 
         // ------------------------------------------
@@ -1111,6 +1129,6 @@ namespace ServerAPI.Repository
             }
         }
 
-
+        
     }
 }

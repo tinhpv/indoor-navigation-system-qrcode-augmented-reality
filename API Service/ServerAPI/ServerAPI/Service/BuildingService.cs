@@ -81,5 +81,10 @@ namespace ServerAPI.Service
         {
             return iRepository.UpdateRoomSpaceAnchorId(roomId, spaceAnchorId);
         }
+
+        public string UpdateBuildingVersion(string buildingId)
+        {
+            return iRepository.UpdateBuildingVersion(buildingId);
+        }
     }
 }

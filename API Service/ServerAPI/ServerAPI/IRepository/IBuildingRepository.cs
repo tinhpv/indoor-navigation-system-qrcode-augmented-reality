@@ -35,5 +35,9 @@ namespace ServerAPI.IRepository
         string UpdateLocationSpaceAnchorId(string locationId, string spaceAnchorId);
         string UpdateRoomSpaceAnchorId(string roomId, string spaceAnchorId);
 
+
+
+        string UpdateBuildingVersion(string buildingId);
+
     }
 }

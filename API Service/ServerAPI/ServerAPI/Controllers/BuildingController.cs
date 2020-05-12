@@ -170,6 +170,13 @@ namespace ServerAPI.Controllers
             return Ok(iService.UpdateBuilding(building));
         }
 
+        [HttpPut("updateBuildingVersion")]
+        public IActionResult UpdateBuildingVersion([FromQuery] string buildingId)
+        {
+     
+            return Ok(iService.UpdateBuildingVersion(buildingId));
+        }
+
         [HttpPost("createNewCompany")]
         public IActionResult CreateCompany([FromBody] Company company)
         {

@@ -36,5 +36,8 @@ namespace ServerAPI.IService
         string UpdateLocationQrAnchorId(string locationId, string qrAnchorId);
         string UpdateLocationSpaceAnchorId(string locationId, string spaceAnchorId);
         string UpdateRoomSpaceAnchorId(string roomId, string spaceAnchorId);
+
+
+        string UpdateBuildingVersion(string buildingId);
     }
 }
