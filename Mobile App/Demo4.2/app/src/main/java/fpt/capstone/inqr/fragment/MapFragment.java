@@ -643,7 +643,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         rvDot.setAdapter(adapterPoint);
 
         maybeEnableArButton();
-        
+
         // camera
         // Create an instance of Camera
 //        camera = getCameraInstance();

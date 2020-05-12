@@ -84,7 +84,7 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
     private static final int SCANNING_RADIUS = 20; // scanning radius in meters
 
     private View view;
-    private TextView tvProgressStatus, tvScanningResult, tvDestination, tvCurrentDestination;
+    private TextView tvDestination, tvCurrentDestination;
     private CustomArFragment mArFragment;
     private ArSceneView mSceneView;
 
@@ -174,8 +174,6 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
 
         tvCurrentDestination = view.findViewById(R.id.tv_current_location);
 
-        tvProgressStatus = view.findViewById(R.id.tv_status);
-        tvScanningResult = view.findViewById(R.id.tv_scanning_result);
         mCardView = view.findViewById(R.id.card_view);
         expandableView = view.findViewById(R.id.expandable_view);
 
@@ -327,7 +325,6 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
                 String code = QRCodeHelper.detectQRCode(getContext(), ImageHelper.fromYUVImageToARGB(image));
 
                 if (code != null) {
-                    getActivity().runOnUiThread(() -> tvScanningResult.setText(code));
                     String[] arrOfStr = code.split("\\|")[0].split(":");
                     scannedLocationId = arrOfStr[arrOfStr.length - 1].trim();
                     scannedAnchorID = qrAnchorIdList.get(scannedLocationId);
@@ -510,23 +507,6 @@ public class NavigationFragment extends BaseFragment implements Scene.OnUpdateLi
 
     private void onSessionUpdated(SessionUpdatedEvent sessionUpdatedEvent) {
         // frame collected by cloud session
-        float progress = sessionUpdatedEvent.getStatus().getRecommendedForCreateProgress();
-        enoughDataForSaving = progress >= 1.0;
-
-        synchronized (progressLock) {
-            DecimalFormat decimalFormat = new DecimalFormat("00");
-            getActivity().runOnUiThread(() -> {
-                String progressMessage = "progress: " + decimalFormat.format(Math.min(1.0f, progress) * 100) + "%";
-                tvProgressStatus.setText(progressMessage);
-            });
-
-            if (enoughDataForSaving) {
-                getActivity().runOnUiThread(() -> {
-                    tvProgressStatus.setText("READ TO SAVE");
-                });
-            } // end if enough data
-        } // end synchronized
-
     }
 
     private void drawLine(AnchorNode node1, AnchorNode node2) {
