@@ -8,8 +8,8 @@ android {
         applicationId "fpt.capstone.inqr"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 13
-        versionName "2.0.5"
+        versionCode 15
+        versionName "2.0.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

@@ -79,6 +79,8 @@ public class Wayfinder {
                         shortestPathList = new ArrayList<>();
                         shortestPathList.add(getVertexInList(specialRoom.getLocationId()));
                         endRoom = specialRoom;
+
+                        break;
                     } else {
                         shortestPath.computeShortestPaths(getVertexInList(startLocationId));
                         double tempShortestDistance = getVertexInList(specialRoom.getLocationId()).getDistance();
@@ -88,7 +90,7 @@ public class Wayfinder {
                             shortestPathList = pathPointList;
                             endRoom = specialRoom;
                             shortestDistance = tempShortestDistance;
-                        } else {
+                        } else if (tempShortestDistance < shortestDistance) {
                             shortestPathList = pathPointList;
                             endRoom = specialRoom;
                             shortestDistance = tempShortestDistance;
