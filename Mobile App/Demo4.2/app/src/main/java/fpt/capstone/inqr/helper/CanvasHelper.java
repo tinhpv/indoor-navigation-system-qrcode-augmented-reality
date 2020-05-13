@@ -61,13 +61,13 @@ public class CanvasHelper {
             startX = Math.round(mapImg.getWidth() * startPoint.getRatioX());
             startY = Math.round(mapImg.getHeight() * startPoint.getRatioY());
 
-            lines.add(new Line(startX, startY, startX, startY));
+            lines.add(new Line(false, startX, startY, startX, startY));
 
 
             endX = Math.round(mapImg.getWidth() * destinationRoom.getRatioX());
             endY = Math.round(mapImg.getHeight() * destinationRoom.getRatioY());
 
-            lines.add(new Line(endX, endY, endX, endY));
+            lines.add(new Line(true, endX, endY, endX, endY));
 
         } else {
 
@@ -80,7 +80,7 @@ public class CanvasHelper {
                 float endX = Math.round(mapImg.getWidth() * destinationRoom.getRatioX());
                 float endY = Math.round(mapImg.getHeight() * destinationRoom.getRatioY());
 
-                lines.add(new Line(startX, startY, endX, endY));
+                lines.add(new Line(true, startX, startY, endX, endY));
 
                 Path path = new Path();
                 path.moveTo(startX, startY);
@@ -93,38 +93,44 @@ public class CanvasHelper {
                 arrowEndY = endY;
             } else {
                 Path path = new Path();
-                for (int i = 0; i < locationPathList.size(); i++) {
-                    if (i != locationPathList.size() - 1) {
-                        if (locationPathList.get(i).getFloorId().equals(currentFloorId)) {
-                            Location startPoint = locationPathList.get(i);
+                for (int i = 0; i < locationPathList.size() - 1; i++) {
+//                    if (i != locationPathList.size() - 1) {
+                    if (locationPathList.get(i).getFloorId().equals(currentFloorId)) {
+                        Location startPoint = locationPathList.get(i);
 
-                            float startX, startY, endX, endY;
+                        float startX, startY, endX, endY;
 
-                            startX = Math.round(mapImg.getWidth() * startPoint.getRatioX());
-                            startY = Math.round(mapImg.getHeight() * startPoint.getRatioY());
+                        startX = Math.round(mapImg.getWidth() * startPoint.getRatioX());
+                        startY = Math.round(mapImg.getHeight() * startPoint.getRatioY());
 
-                            if (i == locationPathList.size() - 2) { // node cuối lấy tọa độ của room
-                                endX = Math.round(mapImg.getWidth() * destinationRoom.getRatioX());
-                                endY = Math.round(mapImg.getHeight() * destinationRoom.getRatioY());
-                            } else {
-                                Location endPoint = locationPathList.get(i + 1);
-                                endX = Math.round(mapImg.getWidth() * endPoint.getRatioX());
-                                endY = Math.round(mapImg.getHeight() * endPoint.getRatioY());
-                            }
+                        if (i == locationPathList.size() - 2) { // node cuối lấy tọa độ của room
+                            endX = Math.round(mapImg.getWidth() * destinationRoom.getRatioX());
+                            endY = Math.round(mapImg.getHeight() * destinationRoom.getRatioY());
+                        } else {
+                            Location endPoint = locationPathList.get(i + 1);
+                            endX = Math.round(mapImg.getWidth() * endPoint.getRatioX());
+                            endY = Math.round(mapImg.getHeight() * endPoint.getRatioY());
+                        }
 
-                            path.moveTo(startX, startY);
-                            path.lineTo(endX, endY);
+                        path.moveTo(startX, startY);
+                        path.lineTo(endX, endY);
 
-                            lines.add(new Line(startX, startY, endX, endY));
+//                            lines.add(new Line(startX, startY, endX, endY));
 
-                            if (i == 0) {
-                                arrowStartX = startX;
-                                arrowStartY = startY;
-                                arrowEndX = endX;
-                                arrowEndY = endY;
-                            }
-                        } // end if current floor equal
-                    } // end if max size
+                        if (i == locationPathList.size() - 2) {
+                            lines.add(new Line(true, startX, startY, endX, endY));
+                        } else {
+                            lines.add(new Line(false, startX, startY, endX, endY));
+                        }
+
+                        if (i == 0) {
+                            arrowStartX = startX;
+                            arrowStartY = startY;
+                            arrowEndX = endX;
+                            arrowEndY = endY;
+                        }
+                    } // end if current floor equal
+//                    } // end if max size
                 } // end for each point
                 canvas.drawPath(path, paint);
             }

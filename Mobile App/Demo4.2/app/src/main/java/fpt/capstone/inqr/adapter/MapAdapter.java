@@ -152,14 +152,25 @@ public class MapAdapter extends RecyclerView.Adapter<MapHolder> {
                             Math.round(firstLine.getyStart() - bitmap.getHeight() / 2), new Paint());
                 }
 
-                if (indexBig == listLines.size() - 1) {
-                    List<Line> listTmp = listLines.get(listLines.size() - 1);
-                    Line endLine = listTmp.get(listTmp.size() - 1);
+//                if (indexBig == listLines.size() - 1) {
+//                    List<Line> listTmp = listLines.get(listLines.size() - 1);
+//                    Line endLine = listTmp.get(listTmp.size() - 1);
+//
+//                    Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.destination_on_map);
+//                    canvas.drawBitmap(bitmap,
+//                            Math.round(endLine.getxEnd() - bitmap.getWidth() / 2),
+//                            Math.round(endLine.getyEnd() - bitmap.getHeight()), new Paint());
+//                }
 
-                    Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.destination_on_map);
-                    canvas.drawBitmap(bitmap,
-                            Math.round(endLine.getxEnd() - bitmap.getWidth() / 2),
-                            Math.round(endLine.getyEnd() - bitmap.getHeight()), new Paint());
+                for (Line line : lines) {
+                    if (line.isEnd()) {
+                        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.destination_on_map);
+                        canvas.drawBitmap(bitmap,
+                                Math.round(line.getxEnd() - bitmap.getWidth() / 2),
+                                Math.round(line.getyEnd() - bitmap.getHeight()), new Paint());
+
+                        break;
+                    }
                 }
 
 
