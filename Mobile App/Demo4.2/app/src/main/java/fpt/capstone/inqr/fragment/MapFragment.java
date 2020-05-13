@@ -9,6 +9,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
@@ -60,6 +62,7 @@ import fpt.capstone.inqr.adapter.PointViewAdapter;
 import fpt.capstone.inqr.adapter.StepAdapter;
 import fpt.capstone.inqr.camera.CameraPreview;
 import fpt.capstone.inqr.camera.SupportScanQr;
+import fpt.capstone.inqr.dialog.InternetWarningDialog;
 import fpt.capstone.inqr.dijkstra.Vertex;
 import fpt.capstone.inqr.helper.CanvasHelper;
 import fpt.capstone.inqr.helper.ImageHelper;
@@ -575,8 +578,13 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
         });
 
         btNavigate.setOnClickListener(v -> {
-            NavigationFragment navFragment = new NavigationFragment(locationList, roomList, nameOfDestinationRoom);
-            changeFragment(navFragment, true, false);
+            if (isNetworkAvailable()) {
+                NavigationFragment navFragment = new NavigationFragment(locationList, roomList, nameOfDestinationRoom);
+                changeFragment(navFragment, true, false);
+            } else {
+                InternetWarningDialog dialog = new InternetWarningDialog();
+                dialog.show(getChildFragmentManager(), "internet_warning");
+            }
         });
 
         btStepList.setOnClickListener(v -> {
@@ -651,6 +659,13 @@ public class MapFragment extends BaseFragment implements SensorEventListener, Ma
 //        // Create our Preview view and set it as the content of our activity.
 //        mCameraPreview = new CameraPreview(this.getContext(), camera);
 //        cameraView.addView(mCameraPreview);
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     public void setupCameraPreview() {
