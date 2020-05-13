@@ -2,6 +2,10 @@ body {
 	background-color: #F0F0F0;
 }
 
+h5 {
+	margin-bottom: 0px !important;
+}
+
 table {
 	text-align: center;
 }
@@ -158,6 +162,7 @@ table {
 .right {
 	float: right;
 	margin-left: 1%;
+	margin-right: 1%;
 }
 
 .wraper {
@@ -451,4 +456,21 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 	border-right: 0px;
 	border-radius: 0%;
 	border-bottom: 0px;
+}
+
+.no-padding-l-r {
+	padding-left: 0px !important;
+	padding-right: 0px !important;
+}
+
+.active {
+	color: #51C6A7;
+	font-weight: bold;
+	font-size: 10px;
+}
+
+.inactive {
+	color: red;
+	font-weight: bold;
+	font-size: 10px;
 }

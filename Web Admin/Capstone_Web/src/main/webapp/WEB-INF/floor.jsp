@@ -80,18 +80,6 @@
 					<span class="bold left percent-70">FLOOR(s)</span>
 					<button class="btn btn-custom-1 left percent-30" data-toggle="modal"
 						data-target="#createFloorModal">Create new floor</button>
-					<!-- <div id="floorActionWraper">
-					<button data-toggle="modal" data-target="#createFloorModal" class="btn btn-outline-success">
-						<i class="fas fa-plus"> New Floor</i>
-					</button>
-				</div> -->
-					<%-- <div id="floorMessageWraper">
-					<span class="success">${createSuccess}</span>
-					<span class="success">${removeSuccess}</span>
-					<span class="success">${editSuccess}</span>
-					<span class="failed">${editFailed}</span>
-					<span class="failed">${createFailed}</span>
-				</div> --%>
 				</div>
 			</div>
 
@@ -217,7 +205,8 @@
 																	</button>
 																</div>
 																<div id="qrCodeWraper" class="modal-body">
-																	<img alt="Please upload this building if you don't see the QR Code." src="${locationDto.linkQr}" />
+																	<img alt="Please upload this building if you don't see the QR Code."
+																		src="${locationDto.linkQr}" />
 																</div>
 															</div>
 														</div>
@@ -269,7 +258,6 @@
 																							<table class="table">
 																								<thead>
 																									<tr>
-																										<th scope="col">#</th>
 																										<th scope="col">Room Name</th>
 																										<th scope="col">(X | Y)</th>
 																										<th scope="col">Special Room</th>
@@ -280,7 +268,6 @@
 																									<c:forEach var="roomDto" items="${locationDto.listRoom}"
 																										varStatus="counter">
 																										<tr>
-																											<td scope="row">${counter.count }</td>
 																											<td>${roomDto.name }</td>
 																											<td>(${roomDto.ratioX } | ${roomDto.ratioY })</td>
 																											<td>${roomDto.specialRoom }</td>
@@ -310,7 +297,7 @@
 																							class="btn btn-custom-1">Create room</a>
 																						<button type="submit"
 																							id="roomRemoveBtn${floorCounter.count}_${locationCounter.count}"
-																							class="btn btn-danger" disabled="disabled">Remove selected rooms</button>
+																							class="btn btn-danger" disabled="disabled">Remove selected</button>
 																					</form>
 																				</div>
 																			</div>
@@ -320,8 +307,7 @@
 																				class="collapse" aria-labelledby="headingTwo"
 																				data-parent="#content-body${floorCounter.count}_${locationCounter.count}">
 																				<div class="card-body">
-																					<form action="${pageContext.request.contextPath}/neighbour/remove"
-																						method="post">
+																					<form action="#" method="post">
 																						<c:if test="${empty locationDto.listLocationBeside}">
 																							<div class="empty">
 																								<h5>This location don't have any neighbour</h5>
@@ -335,10 +321,10 @@
 																							<table class="table">
 																								<thead>
 																									<tr>
-																										<th scope="col">#</th>
 																										<th scope="col">Neighbor Name</th>
 																										<th scope="col">Orientation</th>
 																										<th scope="col">Distance</th>
+																										<th scope="col">Status</th>
 																										<th scope="col">Action</th>
 																									</tr>
 																								</thead>
@@ -346,18 +332,31 @@
 																									<c:forEach var="neighbourDto" items="${locationDto.listLocationBeside}"
 																										varStatus="counter">
 																										<tr>
-																											<td scope="row">${counter.count }</td>
 																											<td>${neighbourDto.name }</td>
 																											<td>${neighbourDto.orientation }</td>
 																											<td>${neighbourDto.distance }(m)</td>
+																											<td>
+																												<c:if test="${neighbourDto.active}">
+																													<span class="active">
+																														<i class="fas fa-circle"></i>
+																														ACTIVE
+																													</span>
+																												</c:if>
+																												<c:if test="${not neighbourDto.active}">
+																													<span class="inactive">
+																														<i class="fas fa-circle"></i>
+																														INACTIVE
+																													</span>
+																												</c:if>
+																											</td>
 																											<th>
 																												<!-- key of modal, important -->
 																												<input type="hidden" name="modalKey"
-																													value="${floorCounter.count}_${locationCounter.count}" /> <input
-																													type="hidden" name="locationId" value="${locationDto.id }" /> <input
-																													type="checkbox"
+																													value="${floorCounter.count}_${locationCounter.count}" />
+																												<input type="hidden" name="locationId" value="${locationDto.id }" />
+																												<input type="checkbox"
 																													name="neighbourGroup${floorCounter.count}_${locationCounter.count}"
-																													onchange="neighbourRemoveBtnState(this.name, '${floorCounter.count}_${locationCounter.count}')"
+																													onchange="neighbourBtnState(this.name, '${floorCounter.count}_${locationCounter.count}')"
 																													value="${neighbourDto.id}" />
 																											</th>
 																										</tr>
@@ -365,8 +364,10 @@
 																								</tbody>
 																							</table>
 																						</c:if>
-																						<button id="locationDetailBtn" class="btn btn-outline-success" type="button"
-																							onclick="$('#neighborAndRoomModal${floorCounter.count}_${locationCounter.count}').modal('hide');">Finish</button>
+																						<button id="neighbourStatusBtn${floorCounter.count}_${locationCounter.count}"
+																							class="btn btn-success" disabled="disabled" type="submit"
+																							formaction="${pageContext.request.contextPath}/neighbour/changeStatus">Enable/Disable
+																							selected</button>
 																						<a
 																							href="${pageContext.request.contextPath}/neighbour/create?floorId=${floorDto.id}&locationId=${locationDto.id}"
 																							id="locationDetailBtn" class="btn btn-custom-1">Attach Neighbor</a>
@@ -376,8 +377,9 @@
 																							aria-expanded="false"
 																							aria-controls="collapseOne${floorCounter.count}_${locationCounter.count}">Back</button>
 																						<button type="submit" class="btn btn-danger" disabled="disabled"
+																							formaction="${pageContext.request.contextPath}/neighbour/remove"
 																							id="neighbourRemoveBtn${floorCounter.count}_${locationCounter.count}">Remove
-																							selected neighbours</button>
+																							selected</button>
 																					</form>
 																				</div>
 																			</div>
@@ -544,17 +546,23 @@
 			}
 		}
 
-		function neighbourRemoveBtnState(name, btnIdNumber) {
+		function neighbourBtnState(name, btnIdNumber) {
 			var i;
 			var x = document.getElementsByName(name);
-			var buttonName = "neighbourRemoveBtn"
-			var button = document.getElementById(buttonName + btnIdNumber);
+			var removeBtnName = "neighbourRemoveBtn";
+			var statusBtnName = "neighbourStatusBtn";
+			var removeBtn = document
+					.getElementById(removeBtnName + btnIdNumber);
+			var statusBtn = document
+					.getElementById(statusBtnName + btnIdNumber);
 			for (i = 0; i < x.length; i++) {
 				if (x[i].checked == true) {
-					button.disabled = false;
+					removeBtn.disabled = false;
+					statusBtn.disabled = false;
 					break;
 				} else {
-					button.disabled = true;
+					removeBtn.disabled = true;
+					statusBtn.disabled = true;
 				}
 			}
 		}

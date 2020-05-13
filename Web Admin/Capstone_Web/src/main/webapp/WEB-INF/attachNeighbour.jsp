@@ -38,7 +38,7 @@
 						<h5>Attach neighbor to ${sessionScope.location.name }</h5>
 					</div>
 					<div class="form-group row">
-						<label for="myInput" class="col-sm-2 col-form-label">Search </label>
+						<label for="myInput" class="col-sm-3 col-form-label">Search</label>
 						<div class="col-sm-7">
 							<input class="form-control" type="text" id="myInput" onkeyup="myFunction()"
 								placeholder="Find location">
@@ -46,18 +46,18 @@
 					</div>
 					<div id="allLocation" class="list-group">
 						<div class="list-group-item active">Available locations</div>
-						<c:forEach var="locationDto" items="${sessionScope.filterdList }">
-							<c:if test="${locationDto.id != sessionScope.location.id}">
+						<c:forEach var="filteredList" items="${sessionScope.filteredList }">
+							<c:if test="${filteredList.id != sessionScope.location.id}">
 								<a class="list-group-item list-group-item-action py-3"
-									onclick="document.getElementById('neighbourId').value='${locationDto.id}'; document.getElementById('neighbourName').value='${locationDto.name}'; draw2(${sessionScope.location.ratioX } ,${sessionScope.location.ratioY } , '', ${locationDto.ratioX}, ${locationDto.ratioY });">
-									${locationDto.name } </a>
+									onclick="document.getElementById('neighbourId').value='${filteredList.id}'; document.getElementById('neighbourName').value='${filteredList.name}'; draw2(${sessionScope.location.ratioX } ,${sessionScope.location.ratioY } , '', ${filteredList.ratioX}, ${filteredList.ratioY });">
+									${filteredList.name } </a>
 							</c:if>
 						</c:forEach>
 					</div>
 					<input type="hidden" class="form-control" id="neighbourId" name="id" placeholder="ID"
 						readonly="readonly">
 					<div class="form-group row">
-						<label for="orientation" class="col-sm-3 col-form-label">Neighbor </label>
+						<label for="orientation" class="col-sm-4 col-form-label">Neighbor </label>
 						<div class="col-sm-7">
 							<input type="text" required="required" class="form-control bold-no-border" id="neighbourName"
 								placeholder="Neighbor" name="name" onkeydown="return false;">
@@ -65,7 +65,7 @@
 						<p class="col-sm-1">*</p>
 					</div>
 					<div class="form-group row">
-						<label for="orientation" class="col-sm-3 col-form-label">Orientation </label>
+						<label for="orientation" class="col-sm-4 col-form-label">Orientation </label>
 						<div class="col-sm-4">
 							<select id="orientation" name="orientation" class="form-control bold-border">
 								<option value="LEFT">Left</option>
@@ -79,10 +79,11 @@
 						<p class="col-sm-1">*</p>
 					</div>
 					<div class="form-group row">
-						<label for="distance" class="col-sm-3 col-form-label">Distance </label>
+						<label for="distance" class="col-sm-4 col-form-label">Distance(m)</label>
 						<div class="col-sm-4">
 							<input type="number" required="required" step="0.01" class="form-control bold-border"
 								name="distance" placeholder="Distance">
+								
 						</div>
 						<p class="col-sm-1">*</p>
 					</div>

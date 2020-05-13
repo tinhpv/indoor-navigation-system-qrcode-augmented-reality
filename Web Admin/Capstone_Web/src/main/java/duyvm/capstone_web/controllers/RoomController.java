@@ -22,10 +22,9 @@ import duyvm.capstone_web.utils.Utilities;
 @Controller
 @RequestMapping("/room")
 public class RoomController {
-	
+
 	@GetMapping("/create")
-	public String getCreateRoom(@RequestParam("floorId") String floorId, @RequestParam("locationId") String locationId,
-			HttpSession session) {
+	public String getCreateRoom(@RequestParam("floorId") String floorId, @RequestParam("locationId") String locationId, HttpSession session) {
 		try {
 			Utilities utilities = new Utilities();
 
@@ -50,8 +49,7 @@ public class RoomController {
 	}
 
 	@PostMapping("/create")
-	public String postCreateRoom(@RequestParam("locationId") String locationId, RoomDTO roomInfo, HttpSession session,
-			HttpServletRequest request) {
+	public String postCreateRoom(@RequestParam("locationId") String locationId, RoomDTO roomInfo, HttpSession session, HttpServletRequest request) {
 		try {
 			RoomDAO roomDAO = new RoomDAO();
 			Utilities utilities = new Utilities();
@@ -59,8 +57,11 @@ public class RoomController {
 			// Lấy building object từ session
 			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
 
+			boolean isExistedRoom = utilities.checkExistedRoom(roomInfo, buildingDTO);
+			boolean isLocationExistedSpecialRoom = utilities.checkLocationExistedSpecialRoom(locationId, roomInfo, buildingDTO);
+
 			// Kiểm tra tên room có bị trùng không
-			if (!utilities.checkExistedRoom(roomInfo, buildingDTO)) {
+			if (!isExistedRoom && !isLocationExistedSpecialRoom) {
 				// Tạo room object
 				buildingDTO = roomDAO.createRoom(buildingDTO, locationId, roomInfo);
 
@@ -69,9 +70,12 @@ public class RoomController {
 
 				// Hiện thông báo
 				request.setAttribute("createSuccess", "Room created locally.");
-			} else {
+			} else if (isExistedRoom) {
 				// Hiện thông báo
 				request.setAttribute("createFailed", "\"" + roomInfo.getName() + "\"" + " already exist!");
+			} else if (isLocationExistedSpecialRoom) {
+				// Hiện thông báo
+				request.setAttribute("createFailed", "Special room \"" + roomInfo.getName() + "\"" + " already exist in this location!");
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -82,8 +86,7 @@ public class RoomController {
 	}
 
 	@PostMapping("/remove")
-	public String postRemoveRoom(@RequestParam MultiValueMap<String, String> map, HttpSession session,
-			HttpServletRequest request) {
+	public String postRemoveRoom(@RequestParam MultiValueMap<String, String> map, HttpSession session, HttpServletRequest request) {
 		try {
 			RoomDAO roomDAO = new RoomDAO();
 

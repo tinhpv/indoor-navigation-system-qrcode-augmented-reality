@@ -27,16 +27,31 @@ public class NeighbourDTO implements Serializable {
 	@SerializedName("Distance")
 	private float distance;
 
+	@Expose
+	@SerializedName("Active")
+	private boolean active;
+
 	public NeighbourDTO() {
 		super();
 	}
-	
-	public NeighbourDTO(String id, String name, String orientation, float distance) {
+
+//	public NeighbourDTO(String id, String name, String orientation, float distance) {
+//		super();
+//		this.id = id;
+//		this.name = name;
+//		this.orientation = orientation;
+//		this.distance = distance;
+//	}
+//	
+//	
+
+	public NeighbourDTO(String id, String name, String orientation, float distance, boolean active) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.orientation = orientation;
 		this.distance = distance;
+		this.active = active;
 	}
 
 	public String getId() {
@@ -69,6 +84,14 @@ public class NeighbourDTO implements Serializable {
 
 	public void setDistance(float distance) {
 		this.distance = distance;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public static long getSerialversionuid() {

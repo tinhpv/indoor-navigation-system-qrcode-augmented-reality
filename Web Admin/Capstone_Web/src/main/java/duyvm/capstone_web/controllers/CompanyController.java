@@ -26,16 +26,30 @@ public class CompanyController {
 	private RestTemplate restTemplate;
 
 	@GetMapping("/getAllCompanies")
-	public String getAllCompanies(HttpSession session) {
+	public String getAllCompanies(@RequestParam(value = "message", required = false) String message, HttpSession session, HttpServletRequest request) {
 		try {
 			JsonParser jsonParser = new JsonParser();
-			
-			//API getAllBuildings
+
+			// API getAllBuildings
 			String getUrl = "http://13.229.117.90:7070/api/INQR/getAllBuildings";
 
-			//Parse chuỗi json trả về thành 1 list các company objects và đưa vào session
+			// Parse chuỗi json trả về thành 1 list các company objects và đưa vào session
 			List<CompanyDTO> companyList = jsonParser.parseToCompanyObject(getUrl, restTemplate);
 			session.setAttribute("companyList", companyList);
+			
+			if (message != null) {
+				switch (message) {
+				case "building_upload":
+					request.setAttribute("uploadSuccess", "Successfully upload building.");
+					break;
+
+				case "building_create":
+					request.setAttribute("createSuccess", "Building successfully created.");
+					
+				default:
+					break;
+				}
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.print("Error at getAllCompany: " + e.getMessage());
@@ -43,22 +57,22 @@ public class CompanyController {
 		}
 		return "index.jsp";
 	}
-	
+
 	@PostMapping("/create")
 	public String postCreateCompany(@RequestParam("name") String companyName, HttpServletRequest request) {
 		try {
 			CompanyDAO companyDAO = new CompanyDAO();
-			
-			//API createNewCompany
+
+			// API createNewCompany
 			String postUrl = "http://13.229.117.90:7070/api/INQR/createNewCompany";
 
-			//Tạo company object
+			// Tạo company object
 			CompanyDTO companyDTO = companyDAO.createCompany(companyName);
 
-			//Đẩy company object lên server
+			// Đẩy company object lên server
 			ResponseEntity<String> response = companyDAO.importCompanyToServer(postUrl, companyDTO, restTemplate);
 
-			//Code value 200 => OK
+			// Code value 200 => OK
 			if (response.getStatusCodeValue() == 200) {
 				/* OK message */
 			}
@@ -74,18 +88,18 @@ public class CompanyController {
 	public String postUpdateCompany(CompanyDTO companyInfo, HttpServletRequest request) {
 		try {
 			CompanyDAO companyDAO = new CompanyDAO();
-			
-			//API updateCompany
+
+			// API updateCompany
 			String putUrl = "http://13.229.117.90:7070/api/INQR/updateCompany";
-			
-			//Đẩy company object lên server để cập nhật
+
+			// Đẩy company object lên server để cập nhật
 			ResponseEntity<String> responseEntity = companyDAO.updateCompanyToServer(putUrl, companyInfo, restTemplate);
-			
-			//Code value 200 => OK
+
+			// Code value 200 => OK
 			if (responseEntity.getStatusCodeValue() == 200) {
 				/* OK message */
 			}
-			
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Error at postUpdateCompany: " + e.getMessage());

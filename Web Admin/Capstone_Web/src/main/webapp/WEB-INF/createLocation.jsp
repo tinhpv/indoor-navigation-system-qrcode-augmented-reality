@@ -91,6 +91,7 @@
 
 			img.style.display = "none";
 
+			drawAllLocation();
 		}
 
 		function drawAllLocation() {

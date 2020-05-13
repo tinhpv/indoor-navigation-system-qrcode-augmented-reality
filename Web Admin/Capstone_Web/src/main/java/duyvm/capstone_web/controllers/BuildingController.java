@@ -38,7 +38,7 @@ public class BuildingController {
 
 	@Autowired
 	private RestTemplate restTemplate;
-
+	
 	@GetMapping({ "/", "" })
 	public String getBuildingPage() {
 		try {
@@ -72,7 +72,7 @@ public class BuildingController {
 	}
 
 	@PostMapping("/create")
-	public String postCreateBuilding(@RequestParam("companyId") String companyId, BuildingDTO buildingInfo, HttpSession session, HttpServletRequest request) {
+	public String postCreateBuilding(@RequestParam("companyId") String companyId, BuildingDTO buildingInfo, HttpSession session) {
 		try {
 			BuildingDAO buildingDAO = new BuildingDAO();
 
@@ -83,20 +83,13 @@ public class BuildingController {
 			BuildingDTO buildingDTO = buildingDAO.createBuilding(buildingInfo);
 
 			// Đẩy building object lên server
-			ResponseEntity<String> response = buildingDAO.importBuildingToServer(postUrl, companyId, buildingDTO, restTemplate);
-
-			// Respond code 200 => OK
-			if (response.getStatusCodeValue() == 200) {
-
-				// Hiện thông báo
-				request.setAttribute("createSuccess", "Building successfully created on server");
-			}
+			buildingDAO.importBuildingToServer(postUrl, companyId, buildingDTO, restTemplate);
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Error at postCreateBuilding: " + e.getMessage());
 			return "error.jsp";
 		}
-		return "index.jsp";
+		return "redirect:/company/getAllCompanies?message=building_create";
 	}
 
 	@GetMapping("/upload")
@@ -112,10 +105,8 @@ public class BuildingController {
 	}
 
 	@PostMapping("/upload")
-	public String postBuildingUpload(HttpSession session, HttpServletRequest request) {
+	public String postBuildingUpload(HttpSession session) {
 		try {
-			String messageString = "";
-
 			FloorDAO floorDAO = new FloorDAO();
 			BuildingDAO buildingDAO = new BuildingDAO();
 			Utilities utilities = new Utilities();
@@ -132,25 +123,13 @@ public class BuildingController {
 			// Code value 200 => OK
 			// Sau khi cập nhật thành công, kiểm tra xem người dùng có đổi bản đồ các lầu
 			if (response.getStatusCodeValue() == 200 && utilities.checkForChangedImage(buildingDTO)) {
-				messageString += "Successfully update building information ";
 
 				// API uploadFloorMap
 				putUrl = "http://13.229.117.90:7070/api/INQR/uploadFloorMap";
 
 				// Cập nhật bản đồ các lầu mà người dùng thay đổi
 				response = floorDAO.importFloorMapToServer(putUrl, buildingDTO, restTemplate);
-
-				// Code 200 => OK
-				// Thông báo cho việc cập nhật hình ảnh các lầu
-				if (response.getStatusCodeValue() == 200) {
-					messageString += "and image of floor(s).";
-				}
-			} else if (response.getStatusCodeValue() == 200 && !utilities.checkForChangedImage(buildingDTO)) {
-				messageString += "Successfully update building information.";
 			}
-
-			// Hiện thông báo
-			request.setAttribute("uploadSuccess", messageString);
 
 			// Remove session
 			session.removeAttribute("building");
@@ -160,7 +139,7 @@ public class BuildingController {
 			System.out.print("Error at postBuildingUpload: " + e.getMessage());
 			return "error.jsp";
 		}
-		return "index.jsp";
+		return "redirect:/company/getAllCompanies?message=building_upload";
 	}
 
 	@PostMapping("/edit")
