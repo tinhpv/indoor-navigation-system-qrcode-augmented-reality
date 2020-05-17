@@ -80,6 +80,7 @@ public class Wayfinder {
                         shortestPathList.add(getVertexInList(specialRoom.getLocationId()));
                         endRoom = specialRoom;
 
+                        shortestDistance = 0;
                         break;
                     } else {
                         shortestPath.computeShortestPaths(getVertexInList(startLocationId));
