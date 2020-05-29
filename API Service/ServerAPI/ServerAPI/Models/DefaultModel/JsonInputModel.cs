@@ -40,17 +40,19 @@ namespace ServerAPI.Models.DefaultModel
         public string Name { get; set; }
         public string Orientation { get; set; }
         public double Distance { get; set; }
+        public bool? Active { get; set; }
 
         public LocationBeside()
         {
         }
 
-        public LocationBeside(string id, string name, string orientation, double distance)
+        public LocationBeside(string id, string name, string orientation, double distance, bool? active)
         {
             Id = id;
             Name = name;
             Orientation = orientation;
             Distance = distance;
+            Active = active;
         }
     }
 

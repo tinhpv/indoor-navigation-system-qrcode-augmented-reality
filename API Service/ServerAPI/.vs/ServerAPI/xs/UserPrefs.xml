@@ -1,17 +1,17 @@
-﻿<Properties StartupConfiguration="{DF4C2C2E-2C11-4591-BFF2-1B05BE635690}|Default" NuGet.AddPackagesDialog.IncludePrerelease="True">
-  <MonoDevelop.Ide.Workbench ActiveDocument="ServerAPI/Startup.cs">
+﻿<Properties StartupConfiguration="{DF4C2C2E-2C11-4591-BFF2-1B05BE635690}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ServerAPI/Program.cs">
     <Files>
-      <File FileName="ServerAPI/Startup.cs" Line="15" Column="17" />
-      <File FileName="ServerAPI/Controllers/BuildingController.cs" />
-      <File FileName="ServerAPI/Models/DefaultModel/LocationModel.cs" />
-      <File FileName="ServerAPI/Repository/BuildingRepository.cs" />
-      <File FileName="ServerAPI/Models/DefaultModel/JsonInputModel.cs" />
+      <File FileName="ServerAPI/Startup.cs" Line="99" Column="36" />
+      <File FileName="ServerAPI/Program.cs" Line="16" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="ServerAPI" expanded="True">
-            <Node name="ServerAPI" expanded="True" />
+            <Node name="ServerAPI" expanded="True">
+              <Node name="wwwroot" expanded="True" />
+              <Node name="Program.cs" selected="True" />
+            </Node>
           </Node>
         </State>
       </Pad>
