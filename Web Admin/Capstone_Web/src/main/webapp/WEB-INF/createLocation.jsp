@@ -4,11 +4,11 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/point.css" />
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
+<title>Create Location</title>
 <link rel="stylesheet"
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/point.css" />
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
@@ -40,7 +40,7 @@
 					<div class="form-group row">
 						<label for="name" class="col-sm-3 col-form-label">Name</label>
 						<div class="col-sm-7">
-							<input type="text" class="form-control" id="name" name="name" placeholder="Exp: 001 - 002"
+							<input type="text" class="form-control bold-border" id="name" name="name" placeholder="Exp: 001 - 002"
 								required="required" />
 						</div>
 						<p class="col-sm-1">*</p>
@@ -48,13 +48,13 @@
 					<div class="form-group row">
 						<label class="col-sm-3 col-form-label">Ratios</label>
 						<div class="col-sm-7">
-							<label class="col-form-label">(</label>
+							<label class="col-form-label">[</label>
 							<input type="number" step="0.001" class="form-control" id="ratioX" name="ratioX"
 								placeholder="X" required="required" onkeydown="return false;" />
 							<label class="col-form-label">,</label>
 							<input type="number" step="0.001" class="form-control" id="ratioY" name="ratioY"
 								placeholder="Y" required="required" onkeydown="return false;" />
-							<label class="col-form-label">)</label>
+							<label class="col-form-label">]</label>
 						</div>
 						<p class="col-sm-1">*</p>
 					</div>
@@ -68,11 +68,12 @@
 							title="Clear all drawn locations" onclick="clearCanvas()" type="button">
 							<i class="fas fa-sync-alt"></i>
 						</button>
-						<button type="submit" class="right btn btn-primary">Create</button>
+						<button type="submit" class="right btn btn-custom-1">Create</button>
 					</div>
 				</form>
 			</div>
 			<p class="success">${requestScope.createSuccess }</p>
+			<p class="failed">${requestScope.createFailed }</p>
 		</div>
 	</div>
 
@@ -90,6 +91,7 @@
 
 			img.style.display = "none";
 
+			drawAllLocation();
 		}
 
 		function drawAllLocation() {

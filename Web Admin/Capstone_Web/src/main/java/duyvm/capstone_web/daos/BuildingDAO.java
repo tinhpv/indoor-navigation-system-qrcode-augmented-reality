@@ -47,9 +47,9 @@ public class BuildingDAO {
 		// Id của tòa nhà được randomize bằng UUID
 		String buildingId = UUID.randomUUID().toString();
 
-		// Tạo building object
+		// Tạo building object với status = false
 		result = new BuildingDTO(buildingId, buildingInfo.getName(), buildingInfo.getDescription(),
-				buildingInfo.getDayExpired(), true, new ArrayList<FloorDTO>());
+				buildingInfo.getDayExpired(), false, new ArrayList<FloorDTO>());
 
 		return result;
 	}

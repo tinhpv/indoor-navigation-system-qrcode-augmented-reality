@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import duyvm.capstone_web.dtos.BuildingDTO;
@@ -25,53 +26,61 @@ import duyvm.capstone_web.dtos.RoomDTO;
 public class Utilities {
 
 	public boolean checkForChangedImage(BuildingDTO buildingDTO) {
-		boolean changedImage = false;
+		boolean isChanged = false;
 		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
-			if (buildingDTO.getListFloor().get(i).getMapFilePath() != null
-					&& !buildingDTO.getListFloor().get(i).getMapFilePath().isEmpty()) {
-				changedImage = true;
+			if (buildingDTO.getListFloor().get(i).getMapFilePath() != null && !buildingDTO.getListFloor().get(i).getMapFilePath().isEmpty()) {
+				isChanged = true;
+				break;
 			}
 		}
-		return changedImage;
+		return isChanged;
+	}
+
+	public boolean checkForValidImageFile(MultipartFile mapFile) {
+		boolean result = false;
+
+		// Get extension of chosen file (.jpg, .png, .docx, ...)
+		String fileExtension = FilenameUtils.getExtension(mapFile.getOriginalFilename()).toLowerCase();
+
+		// Only .jpg or .png file are accepted
+		if (fileExtension.equals("jpg") || fileExtension.equals("png")) {
+			result = true;
+		}
+		return result;
 	}
 
 	public File convertMapFile(MultipartFile file, String floorId, String buildingId) throws IOException {
-
-		// Kiểm tra thư mục hình ảnh
 		File mapDir = new File(System.getProperty("java.io.tmpdir"), "map/" + buildingId + "/");
+		// Tạo thư mục lưu trữ hình nếu như không tồn tại hoặc không phải là directory
 		if (!mapDir.exists() || !mapDir.isDirectory()) {
 			mapDir.mkdirs();
-			System.out.println("Map directory created at: " + mapDir.getAbsolutePath());
 		}
 
+		// File hình ảnh có tên theo format "buildingId_floorId.png"
 		File convFile = new File(mapDir.getAbsolutePath() + "/" + buildingId + "_" + floorId + ".png");
 		convFile.createNewFile();
 		FileOutputStream fos = new FileOutputStream(convFile);
 		fos.write(file.getBytes());
 		fos.close();
-		System.out.println("File written: " + convFile.getAbsolutePath());
 
 		return convFile;
 	}
 
 	public File converQrCodeFile(BuildingDTO buildingDTO) throws IOException {
 
-		String randomDirName = UUID.randomUUID().toString();
 		// Tạo mới thư mục qr code với tên được random
-		File qrcodeDir = new File(System.getProperty("java.io.tmpdir"),
-				"qrcode/" + randomDirName + "-" + buildingDTO.getName());
+		String randomDirName = UUID.randomUUID().toString();
+		File qrcodeDir = new File(System.getProperty("java.io.tmpdir"), "qrcode/" + randomDirName + "-" + buildingDTO.getName());
 		if (!qrcodeDir.exists() || !qrcodeDir.isDirectory()) {
 			qrcodeDir.mkdirs();
-			System.out.println("qrcode directory created at: " + qrcodeDir.getAbsolutePath());
 		}
 
-		List<LocationDTO> buildingLocation = getAllLocationOfBuilding(buildingDTO);
+		List<LocationDTO> listLocation = getAllLocationOfBuilding(buildingDTO);
 
-		for (int i = 0; i < buildingLocation.size(); i++) {
-			if (buildingLocation.get(i).getLinkQr() != null && buildingLocation.get(i).getName() != null) {
-				InputStream in = new URL(buildingLocation.get(i).getLinkQr()).openStream();
-				Files.copy(in, Paths.get(qrcodeDir + "/" + buildingLocation.get(i).getName() + ".png"),
-						StandardCopyOption.REPLACE_EXISTING);
+		for (int i = 0; i < listLocation.size(); i++) {
+			if (listLocation.get(i).getLinkQr() != null && listLocation.get(i).getName() != null) {
+				InputStream in = new URL(listLocation.get(i).getLinkQr()).openStream();
+				Files.copy(in, Paths.get(qrcodeDir + "/" + listLocation.get(i).getName() + ".png"), StandardCopyOption.REPLACE_EXISTING);
 			}
 		}
 
@@ -92,7 +101,7 @@ public class Utilities {
 		List<LocationDTO> result = new ArrayList<LocationDTO>();
 		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
 			for (int j = 0; j < buildingDTO.getListFloor().get(i).getListLocation().size(); j++) {
-				if (buildingDTO.getListFloor().get(i).getListLocation().get(j).getName().contains("Stairs")) {
+				if (buildingDTO.getListFloor().get(i).getListLocation().get(j).getName().toLowerCase().contains("stairs")) {
 					result.add(buildingDTO.getListFloor().get(i).getListLocation().get(j));
 				}
 			}
@@ -104,8 +113,7 @@ public class Utilities {
 		List<RoomDTO> result = new ArrayList<RoomDTO>();
 		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
 			for (int j = 0; j < buildingDTO.getListFloor().get(i).getListLocation().size(); j++) {
-				for (int k = 0; k < buildingDTO.getListFloor().get(i).getListLocation().get(j).getListRoom()
-						.size(); k++) {
+				for (int k = 0; k < buildingDTO.getListFloor().get(i).getListLocation().get(j).getListRoom().size(); k++) {
 					result.add(buildingDTO.getListFloor().get(i).getListLocation().get(j).getListRoom().get(k));
 				}
 			}
@@ -113,19 +121,22 @@ public class Utilities {
 		return result;
 	}
 
-	public List<LocationDTO> filterAvailableLocations(BuildingDTO buildingDTO, FloorDTO floorDTO,
-			LocationDTO locationDTO) {
-		List<LocationDTO> result = new ArrayList<LocationDTO>();
+	public List<LocationDTO> filterAvailableLocations(BuildingDTO buildingDTO, FloorDTO floorDTO, LocationDTO locationDTO) {
+		List<LocationDTO> listOfAvaiableLocations = new ArrayList<LocationDTO>();
+		List<LocationDTO> listOfStairs = new ArrayList<LocationDTO>();
 
-		result = floorDTO.getListLocation();
+		listOfAvaiableLocations.addAll(floorDTO.getListLocation());
 
-		if (locationDTO.getName().contains("Stairs")) {
-			result.addAll(getAllStairsOfBuilding(buildingDTO));
+		if (locationDTO.getName().toLowerCase().contains("stairs")) {
+
+			listOfStairs = getAllStairsOfBuilding(buildingDTO);
+
+			listOfAvaiableLocations.addAll(listOfStairs);
 		}
 
-		result = result.stream().distinct().collect(Collectors.toList());
+		listOfAvaiableLocations = listOfAvaiableLocations.stream().distinct().collect(Collectors.toList());
 
-		return result;
+		return listOfAvaiableLocations;
 	}
 
 	public boolean checkExistedNeighbour(NeighbourDTO neighbourInfo, LocationDTO locationDTO) {
@@ -203,4 +214,121 @@ public class Utilities {
 		}
 		return null;
 	}
+
+	public boolean checkExistedLocationForCreate(LocationDTO locationInfo, BuildingDTO buildingDTO) {
+		boolean result = false;
+		String locationName = locationInfo.getName().toLowerCase();
+		locationName = locationName.replaceAll("\\s+", "");
+		List<LocationDTO> listOfAllLocations = getAllLocationOfBuilding(buildingDTO);
+		for (int i = 0; i < listOfAllLocations.size(); i++) {
+			String locationListName = listOfAllLocations.get(i).getName().toLowerCase();
+			locationListName = locationListName.replaceAll("\\s+", "");
+			if (locationListName.equals(locationName)) {
+				result = true;
+				break;
+			}
+		}
+		return result;
+	}
+
+	public boolean checkExistedLocationForEdit(LocationDTO locationInfo, BuildingDTO buildingDTO) {
+		boolean result = false;
+		List<LocationDTO> listOfAllLocations = getAllLocationOfBuilding(buildingDTO);
+		String locationName = locationInfo.getName().toLowerCase();
+		locationName = locationName.replaceAll("\\s+", "");
+		for (int i = 0; i < listOfAllLocations.size(); i++) {
+			String locationListName = listOfAllLocations.get(i).getName().toLowerCase();
+			locationListName = locationListName.replaceAll("\\s+", "");
+			if (locationListName.equals(locationName)) {
+				if (!listOfAllLocations.get(i).getId().equals(locationInfo.getId())) {
+					result = true;
+					break;
+				}
+			}
+		}
+		return result;
+	}
+
+	public boolean checkExistedRoom(RoomDTO roomInfo, BuildingDTO buildingDTO) {
+		boolean result = false;
+		List<RoomDTO> listOfAllRooms = getAllRoomOfBuilding(buildingDTO);
+		String roomName = roomInfo.getName().toLowerCase();
+		roomName = roomName.replaceAll("\\s+", "");
+		for (int i = 0; i < listOfAllRooms.size(); i++) {
+			String roomListName = listOfAllRooms.get(i).getName().toLowerCase();
+			roomListName = roomListName.replaceAll("\\s+", "");
+			if (roomListName.equals(roomName)) {
+				if (!listOfAllRooms.get(i).isSpecialRoom() || !roomInfo.isSpecialRoom()) {
+					result = true;
+					break;
+				}
+			}
+		}
+		return result;
+	}
+	
+	public boolean checkLocationExistedSpecialRoom(String locationId, RoomDTO roomInfo, BuildingDTO buildingDTO) {
+		boolean result = false;
+		LocationDTO locationDTO = getLocationById(locationId, buildingDTO);
+		String roomName = roomInfo.getName().toLowerCase();
+		roomName = roomName.replaceAll("\\s+", "");
+		for (int i = 0; i < locationDTO.getListRoom().size(); i++) {
+			if (locationDTO.getListRoom().get(i).isSpecialRoom()) {
+				String specialRoomName = locationDTO.getListRoom().get(i).getName().toLowerCase();
+				specialRoomName = specialRoomName.replaceAll("\\s+", "");
+				if (specialRoomName.equals(roomName)) {
+					result = true;
+					break;
+				}
+			}
+		}
+		
+		return result;
+	}
+
+	public boolean getNeighbourStatus(BuildingDTO buildingDTO, String locationId, String neighbourId) {
+		boolean result = true;
+
+		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
+			for (int j = 0; j < buildingDTO.getListFloor().get(i).getListLocation().size(); j++) {
+				if (locationId.equals(buildingDTO.getListFloor().get(i).getListLocation().get(j).getId())) {
+					for (int k = 0; k < buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside().size(); k++) {
+						if (neighbourId.equals(buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside().get(k).getId())) {
+							result = buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside().get(k).isActive();
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+//	public List<LocationDTO> checkForMissingNeighbour(BuildingDTO buildingDTO) {
+//		List<LocationDTO> listOfLocation = new ArrayList<LocationDTO>();
+//		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
+//			for (int j = 0; j < buildingDTO.getListFloor().get(i).getListLocation().size(); j++) {
+//				for (int k = 0; k < buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside().size(); k++) {
+//					if (checkExistedLocationWithNeighbour(buildingDTO, locationId, neighbourId))
+//				}
+//			}
+//		}
+//	}
+//
+//	private boolean checkExistedLocationWithNeighbour(BuildingDTO buildingDTO, String locationId, String neighbourId) {
+//		boolean isExisted = false;
+//		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
+//			for (int j = 0; j < buildingDTO.getListFloor().get(i).getListLocation().size(); j++) {
+//				if (buildingDTO.getListFloor().get(i).getListLocation().get(j).getId().equals(locationId)) {
+//					for (int k = 0; k < buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside().size(); k++) {
+//						if (buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside().get(k).getId().equals(neighbourId)) {
+//							isExisted = true;
+//						}
+//					}
+//				}
+//			}
+//		}
+//		return isExisted;
+//	}
 }

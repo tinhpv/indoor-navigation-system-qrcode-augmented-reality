@@ -38,7 +38,7 @@ public class BuildingController {
 
 	@Autowired
 	private RestTemplate restTemplate;
-
+	
 	@GetMapping({ "/", "" })
 	public String getBuildingPage() {
 		try {
@@ -71,24 +71,8 @@ public class BuildingController {
 		return "building.jsp";
 	}
 
-	@GetMapping("/create")
-	public String getCreateBuilding(@RequestParam("companyId") String companyId,
-			@RequestParam("companyName") String companyName, HttpServletRequest request, HttpSession session) {
-		try {
-			session.invalidate();
-			request.setAttribute("companyId", companyId);
-			request.setAttribute("companyName", companyName);
-		} catch (Exception e) {
-			// TODO: handle exception
-			System.out.println("Error at getCreateBuilding: " + e.getMessage());
-			return "error.jsp";
-		}
-		return "building.jsp";
-	}
-
 	@PostMapping("/create")
-	public String postCreateBuilding(@RequestParam("companyId") String companyId, BuildingDTO buildingInfo,
-			HttpSession session, HttpServletRequest request) {
+	public String postCreateBuilding(@RequestParam("companyId") String companyId, BuildingDTO buildingInfo, HttpSession session) {
 		try {
 			BuildingDAO buildingDAO = new BuildingDAO();
 
@@ -99,24 +83,13 @@ public class BuildingController {
 			BuildingDTO buildingDTO = buildingDAO.createBuilding(buildingInfo);
 
 			// Đẩy building object lên server
-			ResponseEntity<String> response = buildingDAO.importBuildingToServer(postUrl, companyId, buildingDTO,
-					restTemplate);
-
-			// Respond code 200 => OK
-			if (response.getStatusCodeValue() == 200) {
-
-				// Cập nhật building trong session
-				session.setAttribute("building", buildingDTO);
-
-				// Hiện thông báo
-				request.setAttribute("createSuccess", "Building successfully created on server.");
-			}
+			buildingDAO.importBuildingToServer(postUrl, companyId, buildingDTO, restTemplate);
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Error at postCreateBuilding: " + e.getMessage());
 			return "error.jsp";
 		}
-		return "building.jsp";
+		return "redirect:/company/getAllCompanies?message=building_create";
 	}
 
 	@GetMapping("/upload")
@@ -132,10 +105,8 @@ public class BuildingController {
 	}
 
 	@PostMapping("/upload")
-	public String postBuildingUpload(HttpSession session, HttpServletRequest request) {
+	public String postBuildingUpload(HttpSession session) {
 		try {
-			String messageString = "";
-
 			FloorDAO floorDAO = new FloorDAO();
 			BuildingDAO buildingDAO = new BuildingDAO();
 			Utilities utilities = new Utilities();
@@ -152,34 +123,23 @@ public class BuildingController {
 			// Code value 200 => OK
 			// Sau khi cập nhật thành công, kiểm tra xem người dùng có đổi bản đồ các lầu
 			if (response.getStatusCodeValue() == 200 && utilities.checkForChangedImage(buildingDTO)) {
-				messageString += "Successfully update building information ";
 
 				// API uploadFloorMap
 				putUrl = "http://13.229.117.90:7070/api/INQR/uploadFloorMap";
 
 				// Cập nhật bản đồ các lầu mà người dùng thay đổi
 				response = floorDAO.importFloorMapToServer(putUrl, buildingDTO, restTemplate);
-
-				// Code 200 => OK
-				// Thông báo cho việc cập nhật hình ảnh các lầu
-				if (response.getStatusCodeValue() == 200) {
-					messageString += "and image of floor(s).";
-				}
-			} else if (response.getStatusCodeValue() == 200 && !utilities.checkForChangedImage(buildingDTO)) {
-				messageString += "Successfully update building information.";
 			}
 
-			// Hiện thông báo
-			request.setAttribute("uploadSuccess", messageString);
-
-			// Invalid session
-			session.removeAttribute("building");;
+			// Remove session
+			session.removeAttribute("building");
+			session.removeAttribute("floor");
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.print("Error at postBuildingUpload: " + e.getMessage());
 			return "error.jsp";
 		}
-		return "index.jsp";
+		return "redirect:/company/getAllCompanies?message=building_upload";
 	}
 
 	@PostMapping("/edit")
@@ -205,39 +165,44 @@ public class BuildingController {
 	}
 
 	@GetMapping("/getQRCode/{buildingName}")
-	public ResponseEntity<Object> getBuildingQrCodes(@RequestParam("id") String buildingId,
-			HttpServletResponse response) throws Exception {
-		JsonParser jsonParser = new JsonParser();
-		Utilities utilities = new Utilities();
+	public ResponseEntity<Object> getBuildingQrCodes(@RequestParam("id") String buildingId, HttpServletResponse response) {
+		try {
+			JsonParser jsonParser = new JsonParser();
+			Utilities utilities = new Utilities();
 
-		// Rest api
-		String getUrl = "http://13.229.117.90:7070/api/INQR/getAllLocations?buildingId=";
-		getUrl += buildingId;
+			// Rest api
+			String getUrl = "http://13.229.117.90:7070/api/INQR/getAllLocations?buildingId=";
+			getUrl += buildingId;
 
-		// Lấy thông tin tòa nhà và parse thành building object
-		BuildingDTO buildingDTO = jsonParser.parseToBuildingObject(getUrl, restTemplate);
+			// Lấy thông tin tòa nhà và parse thành building object
+			BuildingDTO buildingDTO = jsonParser.parseToBuildingObject(getUrl, restTemplate);
 
-		// Convert tất cả các file qr về dưới local để compress
-		File qrCodeDir = utilities.converQrCodeFile(buildingDTO);
+			// Convert tất cả các file qr về dưới local để compress
+			File qrCodeDir = utilities.converQrCodeFile(buildingDTO);
 
-		Stream<Path> walk = Files.walk(Paths.get(qrCodeDir.getAbsolutePath() + "/"));
-		List<String> result = walk.filter(Files::isRegularFile).map(x -> x.toString()).collect(Collectors.toList());
-		walk.close();
+			Stream<Path> walk = Files.walk(Paths.get(qrCodeDir.getAbsolutePath() + "/"));
+			List<String> result = walk.filter(Files::isRegularFile).map(x -> x.toString()).collect(Collectors.toList());
+			walk.close();
 
-		ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());
-		for (int i = 0; i < result.size(); i++) {
-			FileSystemResource resource = new FileSystemResource(result.get(i));
-			ZipEntry zipEntry = new ZipEntry(resource.getFilename());
-			zipEntry.setSize(resource.contentLength());
-			zipOut.putNextEntry(zipEntry);
-			StreamUtils.copy(resource.getInputStream(), zipOut);
-			zipOut.closeEntry();
+			ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());
+			for (int i = 0; i < result.size(); i++) {
+				FileSystemResource resource = new FileSystemResource(result.get(i));
+				ZipEntry zipEntry = new ZipEntry(resource.getFilename());
+				zipEntry.setSize(resource.contentLength());
+				zipOut.putNextEntry(zipEntry);
+				StreamUtils.copy(resource.getInputStream(), zipOut);
+				zipOut.closeEntry();
+			}
+			zipOut.finish();
+			zipOut.close();
+			System.out.print("OK");
+//			response.setStatus(HttpServletResponse.SC_OK);
+//			response.setHeader("Content-disposition", "attachment; filename=" + "download.zip");
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("Error at getBuildingQrCode: " + e.getMessage());
+			return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
 		}
-		zipOut.finish();
-		zipOut.close();
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.setHeader("Content-disposition", "attachment; filename=\"" + "download.zip" + "");
-
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 }

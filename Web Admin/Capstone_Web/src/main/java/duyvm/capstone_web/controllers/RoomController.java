@@ -1,9 +1,12 @@
 package duyvm.capstone_web.controllers;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,8 +24,7 @@ import duyvm.capstone_web.utils.Utilities;
 public class RoomController {
 
 	@GetMapping("/create")
-	public String getCreateRoom(@RequestParam("floorId") String floorId, @RequestParam("locationId") String locationId,
-			HttpSession session) {
+	public String getCreateRoom(@RequestParam("floorId") String floorId, @RequestParam("locationId") String locationId, HttpSession session) {
 		try {
 			Utilities utilities = new Utilities();
 
@@ -47,22 +49,34 @@ public class RoomController {
 	}
 
 	@PostMapping("/create")
-	public String postCreateRoom(@RequestParam("locationId") String locationId, RoomDTO roomInfo, HttpSession session,
-			HttpServletRequest request) {
+	public String postCreateRoom(@RequestParam("locationId") String locationId, RoomDTO roomInfo, HttpSession session, HttpServletRequest request) {
 		try {
 			RoomDAO roomDAO = new RoomDAO();
+			Utilities utilities = new Utilities();
 
 			// Lấy building object từ session
 			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
 
-			// Tạo room object
-			buildingDTO = roomDAO.createRoom(buildingDTO, locationId, roomInfo);
+			boolean isExistedRoom = utilities.checkExistedRoom(roomInfo, buildingDTO);
+			boolean isLocationExistedSpecialRoom = utilities.checkLocationExistedSpecialRoom(locationId, roomInfo, buildingDTO);
 
-			// Cập nhật thông tin cho session
-			session.setAttribute("building", buildingDTO);
+			// Kiểm tra tên room có bị trùng không
+			if (!isExistedRoom && !isLocationExistedSpecialRoom) {
+				// Tạo room object
+				buildingDTO = roomDAO.createRoom(buildingDTO, locationId, roomInfo);
 
-			// Hiện thông báo
-			request.setAttribute("createSuccess", "Room created locally.");
+				// Cập nhật thông tin cho session
+				session.setAttribute("building", buildingDTO);
+
+				// Hiện thông báo
+				request.setAttribute("createSuccess", "Room created locally.");
+			} else if (isExistedRoom) {
+				// Hiện thông báo
+				request.setAttribute("createFailed", "\"" + roomInfo.getName() + "\"" + " already exist!");
+			} else if (isLocationExistedSpecialRoom) {
+				// Hiện thông báo
+				request.setAttribute("createFailed", "Special room \"" + roomInfo.getName() + "\"" + " already exist in this location!");
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Error at postCreateRoom: " + e.getMessage());
@@ -72,22 +86,29 @@ public class RoomController {
 	}
 
 	@PostMapping("/remove")
-	public String postRemoveRoom(@RequestParam("roomId") String roomId, HttpSession session,
-			HttpServletRequest request) {
+	public String postRemoveRoom(@RequestParam MultiValueMap<String, String> map, HttpSession session, HttpServletRequest request) {
 		try {
 			RoomDAO roomDAO = new RoomDAO();
 
 			// Lấy building object từ session
 			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
 
-			// Xóa room object dựa theo room id
-			buildingDTO = roomDAO.removeRoomById(roomId, buildingDTO);
+			// Key của modal
+			String modalKey = map.getFirst("modalKey");
+
+			// Danh sách id của các room
+			List<String> listRoomIds = map.get("roomGroup" + modalKey);
+
+			for (int i = 0; i < listRoomIds.size(); i++) {
+				// Xóa room object dựa theo room id
+				buildingDTO = roomDAO.removeRoomById(listRoomIds.get(i), buildingDTO);
+			}
 
 			// Cập nhật dữ liệu trong session
 			session.setAttribute("building", buildingDTO);
 
 			// Hiện thông báo
-			request.setAttribute("removeSuccess", "Room removed locally.");
+			request.setAttribute("removeSuccess", "Successfully remove " + listRoomIds.size() + " room(s).");
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Error at postRemoveRoom: " + e.getMessage());

@@ -17,8 +17,8 @@ public class LocationDAO {
 		List<LocationDTO> listLocation = new ArrayList<LocationDTO>();
 
 		String locationId = utilities.generateLocationId(buildingDTO);
-		LocationDTO locationDTO = new LocationDTO(locationId, locationInfo.getName(), locationInfo.getRatioX(),
-				locationInfo.getRatioY(), null, new ArrayList<NeighbourDTO>(), new ArrayList<RoomDTO>());
+		LocationDTO locationDTO = new LocationDTO(locationId, locationInfo.getName(), locationInfo.getRatioX(), locationInfo.getRatioY(), null, null, null,
+				new ArrayList<NeighbourDTO>(), new ArrayList<RoomDTO>());
 
 		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
 			if (buildingDTO.getListFloor().get(i).getId().equals(floorDTO.getId())) {
@@ -47,12 +47,9 @@ public class LocationDAO {
 	public BuildingDTO updateAllNeighbourName(String locationId, String locationName, BuildingDTO buildingDTO) {
 		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
 			for (int j = 0; j < buildingDTO.getListFloor().get(i).getListLocation().size(); j++) {
-				for (int k = 0; k < buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside()
-						.size(); k++) {
-					if (buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside().get(k)
-							.getId().equals(locationId)) {
-						buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside().get(k)
-								.setName(locationName);
+				for (int k = 0; k < buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside().size(); k++) {
+					if (buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside().get(k).getId().equals(locationId)) {
+						buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside().get(k).setName(locationName);
 					}
 				}
 			}
@@ -65,12 +62,9 @@ public class LocationDAO {
 			if (buildingDTO.getListFloor().get(i).getListLocation() != null) {
 				for (int j = 0; j < buildingDTO.getListFloor().get(i).getListLocation().size(); j++) {
 					if (buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside() != null) {
-						for (int k = 0; k < buildingDTO.getListFloor().get(i).getListLocation().get(j)
-								.getListLocationBeside().size(); k++) {
-							if (buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside()
-									.get(k).getId().equals(locationId)) {
-								buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside()
-										.remove(k);
+						for (int k = 0; k < buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside().size(); k++) {
+							if (buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside().get(k).getId().equals(locationId)) {
+								buildingDTO.getListFloor().get(i).getListLocation().get(j).getListLocationBeside().remove(k);
 							}
 						}
 					}

@@ -22,15 +22,15 @@ import duyvm.capstone_web.utils.Utilities;
 
 public class FloorDAO {
 
-	public ResponseEntity<String> importFloorToServer(MultipartFile mapFile, BuildingDTO buildingDTO,
-			FloorDTO floorInfo, RestTemplate restTemplate, String postUrl) throws IOException {
+	public ResponseEntity<String> importFloorToServer(MultipartFile mapFile, BuildingDTO buildingDTO, FloorDTO floorInfo, RestTemplate restTemplate, String postUrl)
+			throws IOException {
 		Utilities utilities = new Utilities();
 
 		// Tạo request header
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-		// Tạo body cho request
+		// Tạo body map
 		MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<String, Object>();
 		String floorId = utilities.generateFloorId(buildingDTO);
 		bodyMap.add("buildingId", buildingDTO.getId());
@@ -39,7 +39,7 @@ public class FloorDAO {
 		bodyMap.add("floorName", floorInfo.getName());
 		bodyMap.add(floorId, new FileSystemResource(filePath));
 
-		// Đặt body vào request body
+		// Đặt body map vào request body
 		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
 
 		// Exchange
@@ -77,15 +77,13 @@ public class FloorDAO {
 		return buildingDTO;
 	}
 
-	public BuildingDTO editFloor(MultipartFile mapFile, FloorDTO floorInfo, BuildingDTO buildingDTO)
-			throws IOException {
+	public BuildingDTO editFloor(MultipartFile mapFile, FloorDTO floorInfo, BuildingDTO buildingDTO) throws IOException {
 		Utilities utilities = new Utilities();
 		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
 			if (buildingDTO.getListFloor().get(i).getId().equals(floorInfo.getId())) {
 				buildingDTO.getListFloor().get(i).setName(floorInfo.getName());
 				if (mapFile != null) {
-					String filePath = utilities.convertMapFile(mapFile, floorInfo.getId(), buildingDTO.getId())
-							.getAbsolutePath();
+					String filePath = utilities.convertMapFile(mapFile, floorInfo.getId(), buildingDTO.getId()).getAbsolutePath();
 					buildingDTO.getListFloor().get(i).setMapFilePath(filePath);
 				} else {
 					buildingDTO.getListFloor().get(i).setMapFilePath(null);
@@ -95,27 +93,24 @@ public class FloorDAO {
 		return buildingDTO;
 	}
 
-	public ResponseEntity<String> importFloorMapToServer(String postUrl, BuildingDTO buildingDTO,
-			RestTemplate restTemplate) {
+	public ResponseEntity<String> importFloorMapToServer(String postUrl, BuildingDTO buildingDTO, RestTemplate restTemplate) {
 
 		// Tạo request header
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-		// Tạo body cho request
+		// Tạo body map cho request
 		MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<String, Object>();
 		bodyMap.add("buildingId", buildingDTO.getId());
 
 		// Thêm vào body những image mà người dùng thay đổi
 		for (int i = 0; i < buildingDTO.getListFloor().size(); i++) {
-			if (buildingDTO.getListFloor().get(i).getMapFilePath() != null
-					&& !buildingDTO.getListFloor().get(i).getMapFilePath().isEmpty()) {
-				bodyMap.add(buildingDTO.getListFloor().get(i).getId(),
-						new FileSystemResource(buildingDTO.getListFloor().get(i).getMapFilePath()));
+			if (buildingDTO.getListFloor().get(i).getMapFilePath() != null && !buildingDTO.getListFloor().get(i).getMapFilePath().isEmpty()) {
+				bodyMap.add(buildingDTO.getListFloor().get(i).getId(), new FileSystemResource(buildingDTO.getListFloor().get(i).getMapFilePath()));
 			}
 		}
 
-		// Đặt body vào request body
+		// Đặt body map vào request body
 		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
 
 		// Exchange

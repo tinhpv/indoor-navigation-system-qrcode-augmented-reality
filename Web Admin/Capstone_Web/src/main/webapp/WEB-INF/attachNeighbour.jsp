@@ -4,11 +4,11 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/point.css" />
+<title>Attach neighbour</title>
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
 <link rel="stylesheet"
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/point.css" />
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
@@ -38,36 +38,36 @@
 						<h5>Attach neighbor to ${sessionScope.location.name }</h5>
 					</div>
 					<div class="form-group row">
-						<label for="myInput" class="col-sm-2 col-form-label">Search </label>
+						<label for="myInput" class="col-sm-3 col-form-label">Search</label>
 						<div class="col-sm-7">
 							<input class="form-control" type="text" id="myInput" onkeyup="myFunction()"
 								placeholder="Find location">
 						</div>
 					</div>
 					<div id="allLocation" class="list-group">
-						<div class="list-group-item active">All locations</div>
-						<c:forEach var="locationDto" items="${sessionScope.filterdList }">
-							<c:if test="${locationDto.id != sessionScope.location.id}">
+						<div class="list-group-item active">Available locations</div>
+						<c:forEach var="filteredList" items="${sessionScope.filteredList }">
+							<c:if test="${filteredList.id != sessionScope.location.id}">
 								<a class="list-group-item list-group-item-action py-3"
-									onclick="document.getElementById('neighbourId').value='${locationDto.id}'; document.getElementById('neighbourName').value='${locationDto.name}'; draw2(${sessionScope.location.ratioX } ,${sessionScope.location.ratioY } , '', ${locationDto.ratioX}, ${locationDto.ratioY });">
-									${locationDto.name } </a>
+									onclick="document.getElementById('neighbourId').value='${filteredList.id}'; document.getElementById('neighbourName').value='${filteredList.name}'; draw2(${sessionScope.location.ratioX } ,${sessionScope.location.ratioY } , '', ${filteredList.ratioX}, ${filteredList.ratioY });">
+									${filteredList.name } </a>
 							</c:if>
 						</c:forEach>
 					</div>
 					<input type="hidden" class="form-control" id="neighbourId" name="id" placeholder="ID"
 						readonly="readonly">
 					<div class="form-group row">
-						<label for="orientation" class="col-sm-3 col-form-label">Neighbor </label>
+						<label for="orientation" class="col-sm-4 col-form-label">Neighbor </label>
 						<div class="col-sm-7">
-							<input type="text" required="required" class="form-control" id="neighbourName"
+							<input type="text" required="required" class="form-control bold-no-border" id="neighbourName"
 								placeholder="Neighbor" name="name" onkeydown="return false;">
 						</div>
 						<p class="col-sm-1">*</p>
 					</div>
 					<div class="form-group row">
-						<label for="orientation" class="col-sm-3 col-form-label">Orientation </label>
+						<label for="orientation" class="col-sm-4 col-form-label">Orientation </label>
 						<div class="col-sm-4">
-							<select id="orientation" name="orientation" class="form-control">
+							<select id="orientation" name="orientation" class="form-control bold-border">
 								<option value="LEFT">Left</option>
 								<option value="RIGHT">Right</option>
 								<option value="FRONT">Front</option>
@@ -79,10 +79,11 @@
 						<p class="col-sm-1">*</p>
 					</div>
 					<div class="form-group row">
-						<label for="distance" class="col-sm-3 col-form-label">Distance </label>
+						<label for="distance" class="col-sm-4 col-form-label">Distance(m)</label>
 						<div class="col-sm-4">
-							<input type="number" required="required" step="0.01" class="form-control" name="distance"
-								placeholder="Distance">
+							<input type="number" required="required" step="0.01" class="form-control bold-border"
+								name="distance" placeholder="Distance">
+								
 						</div>
 						<p class="col-sm-1">*</p>
 					</div>
@@ -96,7 +97,7 @@
 							data-placement="bottom" title="Clear picture" onclick="clearCanvas()">
 							<i class="fas fa-sync-alt"></i>
 						</button>
-						<button type="submit" class="right btn btn-primary">Attach Neighbor</button>
+						<button type="submit" class="right btn btn-custom-1">Attach Neighbor</button>
 					</div>
 				</form>
 			</div>
@@ -173,7 +174,8 @@
 			ctx.fill();
 
 			ctx.beginPath();
-			ctx.lineWidth = 3;
+			ctx.setLineDash([5,3]);
+			ctx.lineWidth = 2;
 			ctx.moveTo(startRatioX * canvas.width, startRatioY * canvas.height);
 			ctx.lineTo(endRatioX * canvas.width, endRatioY * canvas.height);
 			ctx.stroke();

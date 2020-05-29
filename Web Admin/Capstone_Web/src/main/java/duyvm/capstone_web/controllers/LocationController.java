@@ -44,21 +44,28 @@ public class LocationController {
 	public String postCreateLocation(LocationDTO locationInfo, HttpSession session, HttpServletRequest request) {
 		try {
 			LocationDAO locationDAO = new LocationDAO();
+			Utilities utilities = new Utilities();
 
 			// Lấy building object có trong session
 			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
 
-			// Lấy floor object có trong session
-			FloorDTO floorDTO = (FloorDTO) session.getAttribute("floor");
+			// Kiểm tra tên location đã tồn tại chưa
+			if (!utilities.checkExistedLocationForCreate(locationInfo, buildingDTO)) {
+				// Lấy floor object có trong session
+				FloorDTO floorDTO = (FloorDTO) session.getAttribute("floor");
 
-			// Tạo một location object mới
-			buildingDTO = locationDAO.createLocation(buildingDTO, floorDTO, locationInfo);
+				// Tạo một location object mới
+				buildingDTO = locationDAO.createLocation(buildingDTO, floorDTO, locationInfo);
 
-			// Cập nhật building object trong session
-			session.setAttribute("building", buildingDTO);
+				// Cập nhật building object trong session
+				session.setAttribute("building", buildingDTO);
 
-			// Hiện thông báo
-			request.setAttribute("createSuccess", "Location created locally.");
+				// Hiện thông báo
+				request.setAttribute("createSuccess", "Location created locally.");
+			} else {
+				// Hiện thông báo
+				request.setAttribute("createFailed", "\"" + locationInfo.getName() + "\"" + " already exist!");
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Error at postCreateLocation: " + e.getMessage());
@@ -97,7 +104,7 @@ public class LocationController {
 
 	@GetMapping("/edit")
 	public String getEditLocation(@RequestParam("floorId") String floorId,
-			@RequestParam("locationId") String locationId, HttpSession session, HttpServletRequest request) {
+			@RequestParam("locationId") String locationId, HttpSession session) {
 		try {
 			Utilities utilities = new Utilities();
 
@@ -111,8 +118,8 @@ public class LocationController {
 			LocationDTO locationDTO = utilities.getLocationById(locationId, buildingDTO);
 
 			// Thêm floor object và location object vào request
-			request.setAttribute("floor", floorDTO);
-			request.setAttribute("location", locationDTO);
+			session.setAttribute("floor", floorDTO);
+			session.setAttribute("location", locationDTO);
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Error at getEditLocation: " + e.getMessage());
@@ -125,21 +132,30 @@ public class LocationController {
 	public String postEditLocation(LocationDTO locationInfo, HttpSession session, HttpServletRequest request) {
 		try {
 			LocationDAO locationDAO = new LocationDAO();
+			Utilities utilities = new Utilities();
 
 			// Lấy building object có trong session
 			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
 
-			// Cập nhật thông tin của location object
-			buildingDTO = locationDAO.updateLocation(locationInfo, buildingDTO);
+			// Kiểm tra tên location đã tồn tại chưa
+			if (!utilities.checkExistedLocationForEdit(locationInfo, buildingDTO)) {
+				// Cập nhật thông tin của location object
+				buildingDTO = locationDAO.updateLocation(locationInfo, buildingDTO);
 
-			// Cập nhật thông tin tất cả neighbour object có liên kết với location được chọn
-			buildingDTO = locationDAO.updateAllNeighbourName(locationInfo.getId(), locationInfo.getName(), buildingDTO);
+				// Cập nhật thông tin tất cả neighbour object có liên kết với location được chọn
+				buildingDTO = locationDAO.updateAllNeighbourName(locationInfo.getId(), locationInfo.getName(),
+						buildingDTO);
 
-			// Cập nhật building trong session
-			session.setAttribute("building", buildingDTO);
+				// Cập nhật building trong session
+				session.setAttribute("building", buildingDTO);
 
-			// Hiện thông báo
-			request.setAttribute("editSuccess", "Location info updated locally.");
+				// Hiện thông báo
+				request.setAttribute("editSuccess", "Location info updated locally.");
+			} else {
+				// Hiện thông báo
+				request.setAttribute("editFailed", "\"" + locationInfo.getName() + "\"" + " already exist!");
+				return "updateLocation.jsp";
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Error at postEditLocation: " + e.getMessage());

@@ -1,11 +1,13 @@
 package duyvm.capstone_web.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,10 +25,10 @@ import duyvm.capstone_web.utils.Utilities;
 public class NeighbourController {
 
 	@GetMapping("/create")
-	public String getCreateNeighbour(@RequestParam("floorId") String floorId,
-			@RequestParam("locationId") String locationId, HttpSession session) {
+	public String getCreateNeighbour(@RequestParam("floorId") String floorId, @RequestParam("locationId") String locationId, HttpSession session) {
 		try {
 			Utilities utilities = new Utilities();
+			List<LocationDTO> filteredList = new ArrayList<LocationDTO>();
 
 			// Lấy building object có trong session
 			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
@@ -38,12 +40,12 @@ public class NeighbourController {
 			LocationDTO locationDTO = utilities.getLocationById(locationId, buildingDTO);
 
 			// Filter những neighbor mà location có thể attach
-			List<LocationDTO> filteredList = utilities.filterAvailableLocations(buildingDTO, floorDTO, locationDTO);
+			filteredList = utilities.filterAvailableLocations(buildingDTO, floorDTO, locationDTO);
 
 			// Đặt floor object, location object, filteredList vào session
-			session.setAttribute("floor", floorDTO);
 			session.setAttribute("location", locationDTO);
-			session.setAttribute("filterdList", filteredList);
+			session.setAttribute("floor", floorDTO);
+			session.setAttribute("filteredList", filteredList);
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Error at getCreateNeighbour: " + e.getMessage());
@@ -53,8 +55,7 @@ public class NeighbourController {
 	}
 
 	@PostMapping("/create")
-	public String postCreateNeighbour(@RequestParam("locationId") String locationId, NeighbourDTO neighbourInfo,
-			HttpSession session, HttpServletRequest request) {
+	public String postCreateNeighbour(@RequestParam("locationId") String locationId, NeighbourDTO neighbourInfo, HttpSession session, HttpServletRequest request) {
 		try {
 			NeighbourDAO neighbourDAO = new NeighbourDAO();
 			Utilities utilities = new Utilities();
@@ -77,8 +78,8 @@ public class NeighbourController {
 				request.setAttribute("createSuccess", "Neighbour created locally.");
 			} else {
 				// Hiện thông báo
-				request.setAttribute("createFailed",
-						"Failed to create, this location has already attach with " + neighbourInfo.getName());
+				request.setAttribute("createFailed", "Failed to create, this location has already attach with " + neighbourInfo.getName());
+				System.out.println("This relationship has already exist!");
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -89,22 +90,32 @@ public class NeighbourController {
 	}
 
 	@PostMapping("/remove")
-	public String postRemoveNeighbour(@RequestParam("locationId") String locationId,
-			@RequestParam("neighbourId") String neighbourId, HttpSession session, HttpServletRequest request) {
+	public String postRemoveNeighbour(@RequestParam MultiValueMap<String, String> map, HttpSession session, HttpServletRequest request) {
 		try {
 			NeighbourDAO neighbourDAO = new NeighbourDAO();
 
 			// Lấy building object có trong session
 			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
 
-			// Gỡ bỏ neighbour đã chọn khỏi building object
-			buildingDTO = neighbourDAO.removeNeighbourFromLocation(locationId, neighbourId, buildingDTO);
+			// Key of modal
+			String modalKey = map.getFirst("modalKey");
+
+			// Location id
+			String locationId = map.getFirst("locationId");
+
+			// Danh sách ids của neighbour
+			List<String> listNeighbourIds = map.get("neighbourGroup" + modalKey);
+
+			for (int i = 0; i < listNeighbourIds.size(); i++) {
+				// Gỡ bỏ neighbour đã chọn khỏi building object
+				buildingDTO = neighbourDAO.removeNeighbourFromLocation(locationId, listNeighbourIds.get(i), buildingDTO);
+			}
 
 			// Cập nhật thông tin trong session
 			session.setAttribute("building", buildingDTO);
 
 			// Hiện thông báo
-			request.setAttribute("removeSuccess", "Neighbour removed locally.");
+			request.setAttribute("removeSuccess", "Successfully remove " + listNeighbourIds.size() + " neighbour(s).");
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Error at postRemoveNeighbour: " + e.getMessage());
@@ -113,4 +124,44 @@ public class NeighbourController {
 		return "floor.jsp";
 	}
 
+	@PostMapping("/changeStatus")
+	public String postChangeNeighbourStatus(@RequestParam MultiValueMap<String, String> map, HttpSession session, HttpServletRequest request) {
+		try {
+			NeighbourDAO neighbourDAO = new NeighbourDAO();
+			Utilities utilities = new Utilities();
+			boolean status;
+
+			// Lấy building object có trong session
+			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
+
+			// Key of modal
+			String modalKey = map.getFirst("modalKey");
+
+			// Location id
+			String locationId = map.getFirst("locationId");
+
+			// Danh sách ids của neighbour
+			List<String> listNeighbourIds = map.get("neighbourGroup" + modalKey);
+
+			for (int i = 0; i < listNeighbourIds.size(); i++) {
+				// Lấy trạng thái của neighbour
+				if (utilities.getNeighbourStatus(buildingDTO, locationId, listNeighbourIds.get(i))) {
+					status = false;
+				} else {
+					status = true;
+				}
+
+				buildingDTO = neighbourDAO.changeNeighbourStatus(buildingDTO, locationId, listNeighbourIds.get(i), status);
+
+				buildingDTO = neighbourDAO.changeNeighbourStatus(buildingDTO, listNeighbourIds.get(i), locationId, status);
+			}
+
+			session.setAttribute("building", buildingDTO);
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("Error at postDisableNeighbour: " + e.getMessage());
+			return "error.jsp";
+		}
+		return "floor.jsp";
+	}
 }

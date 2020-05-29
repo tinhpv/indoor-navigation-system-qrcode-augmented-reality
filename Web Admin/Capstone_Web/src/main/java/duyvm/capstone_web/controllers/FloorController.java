@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import duyvm.capstone_web.daos.FloorDAO;
 import duyvm.capstone_web.dtos.BuildingDTO;
 import duyvm.capstone_web.dtos.FloorDTO;
+import duyvm.capstone_web.utils.Utilities;
 
 @Controller
 @RequestMapping("/floor")
@@ -41,27 +42,35 @@ public class FloorController {
 			HttpSession session, HttpServletRequest request) {
 		try {
 			FloorDAO floorDAO = new FloorDAO();
-			
-			//API createNewFloor
-			String postUrl = "http://13.229.117.90:7070/api/INQR/createNewFloor";
+			Utilities utilities = new Utilities();
 
-			// Lấy building object có trong session
-			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
-			
-			// Đẩy thông tin của floor lên server để tạo mới
-			ResponseEntity<String> result = floorDAO.importFloorToServer(mapFile, buildingDTO, floorInfo, restTemplate,
-					postUrl);
+			// Kiểm tra file có phải file hình ảnh không
+			if (utilities.checkForValidImageFile(mapFile)) {
 
-			if (result.getStatusCode() == HttpStatus.OK) {
-				// Nếu tạo mới thành công, result trả về sẽ là đường link hình ảnh của floor
-				// Thêm mới một floor object vào building object
-				buildingDTO = floorDAO.createFloor(result.getBody(), buildingDTO, floorInfo);
-				
-				// Cập nhật building trong session
-				session.setAttribute("building", buildingDTO);
+				// API createNewFloor
+				String postUrl = "http://13.229.117.90:7070/api/INQR/createNewFloor";
 
-				// Hiện thông báo
-				request.setAttribute("createSuccess", "Create floor successful on both server and local.");
+				// Lấy building object có trong session
+				BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
+
+				// Đẩy thông tin của floor lên server để tạo mới
+				ResponseEntity<String> result = floorDAO.importFloorToServer(mapFile, buildingDTO, floorInfo,
+						restTemplate, postUrl);
+
+				if (result.getStatusCode() == HttpStatus.OK) {
+					// Nếu tạo mới thành công, result trả về sẽ là đường link hình ảnh của floor
+					// Thêm mới một floor object vào building object
+					buildingDTO = floorDAO.createFloor(result.getBody(), buildingDTO, floorInfo);
+
+					// Cập nhật building trong session
+					session.setAttribute("building", buildingDTO);
+
+					// Hiện thông báo
+					request.setAttribute("createSuccess", "Create floor successful on both server and local.");
+				}
+			} else {
+				request.setAttribute("createFailed", "Floor's image file must be a .jpg or .png file!");
+				return "floor.jsp";
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -96,20 +105,27 @@ public class FloorController {
 	}
 
 	@PostMapping("/edit")
-	public String postEditFloor(@RequestParam("fileMap") MultipartFile fileMap, FloorDTO floorInfo, HttpSession session,
+	public String postEditFloor(@RequestParam("mapFile") MultipartFile mapFile, FloorDTO floorInfo, HttpSession session,
 			HttpServletRequest request) {
 		try {
 			FloorDAO floorDAO = new FloorDAO();
+			Utilities utilities = new Utilities();
 
 			// Lấy building object có trong session
 			BuildingDTO buildingDTO = (BuildingDTO) session.getAttribute("building");
 
 			// Kiểm tra người dùng có chọn file hình ảnh hay không
-			if (fileMap.getOriginalFilename() != null && !fileMap.getOriginalFilename().isEmpty()) {
-				// Update thông tin của floor object trong building object bao gồm cả file hình ảnh
-				buildingDTO = floorDAO.editFloor(fileMap, floorInfo, buildingDTO);
+			if (mapFile.getOriginalFilename() != null && !mapFile.getOriginalFilename().isEmpty()) {
+				// Kiểm tra file có phải file hình ảnh không
+				if (utilities.checkForValidImageFile(mapFile)) {
+					// Edit thông tin của floor object bao gồm cả file image
+					buildingDTO = floorDAO.editFloor(mapFile, floorInfo, buildingDTO);
+				} else {
+					request.setAttribute("editFailed", "Floor's image file must be a .jpg or .png file!");
+					return "floor.jsp";
+				}
 			} else {
-				// Update thông tin của floor object trong building object không bao gồm file hình ảnh
+				// Edit thông tin của floor object không bao gồm file image
 				buildingDTO = floorDAO.editFloor(null, floorInfo, buildingDTO);
 			}
 

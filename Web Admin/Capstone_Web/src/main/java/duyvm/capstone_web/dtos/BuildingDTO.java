@@ -40,14 +40,15 @@ public class BuildingDTO implements Serializable {
 	public BuildingDTO() {
 	}
 
-	public BuildingDTO(String id, String name) {
+	public BuildingDTO(String id, String name, String dayExpired, boolean active) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.dayExpired = dayExpired;
+		this.active = active;
 	}
 
-	public BuildingDTO(String id, String name, String description, String dayExpired, boolean active,
-			List<FloorDTO> listFloor) {
+	public BuildingDTO(String id, String name, String description, String dayExpired, boolean active, List<FloorDTO> listFloor) {
 		super();
 		this.id = id;
 		this.name = name;

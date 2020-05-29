@@ -31,7 +31,15 @@ public class LocationDTO implements Serializable {
 
 	@SerializedName("LinkQR")
 	private String linkQr;
-	
+
+	@Expose
+	@SerializedName("QrAnchorId")
+	private String qrAnchorId;
+
+	@Expose
+	@SerializedName("SpaceAnchorId")
+	private String spaceAnchorId;
+
 	@Expose
 	@SerializedName("ListLocationBeside")
 	private List<NeighbourDTO> listLocationBeside;
@@ -43,18 +51,33 @@ public class LocationDTO implements Serializable {
 	public LocationDTO() {
 		super();
 	}
-
-	public LocationDTO(String id, String name, double ratioX, double ratioY, String linkQr,
-			List<NeighbourDTO> listLocationBeside, List<RoomDTO> listRoom) {
+	
+	public LocationDTO(String id, String name, double ratioX, double ratioY, String linkQr, String qrAnchorId, String spaceAnchorId, List<NeighbourDTO> listLocationBeside,
+			List<RoomDTO> listRoom) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.ratioX = ratioX;
 		this.ratioY = ratioY;
 		this.linkQr = linkQr;
+		this.qrAnchorId = qrAnchorId;
+		this.spaceAnchorId = spaceAnchorId;
 		this.listLocationBeside = listLocationBeside;
 		this.listRoom = listRoom;
 	}
+
+
+//
+//	public LocationDTO(String id, String name, double ratioX, double ratioY, String linkQr, List<NeighbourDTO> listLocationBeside, List<RoomDTO> listRoom) {
+//		super();
+//		this.id = id;
+//		this.name = name;
+//		this.ratioX = ratioX;
+//		this.ratioY = ratioY;
+//		this.linkQr = linkQr;
+//		this.listLocationBeside = listLocationBeside;
+//		this.listRoom = listRoom;
+//	}
 
 	public String getId() {
 		return id;
@@ -108,10 +131,6 @@ public class LocationDTO implements Serializable {
 //		this.listNeighbour = listNeighbour;
 //	}
 
-	public List<RoomDTO> getListRoom() {
-		return listRoom;
-	}
-
 	public List<NeighbourDTO> getListLocationBeside() {
 		return listLocationBeside;
 	}
@@ -120,8 +139,28 @@ public class LocationDTO implements Serializable {
 		this.listLocationBeside = listLocationBeside;
 	}
 
+	public List<RoomDTO> getListRoom() {
+		return listRoom;
+	}
+
 	public void setListRoom(List<RoomDTO> listRoom) {
 		this.listRoom = listRoom;
+	}
+
+	public String getQrAnchorId() {
+		return qrAnchorId;
+	}
+
+	public void setQrAnchorId(String qrAnchorId) {
+		this.qrAnchorId = qrAnchorId;
+	}
+
+	public String getSpaceAnchorId() {
+		return spaceAnchorId;
+	}
+
+	public void setSpaceAnchorId(String spaceAnchorId) {
+		this.spaceAnchorId = spaceAnchorId;
 	}
 
 }
