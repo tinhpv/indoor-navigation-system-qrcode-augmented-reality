@@ -4,6 +4,7 @@ package fpt.capstone.inqr.fragment;
 import androidx.fragment.app.Fragment;
 
 import fpt.capstone.inqr.activity.AppActivity;
+import fpt.capstone.inqr.camera.SupportScanQr;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,5 +38,9 @@ public class BaseFragment extends Fragment {
         activity.changeFragment(fragment, isBackStack, isHomeFragment);
     }
 
+    public void setSupporter(SupportScanQr supporter) {
+        activity = (AppActivity) getActivity();
+        activity.setSupportScanQr(supporter);
+    }
 
 }

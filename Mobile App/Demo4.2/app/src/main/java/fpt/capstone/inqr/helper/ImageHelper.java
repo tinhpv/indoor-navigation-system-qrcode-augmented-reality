@@ -1,5 +1,6 @@
 package fpt.capstone.inqr.helper;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -47,4 +48,16 @@ public class ImageHelper {
         Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         return bitmap;
     }
+
+    public static Bitmap convertImageToBitmap(Image image) {
+        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+        byte[] bytes = new byte[buffer.capacity()];
+        buffer.get(bytes);
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
+    }
+
+    public static Bitmap getBitmap(Context context, String buildingId, String currentFloorId) {
+        return BitmapFactory.decodeStream(FileHelper.getImage(context, FileHelper.TYPE_MAP, buildingId, currentFloorId)).copy(Bitmap.Config.ARGB_8888, true);
+    }
+
 }

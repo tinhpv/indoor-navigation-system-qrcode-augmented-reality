@@ -2,12 +2,14 @@ package fpt.capstone.inqr.helper;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+
 
 /**
  * Demo4
@@ -31,7 +33,11 @@ public class QRCodeHelper {
         Frame frame = new Frame.Builder().setBitmap(bitmap).build();
         SparseArray<Barcode> barcodes = detector.detect(frame);
 
-        Barcode thisCode = barcodes.valueAt(0);
-        return thisCode.rawValue;
+        if (barcodes.size() > 0) {
+            Barcode thisCode = barcodes.valueAt(0);
+            return thisCode.rawValue;
+        }
+        return null;
     }
+
 }

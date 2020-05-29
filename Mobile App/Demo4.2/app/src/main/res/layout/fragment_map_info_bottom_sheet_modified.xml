@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/way_info_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:visibility="gone"
+    app:behavior_peekHeight="?actionBarSize"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <!-- TOP -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_45sdp"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/tv_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito_bold"
+            android:padding="0dp"
+            android:text="12"
+            android:textColor="@color/dark_green"
+            android:textSize="25sp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/_20sdp"/>
+
+        <ImageView
+            android:id="@+id/img_time"
+            android:layout_width="@dimen/_2sdp"
+            android:layout_height="@dimen/_2sdp"
+            android:src="@drawable/ic_time_dot"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/tv_distance"
+            android:layout_marginStart="@dimen/_8sdp"/>
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito_bold"
+            android:padding="0dp"
+            android:text="25"
+            android:textColor="@color/black_gray"
+            android:textSize="20sp"
+            android:layout_toRightOf="@id/img_time"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/_7sdp" />
+
+    </RelativeLayout>
+
+    <!-- EXPANDABLE -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvStep"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

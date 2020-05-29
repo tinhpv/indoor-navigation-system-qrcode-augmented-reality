@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,7 +21,8 @@ import fpt.capstone.inqr.model.supportModel.Notification;
 public class NotificationDialog extends DialogFragment {
 
     //    private String buildingName, description;
-    private TextView tvName, tvDes, tvClose;
+    private TextView tvName, tvDes;
+    private Button btClose;
 
     private List<Notification> listNotification;
 
@@ -39,12 +41,12 @@ public class NotificationDialog extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_notification, container, false);
+        View view = inflater.inflate(R.layout.dialog_notification_modified, container, false);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         tvName = view.findViewById(R.id.tvName);
         tvDes = view.findViewById(R.id.tvDes);
-        tvClose = view.findViewById(R.id.tvClose);
+        btClose = view.findViewById(R.id.bt_close);
 
 
         tvName.setText("What's new");
@@ -75,7 +77,7 @@ public class NotificationDialog extends DialogFragment {
 
         tvDes.setText(message);
 
-        tvClose.setOnClickListener(v -> dismiss());
+        btClose.setOnClickListener(v -> dismiss());
 
         return view;
     }

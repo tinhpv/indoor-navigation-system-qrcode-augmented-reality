@@ -4,22 +4,19 @@ package fpt.capstone.inqr.fragment;
 import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
+import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -29,16 +26,20 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.ar.core.ArCoreApk;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -46,75 +47,71 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
+import java.util.UUID;
 
 import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.adapter.MapAdapter;
 import fpt.capstone.inqr.adapter.PointViewAdapter;
-import fpt.capstone.inqr.dijkstra.DijkstraShortestPath;
-import fpt.capstone.inqr.dijkstra.Edge;
+import fpt.capstone.inqr.adapter.StepAdapter;
+import fpt.capstone.inqr.camera.CameraPreview;
+import fpt.capstone.inqr.camera.SupportScanQr;
+import fpt.capstone.inqr.dialog.InternetWarningDialog;
 import fpt.capstone.inqr.dijkstra.Vertex;
-import fpt.capstone.inqr.helper.DatabaseHelper;
-import fpt.capstone.inqr.helper.FileHelper;
-import fpt.capstone.inqr.helper.GeoHelper;
+import fpt.capstone.inqr.helper.CanvasHelper;
+import fpt.capstone.inqr.helper.ImageHelper;
+import fpt.capstone.inqr.helper.PreferenceHelper;
+import fpt.capstone.inqr.helper.Wayfinder;
 import fpt.capstone.inqr.model.Floor;
 import fpt.capstone.inqr.model.Location;
 import fpt.capstone.inqr.model.Neighbor;
 import fpt.capstone.inqr.model.Room;
 import fpt.capstone.inqr.model.supportModel.Line;
+import fpt.capstone.inqr.model.supportModel.Stair;
 import fpt.capstone.inqr.model.supportModel.Step;
+import fpt.capstone.inqr.presenter.MapPresenter;
+import fpt.capstone.inqr.view.MapView;
 import github.nisrulz.qreader.QREader;
 
 import static android.content.Context.SENSOR_SERVICE;
-import static java.lang.Math.PI;
-import static java.lang.Math.atan2;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MapFragment extends BaseFragment implements SensorEventListener {
+public class MapFragment extends BaseFragment implements SensorEventListener, MapView, SupportScanQr {
 
     //    private ImageView imgView;
+    private View view;
     private RecyclerView rvMap, rvDot;
     private MapAdapter adapterMap;
     private PointViewAdapter adapterPoint;
-    private CardView bgNavigate, bgStep;
-    private ImageView imgScan;
+    private LinearLayout btNavigate;
+    private RelativeLayout btStepList;
+    private ImageView imgScan, imgLike;
     private FrameLayout frame;
     private TextView tvTime, tvDistance;
+    private LinearLayout howItWorkBlock;
 
-    private DatabaseHelper db;
     private Bitmap mapImg;
-    private Canvas canvas;
-    private AutoCompleteTextView tvStart;
-    private AutoCompleteTextView tvEnd;
+    private AutoCompleteTextView tvStart, tvEnd;
 
     private List<Location> locationList;
-    private List<Room> listRoom;
-    private List<Room> listSpecialRoom;
-    private List<String> listLocationName;
-    private List<String> listRoomName;
-    private List<Vertex> vertexList;
+    private List<Room> roomList;
+    private List<Floor> floorList;
+    private List<String> locationNameList, roomNameList, listFloorName, allFloorNames, listFloorIdOnWay;
     private List<Vertex> listPointOnWay;
-    private List<String> listFloorIdOnWay;
     private List<Bitmap> listSourceMap;
-    private List<Floor> listFloor;
-    private List<String> listFloorName;
+    private List<List<Stair>> listStairs;
     private List<List<Line>> listLines;
-    private List<Line> lines;
     private List<Step> listStep;
 
-    private Room endRoom;
-    private String startLocationId = "";
-    private String buildingId = "";
-    private DijkstraShortestPath shortestPath;
-
+    private String buildingId = "", nameOfDestinationRoom, startLocationId = "";
 
     // xoay
     private QREader qrEader;
@@ -124,14 +121,37 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     private float currentDegrees = 0f;
 
     private FrameLayout bgImg;
-    private SurfaceView cameraView;
+    private FrameLayout cameraView;
+    private CameraPreview mCameraPreview;
+    private Camera camera;
     boolean hadQr = false;
     private Handler checkQrExistHandler;
     private Runnable runnable;
 
+    // walking-speed
+    private double oldDistanceRemove;
+    private String oldTimeScan, currentTime;
+    private SimpleDateFormat sdf;
+
+    // TODO: ADD SOME BOTTOM-SHEET HANDLER
+    private BottomSheetBehavior bottomSheetBehavior;
+    private LinearLayout linearLayoutBottomSheet;
+    private RelativeLayout mapFooterSection;
+    private RecyclerView rvStep;
+    private StepAdapter stepAdapter;
+    private ImageView imgWayInfoToggle;
+    private TextView tvWayInfoToggleName;
+
+    private MapPresenter mMapPresenter;
+    private Wayfinder wayfinder;
+
+    private Calendar calendar;
+
+    private TextToSpeech textToSpeech;
+    private boolean favoriteDestination = false;
 
     public MapFragment() {
-        // Required empty public constructor
+
     }
 
     @Override
@@ -144,9 +164,25 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                 .withListener(new PermissionListener() {
                     @Override
                     public void onPermissionGranted(PermissionGrantedResponse response) {
+
+                        // Create an instance of Camera
+//                        camera = getCameraInstance();
+//
+//                        // Create our Preview view and set it as the content of our activity.
+//                        mCameraPreview = new CameraPreview(MapFragment.this.getContext(), camera);
+
+
+                        cameraView.removeAllViews();
+                        cameraView.addView(mCameraPreview);
+//                        mCameraPreview.resize();
+
+//                        setupCamera();
+
                         if (qrEader != null) {
-                            qrEader.initAndStart(cameraView);
+                            qrEader.initAndStart(mCameraPreview);
                         }
+//                        cameraView.resumeCameraPreview(MapFragment.this::handleResult);
+//                        cameraView.startCamera();
                     }
 
                     @Override
@@ -160,6 +196,8 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                     }
                 }).check();
 
+        checkQrExistHandler.removeCallbacks(runnable);
+        checkQrExistHandler.removeCallbacksAndMessages(null);
         checkQrExistHandler.postDelayed(runnable, 100);
     }
 
@@ -167,6 +205,19 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     public void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        checkQrExistHandler.removeCallbacks(runnable);
+        checkQrExistHandler.removeCallbacksAndMessages(null);
+
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+
         Dexter.withActivity(this.getActivity())
                 .withPermission(Manifest.permission.CAMERA)
                 .withListener(new PermissionListener() {
@@ -189,187 +240,240 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                 }).check();
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        checkQrExistHandler.removeCallbacks(runnable);
-        checkQrExistHandler.removeCallbacksAndMessages(null);
+    /**
+     * A safe way to get an instance of the Camera object.
+     */
+    private static Camera getCameraInstance() {
+        Camera c = null;
+        try {
+            c = Camera.open(); // attempt to get a Camera instance
+        } catch (Exception e) {
+            // Camera is not available (in use or does not exist)
+        }
+        return c; // returns null if camera is unavailable
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setTitle("Chỉ đường");
 
-        // GET BUILDING_ID THAT USER PICKED
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            buildingId = bundle.getString("buildingID", "");
-        }
 
-        db = new DatabaseHelper(getContext());
+        textToSpeech = new TextToSpeech(getContext(), status -> {
+            if (status != TextToSpeech.ERROR) {
+                textToSpeech.setLanguage(Locale.US);
+            }
+        });
 
-        // get all floor
-        listFloor = db.getAllFloors(buildingId);
-
-        // get all location
-        locationList = new ArrayList<>();
-        for (Floor floor : listFloor) {
-            locationList.addAll(db.getAllLocations(floor.getId()));
-        }
-
-        // get all location Name
-        listLocationName = getListLocationName();
-
-        // get all room
-        listRoom = new ArrayList<>();
-        for (Location location : locationList) {
-            listRoom.addAll(db.getAllRooms(location.getId()));
-        }
-
-        // get all room name
-        listRoomName = getListRoomName();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_map, container, false);
+        view = inflater.inflate(R.layout.fragment_map_modified_updated, container, false);
+        sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        buildingId = getArguments().getString("buildingID", "");
 
-        initView(view);
-        setupInput();
-        setupSensor();
-        setupScanQR();
-
-        imgScan.setOnClickListener(v -> {
-            if (frame.getVisibility() == View.VISIBLE) {
-                frame.setVisibility(View.GONE);
-            } else if (frame.getVisibility() == View.GONE) {
-                frame.setVisibility(View.VISIBLE);
-            }
-        });
-
-        bgNavigate.setOnClickListener(v -> {
-            NavigationFragment navFragment = new NavigationFragment();
-            changeFragment(navFragment, true, false);
-        });
-
-        bgStep.setOnClickListener(v -> {
-            BottomSheetFragment bottomSheetFragment = new BottomSheetFragment(listStep, tvDistance.getText().toString(), tvTime.getText().toString());
-            bottomSheetFragment.show(getActivity().getSupportFragmentManager(), bottomSheetFragment.getTag());
-        });
-
-        // prepare rv
-        adapterMap = new MapAdapter(getActivity());
-        adapterPoint = new PointViewAdapter(this);
-
-        rvMap.setLayoutManager(new LinearLayoutManager(this.getContext(), RecyclerView.HORIZONTAL, false) {
-            @Override
-            public boolean canScrollHorizontally() {
-                return false;
-            }
-        });
-        rvMap.setAdapter(adapterMap);
-
-        SnapHelper snapHelper = new PagerSnapHelper();
-        snapHelper.attachToRecyclerView(rvMap);
-
-        rvDot.setLayoutManager(new LinearLayoutManager(view.getContext(), RecyclerView.HORIZONTAL, false));
-        rvDot.setAdapter(adapterPoint);
-
-
-//        rvMap.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//                LinearLayoutManager layoutManager = (LinearLayoutManager) rvMap.getLayoutManager();
-//                int positionOfVisibleView = layoutManager.findFirstVisibleItemPosition();
-//
-//                adapterMap.setListSource(listSourceMap, listLines);
-//
-//                adapterPoint.setPosition(positionOfVisibleView);
-//            }
-//        });
+        // TODO: MODIFY HERE
+        mMapPresenter = new MapPresenter(this, getContext());
+        mMapPresenter.loadBuildingData(buildingId);
 
 
         return view;
     }
 
+    @Override
+    public void onSuccessLoadBuildingData(List<Floor> floors, List<Location> locations, List<Room> rooms, List<String> floorNames, List<String> locationNames, List<String> roomNames) {
+        floorList = floors;
+        allFloorNames = floorNames;
+        locationList = locations;
+        locationNameList = locationNames;
+        roomList = rooms;
+        roomNameList = roomNames;
+        wayfinder = new Wayfinder(locationList, roomList);
+
+        initView(view);
+//        setupInput();
+        setupInputNew();
+
+        setupSensor();
+        setupScanQR();
+
+        // Create an instance of Camera
+        camera = getCameraInstance();
+
+        // Create our Preview view and set it as the content of our activity.
+        mCameraPreview = new CameraPreview(MapFragment.this.getContext(), camera);
+//        cameraView.addView(mCameraPreview);
+
+
+        setupCamera();
+    }
+
+    @Override
+    public void onLoadRoomData(List<Room> listRooms) {
+        this.roomList = listRooms;
+    }
+
+    private void maybeEnableArButton() {
+        ArCoreApk.Availability availability = ArCoreApk.getInstance().checkAvailability(getContext());
+        if (availability.isTransient()) {
+            // Re-query at 5Hz while compatibility is checked in the background.
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    maybeEnableArButton();
+                }
+            }, 200);
+        }
+        if (availability.isSupported()) {
+            btNavigate.setVisibility(View.VISIBLE);
+            btNavigate.setEnabled(true);
+            // indicator on the button.
+        } else { // Unsupported or unknown.
+            btNavigate.setVisibility(View.INVISIBLE);
+            btNavigate.setEnabled(false);
+        }
+    }
+
+    private void setupInputNew() {
+        tvStart.setOnClickListener(v -> {
+            if (frame.getVisibility() == View.VISIBLE) {
+                frame.setVisibility(View.GONE);
+            }
+
+            //remove destination
+            tvEnd.setText("");
+
+            this.changeFragment(new ChooseLocationFragment(this, locationList), true, false);
+        });
+
+        tvEnd.setOnClickListener(v -> {
+            if (frame.getVisibility() == View.VISIBLE) {
+                frame.setVisibility(View.GONE);
+            }
+            this.changeFragment(new ChooseDestinationFragment(this, roomList, buildingId), true, false);
+        });
+    }
+
+    public void speak(String message) {
+        String utteranceId = UUID.randomUUID().toString();
+        textToSpeech.speak(message, TextToSpeech.QUEUE_ADD, null, utteranceId);
+    }
+
     public void chooseFloor(int position) {
         if (frame.getVisibility() == View.VISIBLE) {
-            adapterMap.setListSource(listSourceMap, listLines, 3f);
+            adapterMap.setListSource(listSourceMap, listStairs, listLines, 3f);
         } else {
-            adapterMap.setListSource(listSourceMap, listLines, 2f);
+            adapterMap.setListSource(listSourceMap, listStairs, listLines, 2f);
         }
+
         rvMap.scrollToPosition(position);
         adapterPoint.setPosition(position);
     }
 
 
     private void setupScanQR() {
-        Dexter.withActivity(this.getActivity())
-                .withPermission(Manifest.permission.CAMERA)
-                .withListener(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted(PermissionGrantedResponse response) {
-                        setupCamera();
-                    }
-
-                    @Override
-                    public void onPermissionDenied(PermissionDeniedResponse response) {
-
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-
-                    }
-                }).check();
 
 //        img.setVisibility(View.INVISIBLE);
-
         checkQrExistHandler = new Handler();
         runnable = () -> {
+
             if (hadQr) {
                 mSensorManager.registerListener(this, mRotation, SensorManager.SENSOR_DELAY_GAME);
                 this.getActivity().runOnUiThread(() -> bgImg.setVisibility(View.VISIBLE));
+
+//                cameraView.resumeCameraPreview(MapFragment.this::handleResult);
             } else {
                 mSensorManager.unregisterListener(this);
                 this.getActivity().runOnUiThread(() -> bgImg.setVisibility(View.INVISIBLE));
+
+
             }
 
             hadQr = false;
             checkQrExistHandler.postDelayed(runnable, 100);
         };
-//        checkQrExistHandler.postDelayed(runnable, 100);
+        checkQrExistHandler.postDelayed(runnable, 100);
     }
 
     private void setupSensor() {
         mSensorManager = (SensorManager) this.getActivity().getSystemService(SENSOR_SERVICE);
-
         mRotation = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
     }
 
+    public void setStartLocation(Location location) {
+        tvStart.setText(location.getName());
+
+        tvStart.setError(null);
+    }
+
+    public void setDestination(Room room) {
+        tvEnd.setText(room.getName());
+        tvEnd.setError(null);
+
+        if (imgLike.getVisibility() == View.GONE) {
+            imgLike.setVisibility(View.VISIBLE);
+        }
+
+        if (room.isSpecialRoom()) {
+            int count = PreferenceHelper.getInt(getContext(), buildingId + "_" + room.getName().toLowerCase());
+            // save in preference
+            PreferenceHelper.putInt(getContext(), buildingId + "_" + room.getName().toLowerCase(), count + 1);
+
+            favoriteDestination = PreferenceHelper.getBoolean(getContext(), buildingId + "_" + room.getName().toLowerCase() + "_favorite");
+        } else {
+            favoriteDestination = room.isFavorite();
+
+            // update counter
+            mMapPresenter.updateRoomCounter(buildingId, room.getId(), room.getCounter() + 1);
+        }
+
+        if (favoriteDestination) {
+            imgLike.setImageResource(R.drawable.ic_like);
+        } else {
+            imgLike.setImageResource(R.drawable.ic_no_like);
+        }
+
+        // process find way
+        if (tvStart.getText().toString().isEmpty()) {
+            tvStart.setError("Invalid");
+        } else {
+            nameOfDestinationRoom = room.getName();
+
+            startLocationId = getLocationId(tvStart.getText().toString());
+            processFindWay(startLocationId, room.getName());
+        }
+
+
+    }
+
     private void setupInput() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, 0);
-        for (String s : listLocationName) {
+        // LOCATION >> STARTING INPUT
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, 0);
+        for (String s : locationNameList) {
             for (int i = 0; i < adapter.getCount(); i++) {
                 if (adapter.getItem(i).equals(s))
                     adapter.remove(s);
             }
             adapter.add(s);
         }
+
         tvStart.setAdapter(adapter);
         adapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, 0);
-        for (String s : listRoomName) {
+
+        // ROOM >> DESTINATION
+        for (String s : roomNameList) {
             for (int i = 0; i < adapter.getCount(); i++) {
                 if (adapter.getItem(i).equals(s))
                     adapter.remove(s);
             }
             adapter.add(s);
         }
+
         tvEnd.setAdapter(adapter);
+
+
         tvEnd.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -386,15 +490,20 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
             }
         });
+
         ArrayAdapter<String> finalAdapter = adapter;
         tvEnd.setOnItemClickListener((parent, view, position, id) -> {
             String roomName = finalAdapter.getItem(position);
+            nameOfDestinationRoom = roomName;
 
             String locationName = tvStart.getText().toString();
             if (checkInputStartPoint(locationName)) {
-                startLocationId = getLocationId(locationName);
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(tvEnd.getWindowToken(), 0);
+                imm.hideSoftInputFromWindow(tvStart.getWindowToken(), 0);
 
-                prepareBeforeFindWay(startLocationId, roomName);
+                startLocationId = getLocationId(locationName);
+                processFindWay(startLocationId, roomName);
             } else {
                 tvStart.setError(getResources().getString(R.string.input_error));
             }
@@ -402,7 +511,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     }
 
     private boolean checkInputStartPoint(String name) {
-        for (String locationName : listLocationName) {
+        for (String locationName : locationNameList) {
             if (name.equals(locationName)) {
                 return true;
             }
@@ -411,7 +520,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     }
 
     private boolean checkInputEndPoint(String name) {
-        for (String roomName : listRoomName) {
+        for (String roomName : roomNameList) {
             if (name.equals(roomName)) {
                 return true;
             }
@@ -422,37 +531,168 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
     private void initView(View view) {
         rvMap = view.findViewById(R.id.rvMap);
         rvDot = view.findViewById(R.id.rvDot);
-        bgNavigate = view.findViewById(R.id.bgNavigate);
-        bgStep = view.findViewById(R.id.bgStep);
+        btNavigate = view.findViewById(R.id.bt_navigate);
+        btStepList = view.findViewById(R.id.map_footer_section);
         imgScan = view.findViewById(R.id.imgScan);
-//        imgView = view.findViewById(R.id.imgView);
+        imgLike = view.findViewById(R.id.imgLike);
         tvStart = view.findViewById(R.id.tvStart);
         tvEnd = view.findViewById(R.id.tvEnd);
 
         frame = view.findViewById(R.id.frame);
+        howItWorkBlock = view.findViewById(R.id.how_it_work_block);
 
         img = view.findViewById(R.id.img);
         bgImg = view.findViewById(R.id.bgImg);
-//        bgCam = view.findViewById(R.id.bgCam);
         cameraView = view.findViewById(R.id.cameraView);
 
+        // TODO: CHANGE THE ID OF TEXT VIEW
+        tvTime = view.findViewById(R.id.tv_time);
+        tvDistance = view.findViewById(R.id.tv_distance);
+        tvWayInfoToggleName = view.findViewById(R.id.tv_way_info_toggle_name);
+        imgWayInfoToggle = view.findViewById(R.id.img_way_info_toggle);
 
-        tvTime = view.findViewById(R.id.tvTime);
-        tvDistance = view.findViewById(R.id.tvDistance);
+        rvStep = view.findViewById(R.id.rvStep);
+        stepAdapter = new StepAdapter(this, new ArrayList<>());
+        rvStep.setLayoutManager(new LinearLayoutManager(view.getContext(), RecyclerView.VERTICAL, false));
+        rvStep.setAdapter(stepAdapter);
+
+        mapFooterSection = view.findViewById(R.id.map_footer_section);
+        linearLayoutBottomSheet = view.findViewById(R.id.way_info_bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(linearLayoutBottomSheet);
+        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    tvWayInfoToggleName.setText("SHOW MAP");
+                    imgWayInfoToggle.setImageResource(R.drawable.ic_show_map);
+                } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    tvWayInfoToggleName.setText("STEP AND MORE");
+                    imgWayInfoToggle.setImageResource(R.drawable.ic_step_and_more);
+                } // end if
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
+
+        btNavigate.setOnClickListener(v -> {
+            if (isNetworkAvailable()) {
+                NavigationFragment navFragment = new NavigationFragment(locationList, roomList, nameOfDestinationRoom);
+                changeFragment(navFragment, true, false);
+            } else {
+                InternetWarningDialog dialog = new InternetWarningDialog();
+                dialog.show(getChildFragmentManager(), "internet_warning");
+            }
+        });
+
+        btStepList.setOnClickListener(v -> {
+            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            } else {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
+        });
+
+
+        imgScan.setOnClickListener(v -> {
+            setupCameraPreview();
+        });
+
+        imgLike.setOnClickListener(v -> {
+            if (wayfinder.getRoom(tvEnd.getText().toString()).isSpecialRoom()) {
+                if (favoriteDestination) {
+                    imgLike.setImageResource(R.drawable.ic_no_like);
+
+                    PreferenceHelper.putBoolean(getContext(), buildingId + "_" + tvEnd.getText().toString().toLowerCase() + "_favorite", false);
+
+                    favoriteDestination = false;
+                } else {
+                    imgLike.setImageResource(R.drawable.ic_like);
+
+                    PreferenceHelper.putBoolean(getContext(), buildingId + "_" + tvEnd.getText().toString().toLowerCase() + "_favorite", true);
+
+                    favoriteDestination = true;
+                }
+            } else {
+                if (favoriteDestination) {
+                    imgLike.setImageResource(R.drawable.ic_no_like);
+
+                    mMapPresenter.updateFavoriteRoom(buildingId, wayfinder.getRoom(tvEnd.getText().toString()).getId(), 0);
+
+                    favoriteDestination = false;
+                } else {
+                    imgLike.setImageResource(R.drawable.ic_like);
+
+                    mMapPresenter.updateFavoriteRoom(buildingId, wayfinder.getRoom(tvEnd.getText().toString()).getId(), 1);
+
+                    favoriteDestination = true;
+                }
+            }
+        });
+
+        // prepare rv
+        adapterMap = new MapAdapter(getActivity());
+        adapterPoint = new PointViewAdapter(this, getActivity());
+
+        rvMap.setLayoutManager(new LinearLayoutManager(this.getContext(), RecyclerView.HORIZONTAL, false) {
+            @Override
+            public boolean canScrollHorizontally() {
+                return false;
+            }
+        });
+        rvMap.setAdapter(adapterMap);
+
+        SnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(rvMap);
+
+        rvDot.setLayoutManager(new LinearLayoutManager(view.getContext(), RecyclerView.HORIZONTAL, false));
+        rvDot.setAdapter(adapterPoint);
+
+        maybeEnableArButton();
+
+        // camera
+        // Create an instance of Camera
+//        camera = getCameraInstance();
+//
+//        // Create our Preview view and set it as the content of our activity.
+//        mCameraPreview = new CameraPreview(this.getContext(), camera);
+//        cameraView.addView(mCameraPreview);
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    public void setupCameraPreview() {
+        if (frame.getVisibility() == View.VISIBLE) {
+            frame.setVisibility(View.GONE);
+        } else if (frame.getVisibility() == View.GONE) {
+            frame.setVisibility(View.VISIBLE);
+
+//            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+//            imm.hideSoftInputFromWindow(tvEnd.getWindowToken(), 0);
+//            imm.hideSoftInputFromWindow(tvStart.getWindowToken(), 0);
+        }
     }
 
     private void showMap() {
+        howItWorkBlock.setVisibility(View.GONE);
+        linearLayoutBottomSheet.setVisibility(View.VISIBLE);
+        mapFooterSection.setVisibility(View.VISIBLE);
         rvMap.setVisibility(View.VISIBLE);
         rvDot.setVisibility(View.VISIBLE);
-        bgNavigate.setVisibility(View.VISIBLE);
-        bgStep.setVisibility(View.VISIBLE);
-
         tvTime.setVisibility(View.VISIBLE);
         tvDistance.setVisibility(View.VISIBLE);
+        stepAdapter.setListSteps(listStep);
     }
 
     private void setupCamera() {
-        qrEader = new QREader.Builder(this.getContext(), cameraView, data -> {
+        qrEader = new QREader.Builder(this.getContext(), mCameraPreview, data -> {
             tvStart.post(() -> {
 //                    btnFindWay.setText(data);
 
@@ -482,7 +722,7 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
                                     startLocationId = id[1].trim();
 
                                     //tìm đường
-                                    prepareBeforeFindWay(startLocationId, tvEnd.getText().toString());
+                                    processFindWay(startLocationId, tvEnd.getText().toString());
                                 } else {
                                     tvStart.setText(getResources().getString(R.string.qr_error));
                                 }
@@ -503,25 +743,24 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
         }).facing(QREader.BACK_CAM)
                 .enableAutofocus(true)
-//                .height(cameraView.getHeight())
-//                .width(cameraView.getWidth())
+//                .height(mCameraPreview.getHeight())
+//                .width(mCameraPreview.getWidth())
                 .build();
         qrEader.start();
     }
 
     private void updateOrientation(String orientId) {
         switch (orientId) {
+            case Neighbor.ORIENT_NO_WAY:
+                img.setImageResource(R.drawable.fence);
+                break;
             case Neighbor.ORIENT_NULL:
                 img.setImageResource(R.drawable.like);
                 break;
             case Neighbor.ORIENT_LEFT:
-//            case Neighbor.ORIENT_LEFT_TURN_LEFT:
-//            case Neighbor.ORIENT_LEFT_TURN_RIGHT:
                 img.setImageResource(R.drawable.arrow_left);
                 break;
             case Neighbor.ORIENT_RIGHT:
-//            case Neighbor.ORIENT_RIGHT_TURN_LEFT:
-//            case Neighbor.ORIENT_RIGHT_TURN_RIGHT:
                 img.setImageResource(R.drawable.arrow_right);
                 break;
             case Neighbor.ORIENT_UP:
@@ -539,40 +778,6 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         }
     }
 
-    private List<Room> getListSpecialRoom(String roomName) {
-        List<Room> listWC = new ArrayList<>();
-        for (Room room : listRoom) {
-            if (roomName.equals(room.getName())) {
-                listWC.add(room);
-            }
-        }
-        return listWC;
-    }
-
-    private List<String> getListLocationName() {
-        List<String> listName = new ArrayList<>();
-
-        for (Location location : locationList) {
-            listName.add(location.getName());
-        }
-
-        Collections.sort(listName);
-
-        return listName;
-    }
-
-    private List<String> getListRoomName() {
-        List<String> listName = new ArrayList<>();
-
-        for (Room room : listRoom) {
-            listName.add(room.getName());
-        }
-
-        Collections.sort(listName);
-
-        return listName;
-    }
-
     private String getLocationId(String name) {
         if (name != null) {
             for (Location location : locationList) {
@@ -584,118 +789,110 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         return null;
     }
 
-    private String getLocationIdOfRoom(String name) {
-        if (name != null) {
-            for (Room room : listRoom) {
-                if (name.toLowerCase().equals(room.getName().toLowerCase())) {
-                    return room.getLocationId();
-                }
-            }
-        }
-        return null;
-    }
-
-    private int getIndexOfLocation(String id) {
-
-        for (int i = 0; i < locationList.size(); i++) {
-            if (id.equals(locationList.get(i).getId())) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
     private Location getLocation(String id) {
         for (int i = 0; i < locationList.size(); i++) {
             if (id.equals(locationList.get(i).getId())) {
                 return locationList.get(i);
             }
         }
+
         return null;
     }
 
-    private Room getRoom(String name) {
-        for (Room room : listRoom) {
-            if (name.equals(room.getName())) {
-                return room;
+    private void processFindWay(String startLocationId, String roomName) {
+        new Handler().postDelayed(() -> {
+            List<Vertex> listTmp = checkLocationInListFindWay(startLocationId);
+
+            if (listTmp == null) {
+                destination = roomName;
+                wayfinder.findWay(startLocationId, destination);
+                listPointOnWay = wayfinder.getShortestPathList();
+            } else {
+                listPointOnWay = listTmp;
+                wayfinder.setShortestPathList(listPointOnWay);
             }
-        }
-        return null;
-    }
 
+            processDistanceAndTime();
+            drawOnMap();
 
-    private void prepareData() {
-        if (vertexList == null) {
-            vertexList = new ArrayList<>();
-        } else {
-            vertexList.clear();
-        }
-
-        for (int i = 0; i < locationList.size(); i++) {
-            Vertex vertex = new Vertex(locationList.get(i).getId(), locationList.get(i).getName());
-            vertexList.add(vertex);
-        }
-
-        for (int i = 0; i < locationList.size(); i++) {
-            for (int j = 0; j < locationList.get(i).getNeighborList().size(); j++) {
-                int index = getIndexOfLocation(locationList.get(i).getNeighborList().get(j).getId());
-
-                vertexList.get(i).addNeighbour(new Edge(locationList.get(i).getNeighborList().get(j).getDistance(), vertexList.get(i), vertexList.get(index)));
-            }
-        }
-    }
-
-    private void prepareBeforeFindWay(String startLocationId, String roomName) {
-
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(tvEnd.getWindowToken(), 0);
-        imm.hideSoftInputFromWindow(tvStart.getWindowToken(), 0);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-//                findWay(startLocationId, roomName);
-
-                List<Vertex> listTmp = checkLocationInListFindWay(startLocationId);
-                if (listTmp == null) {
-                    destination = roomName;
-                    findWay(startLocationId, destination);
-                } else {
-                    listPointOnWay = listTmp;
-                    // update UI
-                    drawOnMap();
-                }
-
-                // cal time and distance
-                // khoảng cách chính xác sẽ bằng: khoảng cách từ điểm bắt đầu đến điểm kết thúc - khoảng cách từ điểm bắt đầu
-                // đến điểm đầu tiên trong listPointOnWay
-                if (currentPath != 0) {
-                    double distanceRemove = listPointOnWay.get(0).getDistance();
-                    double distanceReal = currentPath - distanceRemove;
-
-                    // speed : m/h
-                    int speed = getActivity().getResources().getInteger(R.integer.speed_walking);
-                    double time = distanceReal / speed * 60;
-
-                    int mins = (int) (time / 1);
-                    int sens = (int) (time % 1 * 60);
-
-                    if (mins != 0) {
-                        tvTime.setText(mins + "min " + sens + "sec");
-                    } else {
-                        tvTime.setText(sens + "sec");
-                    }
-
-                    tvDistance.setText("(" + (int) Math.round(distanceReal) + "m)");
-                } else {
-                    tvTime.setText("You are at the destination");
-                    tvDistance.setText("");
-                }
-
-
-            }
         }, 200);
+    }
+
+    private void processDistanceAndTime() {
+        // cal time and distance
+        // khoảng cách chính xác sẽ bằng: khoảng cách từ điểm bắt đầu đến điểm kết thúc - khoảng cách từ điểm bắt đầu
+        // đến điểm đầu tiên trong listPointOnWay
+        double shortestDistance = wayfinder.getCurrentShortestDistance();
+        if (shortestDistance > 0) {
+            double distanceRemove = listPointOnWay.get(0).getDistance();
+            double distanceReal = shortestDistance - distanceRemove;
+            int speed;
+
+            if (distanceRemove > 0) {
+                double tmpDistance = distanceRemove - oldDistanceRemove;
+
+                currentTime = sdf.format(new Date());
+                Date startTime = null;
+                Date endTime = null;
+                try {
+                    startTime = sdf.parse(oldTimeScan);
+                    endTime = sdf.parse(currentTime);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                long tmpTime = endTime.getTime() - startTime.getTime();
+                speed = (int) ((tmpDistance * (1000 * 60 * 60)) / tmpTime);
+            } else {
+                // speed : m/h
+                speed = PreferenceHelper.getInt(getContext(), "speed_walking");
+
+                if (speed == 0) {
+                    speed = getActivity().getResources().getInteger(R.integer.speed_walking);
+                    PreferenceHelper.putInt(getContext(), "speed_walking", speed);
+                }
+            }
+
+            double time = distanceReal / speed * 60;
+
+            int mins = (int) (time / 1);
+            int sens = (int) (time % 1 * 60);
+
+            currentTime = sdf.format(new Date());
+            Date date = null;
+            try {
+                date = sdf.parse(currentTime);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            calendar.add(Calendar.SECOND, sens);
+            calendar.add(Calendar.MINUTE, mins);
+
+            if (mins == 0) {
+                tvTime.setText(sens + "secs");
+            } else {
+                if (mins == 1) {
+                    tvTime.setText(mins + "min " + sens + "secs");
+                } else {
+                    tvTime.setText(mins + "mins " + sens + "secs");
+                }
+            }
+
+//            tvTime.setText(currentTime + " - " + sdf.format(calendar.getTime()));
+            tvDistance.setText("(" + (int) Math.round(distanceReal) + "m)");
+
+            oldTimeScan = currentTime;
+            oldDistanceRemove = distanceRemove;
+
+        } else if (shortestDistance == 0) {
+            tvTime.setText("You are at the destination");
+            tvDistance.setText("");
+        } else {
+            tvTime.setText("There is no way to the destination");
+            tvDistance.setText("");
+        }
     }
 
     private String destination = "";
@@ -720,110 +917,15 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
             }
         }
 
-
         return listTmp;
-    }
-
-    private double currentPath = 0.0;
-
-    private void findWay(String startLocationId, String roomName) {
-
-//        if (!isFinding) {
-//        updateFloor(getLocation(startLocationId).getFloorId());
-//        }
-//        isFinding = true;
-
-        prepareData();
-
-
-        if (shortestPath == null) {
-            shortestPath = new DijkstraShortestPath();
-        }
-
-        // check room belong to which location
-        String locationId = getLocationIdOfRoom(roomName);
-        Vertex endPoint = getVertexInList(locationId);
-
-
-        // kiểm tra xem có phải special room không?
-//        String roomName = tvEnd.getText().toString();
-        if (getRoom(roomName).isSpecialRoom()) {
-
-            //prepare list special room
-            listSpecialRoom = getListSpecialRoom(roomName);
-
-
-//            String startId = getLocationId(tvStart.getText().toString());
-            double shortestDistance = 0;
-            for (int i = 0; i < listSpecialRoom.size(); i++) {
-//                System.out.println("WC: " + commonLocations.get(i).get
-
-                // WC nằm chung vị trí với Start Point
-                if (listSpecialRoom.get(i).getLocationId().equals(startLocationId)) {
-                    listPointOnWay = new ArrayList<>();
-                    listPointOnWay.add(getVertexInList(listSpecialRoom.get(i).getLocationId()));
-                    endRoom = listSpecialRoom.get(i);
-
-                    shortestDistance = 0;
-                    break;
-                } else {
-                    shortestPath.computeShortestPaths(getVertexInList(startLocationId));
-                    double tmpPath = getVertexInList(listSpecialRoom.get(i).getLocationId()).getDistance();
-
-                    List<Vertex> listPoint = shortestPath.getShortestsPathTo(getVertexInList(listSpecialRoom.get(i).getLocationId()));
-
-                    if (shortestDistance == 0) {
-                        listPointOnWay = listPoint;
-
-                        endRoom = listSpecialRoom.get(i);
-
-                        shortestDistance = tmpPath;
-                    } else if (tmpPath < shortestDistance) {
-                        listPointOnWay = listPoint;
-
-                        endRoom = listSpecialRoom.get(i);
-
-                        shortestDistance = tmpPath;
-                    }
-                    prepareData();
-                }
-            }
-
-            currentPath = shortestDistance;
-
-
-        } else {
-
-            // check room nằm chung vị trí với Start Point
-            endRoom = getRoom(roomName);
-
-            if (endRoom.getLocationId().equals(startLocationId)) {
-                listPointOnWay = new ArrayList<>();
-                listPointOnWay.add(getVertexInList(endRoom.getLocationId()));
-
-                currentPath = 0;
-            } else {
-                shortestPath.computeShortestPaths(getVertexInList(startLocationId));
-                listPointOnWay = shortestPath.getShortestsPathTo(endPoint);
-
-                currentPath = endPoint.getDistance();
-            }
-
-
-        }
-//        shortestPath.computeShortestPaths(getVertexInList(getLocationId(tvStart.getText().toString())));
-//        listPointOnWay = shortestPath.getShortestsPathTo(getVertexInList(getLocationId(tvEnd.getText().toString())));
-
-        // update tọa độ của node cuối
-
-        Log.d("Path", listPointOnWay.toString());
-
-        drawOnMap();
     }
 
     private void drawOnMap() {
         // tìm hướng
-        if (listPointOnWay.size() > 1) {
+        if (listPointOnWay.size() == 2 && wayfinder.getCurrentShortestDistance() == -1) {
+            // ko tìm đc đường
+            updateOrientation(Neighbor.ORIENT_NO_WAY);
+        } else if (listPointOnWay.size() > 1) {
             String neighborId = listPointOnWay.get(1).getId();
             Location location = getLocation(listPointOnWay.get(0).getId());
             updateOrientation(getNeighbor(location, neighborId).getDirection());
@@ -833,154 +935,54 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         }
 
         getListFloorIdOnWay();
-
-        // refresh map
-//        drawImage();
-
         getListSourceMap();
 
         // send data to adapter, cập nhập View
         if (frame.getVisibility() == View.VISIBLE) {
-            adapterMap.setListSource(listSourceMap, listLines, 3f);
+            adapterMap.setListSource(listSourceMap, listStairs, listLines, 3f);
         } else {
-            adapterMap.setListSource(listSourceMap, listLines, 2f);
+            adapterMap.setListSource(listSourceMap, listStairs, listLines, 2f);
         }
 
         adapterPoint.setListName(listFloorName);
 
-        // lấy cách đi chi tiết
-        getStepDetail();
 
-        // update UI
-        showMap();
-    }
-
-    private void getStepDetail() {
-
-        Map<Integer, String> directionGuide = new HashMap<>();
-
+        // EXTRACT DIRECTION_GUIDE TO TEXT LIST
         if (listStep == null) {
             listStep = new ArrayList<>();
         } else {
             listStep.clear();
         }
 
-        int step = 0;
-        if (listPointOnWay.size() == 2) {
-            Location A = getLocation(listPointOnWay.get(step).getId());
-            String neighborID = listPointOnWay.get(step + 1).getId();
-            Neighbor neighborOfA = getNeighbor(A, neighborID);
-            directionGuide.put(step, neighborOfA.getDirection());
+        // lấy cách đi chi tiết
+        double shortestDistance = wayfinder.getCurrentShortestDistance();
+        if (shortestDistance <= 0) {
+//            listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString(), null));
+//            listStep.addAll(wayfinder.getListStepGuide());
+//            listStep.add(new Step(Step.TYPE_END_POINT, "You reach the destination: " + tvEnd.getText().toString(), null));
         } else {
-            while (step < listPointOnWay.size() - 2) {
-                int nextPointStep = step;
-
-                Location A = getLocation(listPointOnWay.get(nextPointStep).getId());
-                String neighborID = listPointOnWay.get(nextPointStep + 1).getId();
-                Neighbor neighborOfA = getNeighbor(A, neighborID);
-
-                Location B = getLocation(listPointOnWay.get(nextPointStep + 1).getId());
-                neighborID = listPointOnWay.get(nextPointStep + 2).getId();
-                Neighbor neighborOfB = getNeighbor(B, neighborID);
-
-                Location C = getLocation(listPointOnWay.get(nextPointStep + 2).getId());
-
-                // There is no two continuous staircases == three standard locations
-                if (!neighborOfA.getDirection().equals(Neighbor.ORIENT_DOWN) && !neighborOfA.getDirection().equals(Neighbor.ORIENT_UP) &&
-                        !neighborOfB.getDirection().equals(Neighbor.ORIENT_DOWN) && !neighborOfB.getDirection().equals(Neighbor.ORIENT_UP)) {
-                    if (directionGuide.get(step) == null)
-                        directionGuide.put(step, neighborOfA.getDirection());
-                    String direction = GeoHelper.getDirection(A, B, C, neighborOfB);
-                    directionGuide.put(step + 1, direction);
-                } else { // two continuous staircases
-                    directionGuide.put(step, neighborOfA.getDirection());
-                    if (nextPointStep + 2 == listPointOnWay.size() - 1) { // C is the destination
-                        directionGuide.put(++step, neighborOfA.getDirection());
-                    }
-                } // end if
-
-                step++;
-            } // end while
-        } // end if
+            listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString() + " at " + currentTime, null));
+            listStep.addAll(wayfinder.getListStepGuide());
+            listStep.add(new Step(Step.TYPE_END_POINT, "You reach the destination: " + tvEnd.getText().toString() + " at about " + sdf.format(calendar.getTime()), null));
+        }
 
 
-        listStep.add(new Step(Step.TYPE_START_POINT, "You are at: " + tvStart.getText().toString(), null));
-
-        if (directionGuide.size() > 0) {
-            float distance = 0;
-            String previousStep = Neighbor.ORIENT_NULL;
-            Location previousLocation = null;
-
-            for (int i = 0; i < directionGuide.size(); i++) {
-                Location location = getLocation(listPointOnWay.get(i).getId());
-                String neighborID = listPointOnWay.get(i + 1).getId();
-                Neighbor neighbor = getNeighbor(location, neighborID);
-
-                String direction = directionGuide.get(i);
-                if (previousStep.equals(Neighbor.ORIENT_NULL)) previousStep = direction;
-                if (previousLocation == null) previousLocation = location;
-
-                if (i == directionGuide.size() - 1) {
-                    distance += neighbor.getDistance();
-                    direction = Neighbor.ORIENT_NULL;
-                }
-
-                if (!direction.equals(previousStep)) {
-                    switch (previousStep) {
-                        case Neighbor.ORIENT_LEFT:
-                            listStep.add(new Step(Step.TYPE_GO_STRAIGHT, "From the left of " + previousLocation.getName() + ", go straight.", distance + "m"));
-                            break;
-                        case Neighbor.ORIENT_RIGHT:
-                            listStep.add(new Step(Step.TYPE_GO_STRAIGHT, "From the right of " + previousLocation.getName() + ", go straight.", distance + "m"));
-                            break;
-                        case Neighbor.ORIENT_TURN_LEFT:
-                            listStep.add(new Step(Step.TYPE_TURN_LEFT, "Turn left at " + previousLocation.getName() + ", go straight.", distance + "m"));
-                            break;
-                        case Neighbor.ORIENT_TURN_RIGHT:
-                            listStep.add(new Step(Step.TYPE_TURN_RIGHT, "Turn right at " + previousLocation.getName() + ", go straight.", distance + "m"));
-                            break;
-                        case Neighbor.ORIENT_UP:
-                            listStep.add(new Step(Step.TYPE_UP_STAIR, "From " + previousLocation.getName() + ", go up to the next floor", null));
-                            break;
-                        case Neighbor.ORIENT_DOWN:
-                            listStep.add(new Step(Step.TYPE_DOWN_STAIR, "From " + previousLocation.getName() + ", go down to the next floor", null));
-                            break;
-                        case Neighbor.ORIENT_BACKWARD:
-                            listStep.add(new Step(Step.TYPE_TURN_BACK, "Go straight in the opposite direction of  " + previousLocation.getName(), null));
-                            break;
-                        case Neighbor.ORIENT_FORWARD:
-                            listStep.add(new Step(Step.TYPE_GO_FORWARD, "Keep going straight from " + previousLocation.getName(), null));
-
-                    } // end switch
-                    distance = neighbor.getDistance();
-                    previousLocation = location;
-                } else {
-                    distance += neighbor.getDistance();
-                } // end comparison with previous step
-
-                previousStep = direction;
-            } // end for
-
-        } // end extracting direction guide
-
-
-        listStep.add(new Step(Step.TYPE_END_POINT, "You reach the destination: " + tvEnd.getText().toString(), null));
-
-//        Location location = getLocation(listPointOnWay.get(listPointOnWay.size() - 2).getId());
-//        String neighborID = listPointOnWay.get(listPointOnWay.size() - 1).getId();
-//        Neighbor neighbor = getNeighbor(location, neighborID);
-//        if (neighbor.getDirection() == Neighbor.ORIENT_LEFT) {
-//            listStep.add(new Step(Step.TYPE_END_POINT,  tvEnd.getText().toString() + " is at the right side", null));
-//        } else {
-//            listStep.add(new Step(Step.TYPE_END_POINT,  tvEnd.getText().toString() + " is at the left side", null));
-//        }
+        // update UI
+        showMap();
     }
 
     private void getListSourceMap() {
+
         if (listSourceMap == null) {
             listSourceMap = new ArrayList<>();
         } else {
             listSourceMap.clear();
+        }
+
+        if (listStairs == null) {
+            listStairs = new ArrayList<>();
+        } else {
+            listStairs.clear();
         }
 
         if (listLines == null) {
@@ -989,9 +991,27 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
             listLines.clear();
         }
 
+        // DRAW PATH ON EACH FLOOR
+        List<Location> locationPathList = wayfinder.getLocationPathList();
+        Room destinationRoom = wayfinder.getEndRoom();
+
         for (String floorId : listFloorIdOnWay) {
-            drawImage(floorId);
+            mapImg = ImageHelper.getBitmap(getContext(), buildingId, floorId);
+            List<Line> lines = CanvasHelper.drawImage(getContext(), mapImg, floorId, locationPathList, destinationRoom, wayfinder.getCurrentShortestDistance());
+            listSourceMap.add(mapImg);
+            listLines.add(lines);
+
+            List<Stair> stairs = CanvasHelper.getStair(floorId, mapImg, locationPathList, wayfinder.getCurrentShortestDistance());
+            listStairs.add(stairs);
+        } // end for floor to draw path
+    }
+
+    private String getFloorName(String floorID) {
+        for (Floor floor : floorList) {
+            if (floorID.equals(floor.getId())) return floor.getName();
         }
+
+        return "";
     }
 
     private void getListFloorIdOnWay() {
@@ -1006,14 +1026,14 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
         } else {
             listFloorName.clear();
         }
+
         for (Vertex vertex : listPointOnWay) {
             String floorId = getLocation(vertex.getId()).getFloorId();
             if (!listFloorIdOnWay.contains(floorId)) {
                 listFloorIdOnWay.add(floorId);
-                listFloorName.add(db.getFloorName(floorId));
+                listFloorName.add(getFloorName(floorId));
             }
         }
-
     }
 
     private Neighbor getNeighbor(Location location, String neighborId) {
@@ -1023,176 +1043,6 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
             }
         }
         return null;
-    }
-
-    private void drawImage(String currentFloorId) {
-
-        lines = new ArrayList<>();
-
-
-        setImage(currentFloorId);
-        canvas = new Canvas(mapImg);
-
-//        System.out.println("Starting point: " + getStartingPoint());
-//        drawPoint(0);
-
-        if (listPointOnWay.size() == 1) {
-            String idStart = listPointOnWay.get(0).getId();
-            Location startPoint = getLocation(idStart);
-            float xStart, yStart, xEnd, yEnd;
-            xStart = Math.round(mapImg.getWidth() * startPoint.getRatioX());
-            yStart = Math.round(mapImg.getHeight() * startPoint.getRatioY());
-
-            xEnd = Math.round(mapImg.getWidth() * endRoom.getRatioX());
-            yEnd = Math.round(mapImg.getHeight() * endRoom.getRatioY());
-
-            drawLine(xStart, yStart, xEnd, yEnd);
-//            imgView.setImageBitmap(mapImg);
-
-            fillArrow(xStart, yStart, xEnd, yEnd);
-        } else {
-            for (int i = 0; i < listPointOnWay.size(); i++) {
-
-                if (i != listPointOnWay.size() - 1) {
-
-//                int currentFloor = Integer.parseInt(tmp[tmp.length - 1]);
-                    if (getLocation(listPointOnWay.get(i).getId()).getFloorId().equals(currentFloorId)) {
-
-                        String idStart = listPointOnWay.get(i).getId();
-                        String idEnd = listPointOnWay.get(i + 1).getId();
-
-                        Location startPoint = getLocation(idStart);
-
-                        float xStart, yStart, xEnd, yEnd;
-                        xStart = Math.round(mapImg.getWidth() * startPoint.getRatioX());
-                        yStart = Math.round(mapImg.getHeight() * startPoint.getRatioY());
-
-
-                        if (i == listPointOnWay.size() - 2) { // node cuối lấy tọa độ của room
-//                        Room room = getRoom(tvEnd.getText().toString());
-
-                            xEnd = Math.round(mapImg.getWidth() * endRoom.getRatioX());
-                            yEnd = Math.round(mapImg.getHeight() * endRoom.getRatioY());
-                        } else {
-                            Location endPoint = getLocation(idEnd);
-
-                            xEnd = Math.round(mapImg.getWidth() * endPoint.getRatioX());
-                            yEnd = Math.round(mapImg.getHeight() * endPoint.getRatioY());
-                        }
-
-                        drawLine(xStart, yStart, xEnd, yEnd);
-//                        imgView.setImageBitmap(mapImg);
-
-                        if (i == 0) {
-                            fillArrow(xStart, yStart, xEnd, yEnd);
-                        }
-                    }
-
-
-                } else {
-                    if (getLocation(listPointOnWay.get(i).getId()).getFloorId().equals(currentFloorId)) {
-//                        imgView.setImageBitmap(mapImg);
-                    }
-                }
-            }
-        }
-
-        drawPoint(listPointOnWay.get(0).getId(), currentFloorId);
-
-//        imgView.setImageBitmap(mapImg);
-        // add map
-        listSourceMap.add(mapImg);
-        listLines.add(lines);
-    }
-
-    private Vertex getVertexInList(String id) {
-        for (Vertex vertex : vertexList) {
-            if (id.equals(vertex.getId())) {
-                return vertex;
-            }
-        }
-        return null;
-    }
-
-
-    private void drawPoint(String idStart, String currentFloorId) {
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-//        for (int i = 0; i < listPointOnWay.size() - 1; i++) {
-//            Location location = getLocation(listPointOnWay.get(i).getId());
-//            if (location.getFloorId().equals(currentFloorId)) {
-//
-//                canvas.drawCircle(Math.round(mapImg.getWidth() * location.getRatioX()), Math.round(mapImg.getHeight() * location.getRatioY()), 30, new Paint());
-//            }
-//        }
-
-        if (idStart != null) {
-            Location location = getLocation(idStart);
-            if (location.getFloorId().equals(currentFloorId)) {
-                paint.setStyle(Paint.Style.FILL);
-                paint.setColor(Color.RED);
-
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.current_point);
-//                canvas.drawCircle(Math.round(mapImg.getWidth() * location.getRatioX()), Math.round(mapImg.getHeight() * location.getRatioY()), 50, paint);
-                canvas.drawBitmap(bitmap, Math.round(mapImg.getWidth() * location.getRatioX() - bitmap.getWidth() / 2), Math.round(mapImg.getHeight() * location.getRatioY() - bitmap.getHeight() / 2), new Paint());
-            }
-
-//            Room room = getRoom(tvEnd.getText().toString());
-            if (endRoom.getFloorId().equals(currentFloorId)) {
-                paint.setStyle(Paint.Style.FILL);
-                paint.setColor(Color.YELLOW);
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.destination_on_map);
-                canvas.drawBitmap(bitmap, Math.round(mapImg.getWidth() * endRoom.getRatioX() - bitmap.getWidth() / 2), Math.round(mapImg.getHeight() * endRoom.getRatioY() - bitmap.getHeight()), new Paint());
-//                canvas.drawCircle(Math.round(mapImg.getWidth() * endRoom.getRatioX()), Math.round(mapImg.getHeight() * endRoom.getRatioY()), 30, paint);
-            }
-        }
-
-    }
-
-    private void fillArrow(float from_x, float from_y, float to_x, float to_y) {
-
-        Paint paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
-        paint.setStrokeWidth(30);
-        paint.setColor(Color.GREEN);
-
-        float angle, anglerad, radius, lineangle;
-
-        //values to change for other appearance *CHANGE THESE FOR OTHER SIZE ARROWHEADS*
-        radius = 100;
-        angle = 60;
-
-        //some angle calculations
-        anglerad = (float) (PI * angle / 180.0f);
-        lineangle = (float) (atan2(to_y - from_y, to_x - from_x));
-
-        //tha line
-        canvas.drawLine(from_x, from_y, to_x, to_y, paint);
-
-        //tha triangle
-        Path path = new Path();
-        path.setFillType(Path.FillType.EVEN_ODD);
-        path.moveTo(to_x, to_y);
-        path.lineTo((float) (to_x - radius * cos(lineangle - (anglerad / 2.0))),
-                (float) (to_y - radius * sin(lineangle - (anglerad / 2.0))));
-        path.lineTo((float) (to_x - radius * cos(lineangle + (anglerad / 2.0))),
-                (float) (to_y - radius * sin(lineangle + (anglerad / 2.0))));
-        path.close();
-
-        canvas.drawPath(path, paint);
-    }
-
-    private void drawLine(final float xStart, final float yStart, final float xEnd, final float yEnd) {
-        lines.add(new Line(xStart, yStart, xEnd, yEnd));
-
-        final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.parseColor("#F78B03"));
-        paint.setStrokeWidth(25);
-        canvas.drawLine(xStart, yStart, xEnd, yEnd, paint);
-    }
-
-    private void setImage(String currentFloorId) {
-        mapImg = BitmapFactory.decodeStream(FileHelper.getImage(this.getContext(), FileHelper.TYPE_MAP, currentFloorId)).copy(Bitmap.Config.ARGB_8888, true);
     }
 
     @Override
@@ -1237,5 +1087,8 @@ public class MapFragment extends BaseFragment implements SensorEventListener {
 
     }
 
-
+    @Override
+    public void refreshCamera() {
+        this.onResume();
+    }
 }

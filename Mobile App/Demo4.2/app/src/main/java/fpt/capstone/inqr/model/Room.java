@@ -27,9 +27,43 @@ public class Room implements Serializable {
     @Expose
     private boolean specialRoom;
 
+    @SerializedName("SpaceAnchorId")
+    @Expose
+    private String spaceAnchorId;
+
     private String locationId;
 
     private String floorId;
+
+    private String floorName;
+
+    private int counter;
+
+    private boolean favorite;
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
+
+    public int getCounter() {
+        return counter;
+    }
+
+    public void setCounter(int counter) {
+        this.counter = counter;
+    }
+
+    public String getFloorName() {
+        return floorName;
+    }
+
+    public void setFloorName(String floorName) {
+        this.floorName = floorName;
+    }
 
     public String getFloorId() {
         return floorId;
@@ -85,5 +119,13 @@ public class Room implements Serializable {
 
     public void setRatioY(float ratioY) {
         this.ratioY = ratioY;
+    }
+
+    public String getSpaceAnchorId() {
+        return spaceAnchorId;
+    }
+
+    public void setSpaceAnchorId(String spaceAnchorId) {
+        this.spaceAnchorId = spaceAnchorId;
     }
 }

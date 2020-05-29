@@ -24,7 +24,7 @@ public class FileHelper {
 
 //
 
-    public static void saveFileFromUrl(Context context, int type, String link) {
+    public static void saveFileFromUrl(Context context, String buildingId, int type, String link) {
         //Internal path save file
         String folder = "image";
 
@@ -48,11 +48,16 @@ public class FileHelper {
             typePathDir.mkdirs();
         }
 
+        File buildingDir = new File(typePathDir, buildingId);
+        if (!buildingDir.exists()) {
+            buildingDir.mkdirs();
+        }
+
         String fileName = link.substring(link.lastIndexOf('/') + 1);
 
         try {
             // check file exists
-            File file = new File(typePathDir, fileName);
+            File file = new File(buildingDir, fileName);
             if (!file.exists()) {
                 URL url = new URL(link);
                 URLConnection connection = url.openConnection();
@@ -101,7 +106,7 @@ public class FileHelper {
 
     }
 
-    public static InputStream getImage(Context context, int type, String fileName) {
+    public static InputStream getImage(Context context, int type, String buildingId, String fileName) {
         try {
 //            String fileName = link.substring(link.lastIndexOf('/') + 1);
             File directory = context.getDir("image", Context.MODE_PRIVATE);
@@ -117,7 +122,9 @@ public class FileHelper {
             //IMAGE
             File typePathDir = new File(directory, typePath);
 
-            File file = new File(typePathDir, fileName + ".png");
+            File buildingDir = new File(typePathDir, buildingId);
+
+            File file = new File(buildingDir, fileName + ".png");
 
             if (file.exists()) {
 //                Uri uri = Uri.fromFile(file);
@@ -133,15 +140,14 @@ public class FileHelper {
     }
 
     @SuppressLint("DefaultLocale")
-    public static void deleteOldData(Context context, int numberOfChapter) {
+    public static void deleteOldData(Context context, String buildingId) {
         try {
-            File directory = context.getDir("vietkoredu", Context.MODE_PRIVATE);
-
-            String numberOfChapterStr = String.format("%02d", numberOfChapter);
+            File directory = context.getDir("image", Context.MODE_PRIVATE);
 
             // CH13
-            File chapterPathDir = new File(directory, "CH" + numberOfChapterStr);
-            deleteDirectory(chapterPathDir);
+            File typePath = new File(directory, "map");
+            File buildingDir = new File(typePath, buildingId);
+            deleteDirectory(buildingDir);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -7,14 +7,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import fpt.capstone.inqr.model.Building;
 import fpt.capstone.inqr.model.Floor;
 import fpt.capstone.inqr.model.Location;
 import fpt.capstone.inqr.model.Neighbor;
 import fpt.capstone.inqr.model.Room;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -42,6 +42,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String RATIO_X = "ratioX";
     private static final String RATIO_Y = "ratioY";
     private static final String LINK_QR_CODE = "linkQr";
+    private static final String QR_ANCHOR_ID = "qrAnchorId";
+    private static final String SPACE_ANCHOR_ID = "spaceAnchorId";
 //    private static final String FLOOR_ID = "floorId";
 
     //Neighbor Table
@@ -49,6 +51,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String NEIGHBOR_ID = "neighborId";
     private static final String ORIENTATION = "orientation";
     private static final String DISTANCE = "distance";
+    private static final String ACTIVE = "active";
 
     //Floor Table
     private static final String FLOOR_ID = "floorId";
@@ -56,6 +59,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //Room Table
     private static final String SPECIAL_ROOM = "specialRoom";
+    private static final String COUNTER = "counter";
+    private static final String FAVORITE = "favorite";
 
     // Building Table
     private static final String VERSION = "version";
@@ -93,7 +98,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + RATIO_X + " FLOAT,"
             + RATIO_Y + " FLOAT,"
             + FLOOR_ID + " TEXT, "
-            + LINK_QR_CODE + " TEXT"
+            + LINK_QR_CODE + " TEXT, "
+            + QR_ANCHOR_ID + " TEXT, "
+            + SPACE_ANCHOR_ID + " TEXT"
             + ")";
 
     //Neighbor Table Create statement
@@ -103,7 +110,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + LOCATION_ID + " TEXT, "
             + NEIGHBOR_ID + " TEXT, "
             + ORIENTATION + " TEXT,"
-            + DISTANCE + " FLOAT"
+            + DISTANCE + " FLOAT, "
+            + ACTIVE + " INTEGER"
             + ")";
 
     //Room Table create statement
@@ -115,7 +123,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + RATIO_Y + " FLOAT, "
             + LOCATION_ID + " TEXT, "
             + FLOOR_ID + " TEXT, "
-            + SPECIAL_ROOM + " INTEGER"
+            + SPECIAL_ROOM + " INTEGER, "
+            + SPACE_ANCHOR_ID + " TEXT, "
+            + COUNTER + " INTEGER, "
+            + FAVORITE + " INTEGER"
             + ")";
 
     public DatabaseHelper(Context context) {
@@ -166,7 +177,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return building_id;
     }
 
-    // update data building
+    // update data building + status
     public long updateBuilding(Building building) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -177,6 +188,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(DAY_EXPIRED, building.getDayExpired());
         values.put(VERSION, building.getVersion());
         values.put(STATUS, Building.UPDATE);
+
+        //update row
+        long building_id = db.update(TABLE_BUILDING, values, ID + " = ?", new String[]{building.getId()});
+        db.close();
+        return building_id;
+    }
+
+    // update data building information
+    public long updateBuildingInformation(Building building) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(NAME, building.getName());
+        values.put(DESCRIPTION, building.getDescription());
+        values.put(COMPANY_NAME, building.getCompanyName());
+        values.put(DAY_EXPIRED, building.getDayExpired());
+//        values.put(VERSION, building.getVersion());
+//        values.put(STATUS, Building.UPDATE);
 
         //update row
         long building_id = db.update(TABLE_BUILDING, values, ID + " = ?", new String[]{building.getId()});
@@ -209,6 +238,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(RATIO_Y, location.getRatioY());
         values.put(FLOOR_ID, floorId);
         values.put(LINK_QR_CODE, location.getLinkQr());
+        values.put(QR_ANCHOR_ID, location.getQrAnchorId());
+        values.put(SPACE_ANCHOR_ID, location.getSpaceAnchorId());
+
 
         //Insert row
         long floor_id = db.insert(TABLE_LOCATION, null, values);
@@ -232,6 +264,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } else {
             values.put(SPECIAL_ROOM, 0);
         }
+        values.put(SPACE_ANCHOR_ID, room.getSpaceAnchorId());
+        values.put(COUNTER, 0);
+        values.put(FAVORITE, 0);
 
 
         //Insert row
@@ -273,6 +308,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(NEIGHBOR_ID, neighbor.getId());
         values.put(ORIENTATION, neighbor.getDirection());
         values.put(DISTANCE, neighbor.getDistance());
+        if (neighbor.isActive()) {
+            values.put(ACTIVE, 1);
+        } else {
+            values.put(ACTIVE, 0);
+        }
+
 
         //Insert row
         long neighbor_id = db.insert(TABLE_NEIGHBOR, null, values);
@@ -280,37 +321,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return neighbor_id;
     }
 
-    //Fetching all Locations
-//    public List<Location> getAllLocations() {
-//        List<Location> locations = new ArrayList<>();
-//        String selectQuery = "SELECT * FROM " + TABLE_LOCATION;
-//
-//        Log.e(LOG, selectQuery);
-//
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        Cursor c = db.rawQuery(selectQuery, null);
-//
-//        //looping through all rows and add to list
-//        if (c.moveToFirst()) {
-//            do {
-//                Location location = new Location();
-//                location.setId(c.getString((c.getColumnIndex(ID))));
-//                location.setName(c.getString(c.getColumnIndex(NAME)).trim());
-//                location.setRatioX(c.getFloat(c.getColumnIndex(RATIO_X)));
-//                location.setRatioY(c.getFloat(c.getColumnIndex(RATIO_Y)));
-//                location.setFloorId(c.getString(c.getColumnIndex(FLOOR_ID)));
-//
-//                //add to location list
-//                locations.add(location);
-//
-//                List<Neighbor> list = this.getLocationNeighbors(c.getString((c.getColumnIndex(ID))));
-//                location.setNeighborList(list);
-//            } while (c.moveToNext());
-//        }
-//
-//
-//        return locations;
-//    }
+
+    // update counter room
+    public void updateRoomCounter(String roomId, int count) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COUNTER, count);
+
+        //update row
+        db.update(TABLE_ROOM, values, ID + " = ?", new String[]{roomId});
+        db.close();
+    }
+
+    // update favorite room
+    public void updateFavoriteRoom(String roomId, int status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(FAVORITE, status);
+
+        //update row
+        db.update(TABLE_ROOM, values, ID + " = ?", new String[]{roomId});
+        db.close();
+    }
 
     public List<Location> getAllLocations(String floorId) {
         List<Location> locations = new ArrayList<>();
@@ -330,6 +364,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 location.setRatioX(c.getFloat(c.getColumnIndex(RATIO_X)));
                 location.setRatioY(c.getFloat(c.getColumnIndex(RATIO_Y)));
                 location.setFloorId(c.getString(c.getColumnIndex(FLOOR_ID)));
+                location.setQrAnchorId(c.getString(c.getColumnIndex(QR_ANCHOR_ID)));
+                location.setSpaceAnchorId(c.getString(c.getColumnIndex(SPACE_ANCHOR_ID)));
+
+                location.setFloorName(getFloorName(location.getFloorId()));
                 //add to location list
                 locations.add(location);
 
@@ -361,6 +399,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //                neighbor.setLocationId(c.getInt(c.getColumnIndex(LOCATION_ID)));
                 neighbor.setDistance(c.getFloat(c.getColumnIndex(DISTANCE)));
                 neighbor.setDirection(c.getString(c.getColumnIndex(ORIENTATION)));
+
+                int tmp = c.getInt(c.getColumnIndex(ACTIVE));
+                if (tmp == 1) {
+                    neighbor.setActive(true);
+                } else {
+                    neighbor.setActive(false);
+                }
 
                 //add to location list
                 neighbors.add(neighbor);
@@ -415,6 +460,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 room.setRatioY(c.getFloat(c.getColumnIndex(RATIO_Y)));
                 room.setLocationId(c.getString(c.getColumnIndex(LOCATION_ID)));
                 room.setFloorId(c.getString(c.getColumnIndex(FLOOR_ID)));
+                room.setSpaceAnchorId(c.getString(c.getColumnIndex(SPACE_ANCHOR_ID)));
+                room.setCounter(c.getInt(c.getColumnIndex(COUNTER)));
 
                 int tmp = c.getInt(c.getColumnIndex(SPECIAL_ROOM));
                 if (tmp == 1) {
@@ -422,6 +469,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 } else {
                     room.setSpecialRoom(false);
                 }
+
+                tmp = c.getInt(c.getColumnIndex(FAVORITE));
+                if (tmp == 1) {
+                    room.setFavorite(true);
+                } else {
+                    room.setFavorite(false);
+                }
+
+                //
+                room.setFloorName(getFloorName(room.getFloorId()));
+
                 listRoom.add(room);
 
             } while (c.moveToNext());
@@ -563,7 +621,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void deleteBuildingData(String buildingId) {
+    public void deleteBuildingData(Context context, String buildingId) {
         List<Floor> listFloor = getAllFloors(buildingId);
 
         List<Location> listLocation = new ArrayList<>();
@@ -575,6 +633,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // delete room + neighbor
         for (Location location : listLocation) {
+            // delete preference data
+            List<Room> listRoom = getAllRooms(location.getId());
+            for (Room room : listRoom) {
+                if (room.isSpecialRoom()) {
+                    PreferenceHelper.remove(context, buildingId + "_" + room.getName().toLowerCase());
+
+                    PreferenceHelper.remove(context, buildingId + "_" + room.getName().toLowerCase() + "_favorite");
+                }
+            }
+
             deleteNeighbor(location.getId());
 
             deleteRoom(location.getId());
@@ -592,10 +660,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         updateBuildingStatus(buildingId, Building.NOT_DOWNLOAD);
     }
 
-    public void deleteAllBuilding(String buildingId) {
-       deleteBuildingData(buildingId);
+    public void deleteAllBuilding(Context context, String buildingId) {
+        deleteBuildingData(context, buildingId);
 
-       deleteBuilding(buildingId);
+        deleteBuilding(buildingId);
     }
 
     // closing database

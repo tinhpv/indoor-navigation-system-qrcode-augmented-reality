@@ -1,17 +1,29 @@
 package fpt.capstone.inqr.model.supportModel;
 
 public class Line {
+
+    private boolean end;
+
     private float xStart;
     private float yStart;
 
     private float xEnd;
     private float yEnd;
 
-    public Line(float xStart, float yStart, float xEnd, float yEnd) {
+    public Line(boolean end, float xStart, float yStart, float xEnd, float yEnd) {
+        this.end = end;
         this.xStart = xStart;
         this.yStart = yStart;
         this.xEnd = xEnd;
         this.yEnd = yEnd;
+    }
+
+    public boolean isEnd() {
+        return end;
+    }
+
+    public void setEnd(boolean end) {
+        this.end = end;
     }
 
     public float getxStart() {

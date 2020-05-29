@@ -1,24 +1,31 @@
 package fpt.capstone.inqr.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import fpt.capstone.inqr.R;
 import fpt.capstone.inqr.fragment.ListBuildingFragment;
+import fpt.capstone.inqr.fragment.MapFragment;
+import fpt.capstone.inqr.camera.SupportScanQr;
 
 public class AppActivity extends AppCompatActivity {
 
     private ImageView imgNavigation;
     private TextView tvTitle;
     private FrameLayout frameLayout;
+    private SupportScanQr supportScanQr;
+
+    public void setSupportScanQr(SupportScanQr supportScanQr) {
+        this.supportScanQr = supportScanQr;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +73,7 @@ public class AppActivity extends AppCompatActivity {
         if (isHomeFragment) {
             fragmentTransaction.add(R.id.container, fragment, "home_fragment");
         } else {
-            fragmentTransaction.add(R.id.container, fragment);
+            fragmentTransaction.add(R.id.container, fragment, fragment.getClass().getName());
         }
 
         if (isBackStack) {
@@ -89,10 +96,21 @@ public class AppActivity extends AppCompatActivity {
         } else {
             imgNavigation.setVisibility(View.VISIBLE);
         }
+
+        if (checkMapFragment()) {
+            supportScanQr.refreshCamera();
+        }
+    }
+
+    private boolean checkMapFragment() {
+        Fragment fragment = this.getSupportFragmentManager().findFragmentByTag(MapFragment.class.getName());
+        return (fragment != null && fragment.isVisible());
     }
 
     private boolean checkHomeFragment() {
         Fragment fragment = this.getSupportFragmentManager().findFragmentByTag("home_fragment");
         return (fragment != null && fragment.isVisible());
     }
+
+
 }

@@ -1,15 +1,18 @@
 ﻿<Properties StartupConfiguration="{DF4C2C2E-2C11-4591-BFF2-1B05BE635690}|Default" NuGet.AddPackagesDialog.IncludePrerelease="True">
   <MonoDevelop.Ide.Workbench ActiveDocument="ServerAPI/Startup.cs">
     <Files>
-      <File FileName="ServerAPI/Startup.cs" Line="36" Column="17" />
-      <File FileName="ServerAPI/appsettings.json" Line="11" Column="18" />
-      <File FileName="ServerAPI/Database/AppContext.cs" Line="31" Column="16" />
+      <File FileName="ServerAPI/Startup.cs" Line="1" Column="1" />
+      <File FileName="ServerAPI/Controllers/BuildingController.cs" />
+      <File FileName="ServerAPI/Models/DefaultModel/LocationModel.cs" />
+      <File FileName="ServerAPI/Repository/BuildingRepository.cs" />
+      <File FileName="ServerAPI/Models/DefaultModel/JsonInputModel.cs" Line="36" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="ServerAPI" expanded="True">
             <Node name="ServerAPI" expanded="True">
+
               <Node name="Controllers" expanded="True" />
               <Node name="Database" expanded="True" />
               <Node name="IRepository" expanded="True" />
@@ -19,7 +22,11 @@
               </Node>
               <Node name="Repository" expanded="True" />
               <Node name="Service" expanded="True" />
-              <Node name="appsettings.json" expanded="True" />
+
+              <Node name="wwwroot" expanded="True">
+                <Node name="Map" expanded="True" />
+              </Node>
+
               <Node name="Startup.cs" selected="True" />
             </Node>
           </Node>
